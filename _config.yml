@@ -10,12 +10,12 @@ relative_permalinks: false
 title:            Mahdiyar
 tagline:          'Seyyed Mahdiyar Zerehpoush'
 description:      'My Personal Blog :)'
-url:              http://hyde.getpoole.com
+url:              https://mahdiyar.me
 baseurl:          /
 
 author:
-  name:           'Mark Otto'
-  url:            https://twitter.com/mdo
+  name:           'Seyyed Mahdiyar Zerehpoush'
+  url:            https://twitter.com/SeyyedMahdiyar
 
 paginate:         5
 
@@ -23,4 +23,4 @@ paginate:         5
 version:          2.1.0
 
 github:
-  repo:           https://github.com/poole/hyde
+  repo:           https://github.com/smzerehpoush
