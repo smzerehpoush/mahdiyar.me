@@ -1,3 +1,4 @@
+var cursorShape = '█';
 var Typer = {
   text: '',
   accessCountimer: null,
@@ -42,7 +43,7 @@ var Typer = {
       Typer.hidepop();
     } else if (Typer.text) {
       var cont = Typer.content();
-      if (cont.substring(cont.length - 1, cont.length) == '_')
+      if (cont.substring(cont.length - 1, cont.length) == cursorShape)
         $('#console').html(
           $('#console')
             .html()
@@ -73,13 +74,13 @@ var Typer = {
   updLstChr: function () {
     var cont = this.content();
 
-    if (cont.substring(cont.length - 1, cont.length) == '_')
+    if (cont.substring(cont.length - 1, cont.length) == cursorShape)
       $('#console').html(
         $('#console')
           .html()
           .substring(0, cont.length - 1),
       );
-    else this.write('_'); // else write it
+    else this.write(cu); // else write it
   },
 };
 
