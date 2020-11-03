@@ -42,7 +42,7 @@ var Typer = {
       Typer.hidepop();
     } else if (Typer.text) {
       var cont = Typer.content();
-      if (cont.substring(cont.length - 1, cont.length) == '')
+      if (cont.substring(cont.length - 1, cont.length) == '_')
         $('#console').html(
           $('#console')
             .html()
@@ -73,13 +73,13 @@ var Typer = {
   updLstChr: function () {
     var cont = this.content();
 
-    if (cont.substring(cont.length - 1, cont.length) == '□')
+    if (cont.substring(cont.length - 1, cont.length) == '_')
       $('#console').html(
         $('#console')
           .html()
           .substring(0, cont.length - 1),
       );
-    else this.write('□'); // else write it
+    else this.write('_'); // else write it
   },
 };
 
