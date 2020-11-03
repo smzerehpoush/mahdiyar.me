@@ -42,7 +42,7 @@ var Typer = {
       Typer.hidepop();
     } else if (Typer.text) {
       var cont = Typer.content();
-      if (cont.substring(cont.length - 1, cont.length) == '|')
+      if (cont.substring(cont.length - 1, cont.length) == '')
         $('#console').html(
           $('#console')
             .html()
@@ -73,7 +73,7 @@ var Typer = {
   updLstChr: function () {
     var cont = this.content();
 
-    if (cont.substring(cont.length - 1, cont.length) == '|')
+    if (cont.substring(cont.length - 1, cont.length) == '□')
       $('#console').html(
         $('#console')
           .html()
