@@ -1,6 +1,8 @@
 <h1>Seyyed Mahdiyar Zerehpoush</h1>
-<h2>Software Engineer</h2>
-
-<p>
-      <a id="a" href="mailto:mahdiyar.zerehpoush@gmail.com">Email</a> |  <a id="a" href="https://github.com/smzerehpoush">GitHub</a> |  <a id="a" href="https://twitter.com/SeyyedMahdiyar">Twitter</a> |  <a id="a" href="https://linkedin.com/in/mahdiyar-zerehpoush">LinkedIn</a>
-</p>
+    <p>Software Engineer.</p>
+    <nav>
+      <a href="mailto:mahdiyar.zerehpoush@gmail.com">EMAILb</a> /
+      <a href="https://github.com/smzerehpoush">GITHUB</a> /
+      <a href="https://twitter.com/SeyyedMahdiyar">TWITTER</a> /
+      <a href="https://linkedin.com/in/mahdiyar-zerehpoush">LINKEDIN</a>
+    </nav>
