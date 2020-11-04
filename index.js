@@ -29,20 +29,10 @@ var Typer = {
 	addText: function (key) {
 		if (key.keyCode == 18) {
 			Typer.accessCount++;
-
-			if (Typer.accessCount >= 3) {
-				Typer.makeAccess();
-			}
 		} else if (key.keyCode == 20) {
 			Typer.deniedCount++;
-
-			if (Typer.deniedCount >= 3) {
-				Typer.makeDenied();
-			}
-		} else if (key.keyCode == 27) {
-			Typer.hidepop();
 		} else if (Typer.text) {
-			var cont = Typer.content();
+			let cont = Typer.content();
 			if (cont.substring(cont.length - 1, cont.length) == cursorShape)
 				$('#console').html(
 					$('#console')
@@ -88,7 +78,7 @@ Typer.speed = 3;
 Typer.file = 'Mahdiyar.txt';
 Typer.init();
 
-let timer = setInterval('t();', 30);
+let timer = setInterval('t();', 50);
 
 function t() {
 	Typer.addText({keyCode: 123748});
