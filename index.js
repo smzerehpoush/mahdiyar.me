@@ -1,5 +1,5 @@
-var cursorShape = '█';
-var Typer = {
+let cursorShape = '█';
+const Typer = {
 	text: '',
 	accessCountimer: null,
 	index: 0,
@@ -62,7 +62,7 @@ var Typer = {
 	},
 
 	updLstChr: function () {
-		var cont = this.content();
+		let cont = this.content();
 
 		if (cont.substring(cont.length - 1, cont.length) == cursorShape)
 			$('#console').html(
@@ -82,8 +82,13 @@ let timer = setInterval('t();', 50);
 
 function t() {
 	Typer.addText({keyCode: 123748});
-
 	if (Typer.index > Typer.text.length) {
 		clearInterval(timer);
 	}
+	document.getElementById("E").href = "mailto:mahdiyar.zerehpoush@gmail.com";
+	document.getElementById("G").href = "https://github.com/smzerehpoush";
+	document.getElementById("T").href = "https://twitter.com/SeyyedMahdiyar";
+	document.getElementById("L").href = "https://linkedin.com/in/mahdiyar-zerehpoush";
+	document.getElementById("R").href = "assets/Resume.pdf";
+
 }
