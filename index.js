@@ -78,17 +78,21 @@ Typer.speed = 3;
 Typer.file = 'Mahdiyar.txt';
 Typer.init();
 
-let timer = setInterval('t();', 50);
+let timer = setInterval('t();', 100);
 
 function t() {
 	Typer.addText({keyCode: 123748});
 	if (Typer.index > Typer.text.length) {
 		clearInterval(timer);
 	}
-	document.getElementById("E").href = "mailto:mahdiyar.zerehpoush@gmail.com";
-	document.getElementById("G").href = "https://github.com/smzerehpoush";
-	document.getElementById("T").href = "https://twitter.com/SeyyedMahdiyar";
-	document.getElementById("L").href = "https://linkedin.com/in/mahdiyar-zerehpoush";
-	document.getElementById("R").href = "assets/Resume.pdf";
+	let htmlText = document.getElementById("console").innerHTML;
+	htmlText = htmlText
+		.replace("EMAIL", `<a href="mailto:mahdiyar.zerehpoush@gmail.com">EMAIL</a>`)
+		.replace("GITHUB",`<a href="https://github.com/smzerehpoush">GITHUB</a>`)
+		.replace("TWITTER",`<a href="https://twitter.com/SeyyedMahdiyar">TWITTER</a>`)
+		.replace("LINKEDIN",`<a href="https://linkedin.com/in/mahdiyar-zerehpoush">LINKEDIN</a>`)
+		.replace("RESUME",`<a href="assets/Resume.pdf">RESUME</a>`)
+	console.log("edited :: " + htmlText)
+	document.getElementById("console").innerHTML = htmlText;
 
 }

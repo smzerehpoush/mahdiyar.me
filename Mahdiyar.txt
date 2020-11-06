@@ -1,6 +1,6 @@
 <h1>Seyyed Mahdiyar Zerehpoush</h1>
 <h2>Software Engineer.</h2>
 <h3>
-      <a id="E">EMAIL</a> <a id="G">GITHUB</a> <a id="T">TWITTER</a> <a id="L">LINKEDIN</a> <a id="R">RESUME</a>
+      EMAIL GITHUB TWITTER LINKEDIN RESUME
 </h3>
 
