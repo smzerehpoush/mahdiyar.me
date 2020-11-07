@@ -1,6 +1,8 @@
 <h1>Seyyed Mahdiyar Zerehpoush</h1>
 <h2>Software Engineer.</h2>
 <h3>
-      EMAIL GITHUB TWITTER LINKEDIN RESUME
+      LINKEDIN GITHUB TWITTER RESUME
+
+      CONTACT ME
 </h3>
 

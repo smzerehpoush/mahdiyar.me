@@ -87,11 +87,11 @@ function t() {
 	}
 	let htmlText = document.getElementById("console").innerHTML;
 	htmlText = htmlText
-		.replace("EMAIL", `<a href="mailto:mahdiyar.zerehpoush@gmail.com">EMAIL</a>`)
 		.replace("GITHUB",`<a href="https://github.com/smzerehpoush">GITHUB</a>`)
 		.replace("TWITTER",`<a href="https://twitter.com/SeyyedMahdiyar">TWITTER</a>`)
 		.replace("LINKEDIN",`<a href="https://linkedin.com/in/mahdiyar-zerehpoush">LINKEDIN</a>`)
 		.replace("RESUME",`<a href="assets/Resume.pdf">RESUME</a>`)
+		.replace("CONTACT ME",`<a href="contact-me.html">CONTACT ME</a>`)
 	console.log("edited :: " + htmlText)
 	document.getElementById("console").innerHTML = htmlText;
 
