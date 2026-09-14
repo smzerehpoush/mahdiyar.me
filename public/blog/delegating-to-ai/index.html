@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درست سپردن کار به هوش مصنوعی · مهدیار زره‌پوش</title>
+<meta name="description" content="مشکل این نیست که هوش مصنوعی نمی‌تونه کار رو انجام بده؛ مشکل اینه که ما کار رو درست بهش نسپردیم.">
+<meta name="theme-color" content="#04050B">
+<link rel="canonical" href="https://mahdiyar.me/blog/delegating-to-ai/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="fa_IR">
+<meta property="og:title" content="درست سپردن کار به هوش مصنوعی">
+<meta property="og:description" content="مشکل این نیست که هوش مصنوعی نمی‌تونه کار رو انجام بده؛ مشکل اینه که ما کار رو درست بهش نسپردیم.">
+<meta property="og:url" content="https://mahdiyar.me/blog/delegating-to-ai/">
+<meta property="article:published_time" content="2026-09-14">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304050B'/%3E%3Ccircle cx='32' cy='38' r='17' fill='%2310112A' stroke='%238C80FF' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#04050B;
+    --surface:rgba(124,108,255,.05);
+    --line:rgba(140,128,255,.18);
+    --line-strong:rgba(140,128,255,.45);
+    --indigo:#8C80FF;
+    --indigo-hi:#B3AAFF;
+    --t-hi:#FFFFFF;
+    --t-body:#C9CCE0;
+    --t-mut:#7E829E;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    background:
+      radial-gradient(1100px 600px at 85% -10%, rgba(91,75,255,.16), transparent 60%),
+      var(--bg);
+    color:var(--t-body);
+    font-family:'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+    min-height:100vh;
+  }
+  .wrap{width:min(760px,100%);margin:auto;padding:clamp(40px,7vw,88px) clamp(22px,5vw,56px)}
+
+  .eyebrow{
+    color:var(--indigo);font-size:.86rem;font-weight:600;margin-bottom:18px;
+    display:inline-flex;align-items:center;gap:12px;text-decoration:none;
+  }
+  .eyebrow::before{
+    content:"";width:26px;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,var(--indigo),transparent);
+  }
+  .eyebrow:hover{color:var(--indigo-hi)}
+  h1{
+    color:var(--t-hi);font-weight:900;line-height:1.5;
+    font-size:clamp(1.9rem,4.6vw,2.8rem);margin-bottom:14px;
+  }
+  .meta{color:var(--t-mut);font-size:.9rem}
+
+  .prose{
+    margin-top:clamp(30px,5vw,48px);padding-top:clamp(26px,4vw,40px);
+    border-top:1px solid var(--line);
+    font-size:clamp(1.05rem,1.8vw,1.15rem);line-height:2.1;
+  }
+  .prose > * + *{margin-top:1.1em}
+  .prose strong{color:var(--t-hi);font-weight:700}
+  .prose .lead{font-size:1.12em;line-height:2}
+
+  .prose ol, .prose ul{padding-inline-start:1.4em}
+  .prose ol{list-style:none;padding-inline-start:0}
+  .prose li + li{margin-top:.45em}
+  .prose ol .n{color:var(--indigo);font-weight:700;margin-inline-end:.35em}
+  .prose ul li::marker{color:var(--indigo)}
+
+  /* English terms and skill names sit on their own line, isolated from the RTL flow. */
+  .prose .term bdi, .prose .cmd code{
+    display:inline-block;direction:ltr;unicode-bidi:isolate;
+    border:1px solid var(--line-strong);border-radius:8px;
+    background:var(--surface);color:var(--indigo-hi);
+    padding:.1em .7em;line-height:1.9;
+  }
+  .prose .term bdi{font-weight:600;font-size:.95em}
+  .prose .cmd code{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:.88em}
+  .prose .cmd + .cmd{margin-top:.5em}
+
+  .prose blockquote{
+    border-inline-start:3px solid var(--indigo);
+    padding-inline-start:1em;color:var(--t-hi);
+  }
+  .prose a{color:var(--indigo);text-underline-offset:4px;overflow-wrap:anywhere}
+  .prose a:hover{color:var(--indigo-hi)}
+
+  .tags{
+    list-style:none;display:flex;flex-wrap:wrap;gap:8px;
+    margin-top:clamp(30px,5vw,44px);
+  }
+  .tags li{
+    font-size:.82rem;color:var(--t-mut);
+    border:1px solid var(--line);border-radius:999px;padding:.2em .85em;
+  }
+
+  footer{
+    margin-top:clamp(40px,7vw,72px);padding-top:22px;
+    border-top:1px solid var(--line);
+    font-size:.9rem;line-height:2;
+  }
+  footer a{color:var(--indigo);text-decoration:none}
+  footer a::before{content:"→ "}
+  footer a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <article>
+      <header>
+        <a class="eyebrow" href="/blog/">نوشته‌ها</a>
+        <h1>درست سپردن کار به هوش مصنوعی</h1>
+        <p class="meta"><time datetime="2026-09-14">۲۳ شهریور ۱۴۰۵</time></p>
+      </header>
+
+      <div class="prose">
+        <p class="lead"><strong>مشکل این نیست که هوش مصنوعی نمی‌تونه کار رو انجام بده؛ مشکل اینه که ما کار رو درست بهش نسپردیم.</strong></p>
+
+        <p>یکی از موضوعاتی که توی جلسات کوچینگی با حسین عزیز درباره‌ش صحبت کردیم، این بود که چطور باید یک کار رو درست به کسی سپرد.</p>
+
+        <p>حسین می‌گفت اگر می‌خوای یک کار درست جلو بره، باید حداقل این ۵ مورد رو شفاف کنی:</p>
+
+        <ol>
+          <li><span class="n">۱.</span>دقیقاً چه کاری باید انجام بشه؟</li>
+          <li><span class="n">۲.</span>تا چه زمانی باید انجام و تحویل داده بشه؟</li>
+          <li><span class="n">۳.</span>کیفیت مورد انتظار یا معیار تمام‌شدن کار چیه؟</li>
+          <li><span class="n">۴.</span>اولویت این کار نسبت به بقیه کارها چقدره؟</li>
+          <li><span class="n">۵.</span>چه کارهایی نباید انجام بشه؟</li>
+        </ol>
+
+        <p>برای مورد سوم معمولاً از این اصطلاح استفاده می‌کنیم:</p>
+
+        <p class="term"><bdi>Definition of Done</bdi></p>
+
+        <p>ولی کار همین‌جا تموم نمی‌شه.</p>
+
+        <p>بعد از سپردن کار، یه مرحله مهم دیگه داریم: بازخوانی.</p>
+
+        <p class="term"><bdi>Read Back</bdi></p>
+
+        <p>یعنی مطمئن بشیم:</p>
+
+        <ul>
+          <li>چیزی که گفتیم واقعاً شنیده شده؟</li>
+          <li>درست فهمیده شده؟</li>
+          <li>طرف مقابل کار رو پذیرفته؟</li>
+          <li>و دقیقاً می‌دونه چه چیزی رو، چه زمانی قراره تحویل بده؟</li>
+        </ul>
+
+        <p>بعد از این مراحل تازه اجرای کار شروع می‌شه.</p>
+
+        <p>چند وقت پیش داشتم این مدل رو با خودم مرور می‌کردم که متوجه شدم تجربه من از کار کردن با هوش مصنوعی هم خیلی شبیه همینه.</p>
+
+        <p>قبل‌تر معمولاً کل نیازمندی رو یک‌جا به هوش مصنوعی می‌گفتم و بعد می‌گفتم برو انجامش بده.</p>
+
+        <p>اون هم شروع می‌کرد به کار و بعضی وقت‌ها بعد از مدت نسبتاً طولانی با خروجی‌ای برمی‌گشت که یا دقیقاً چیزی نبود که من می‌خواستم، یا از روشی استفاده کرده بود که از همون ابتدا می‌شد فهمید درست یا بهینه نیست.</p>
+
+        <p>اون موقع تازه باید برمی‌گشتیم عقب، مسیر رو اصلاح می‌کردیم و بخشی از کار دوباره انجام می‌شد.</p>
+
+        <p>و این یعنی اتلاف زمان و هزینه.</p>
+
+        <p>کم‌کم متوجه شدم بهتره به جای اینکه کل مسئله رو یک‌جا به هوش مصنوعی بسپارم، قبل از اجرا چند مرحله باهاش روی خود مسئله هم‌راستا بشم.</p>
+
+        <p>برای کارهای توسعه‌ای به یک روند رسیدم که برای من خیلی بهتر جواب داده.</p>
+
+        <p>اول سعی می‌کنم مسئله رو باز کنم و همون ۵ مورد اول رو تا جای ممکن شفاف کنم.</p>
+
+        <p>برای این مرحله از این مهارت استفاده می‌کنم:</p>
+
+        <p class="cmd"><code>/grill-with-docs</code></p>
+
+        <p>بعد خروجی رو می‌خونم و وارد چیزی شبیه همون بازخوانی می‌شم.</p>
+
+        <p>بررسی می‌کنم که هوش مصنوعی چه برداشتی از مسئله داشته، چه نقشه‌ای برای اجرا داره، چه فرض‌هایی کرده و قراره از چه روشی مسئله رو حل کنه.</p>
+
+        <p>اینجا هنوز توسعه‌ای شروع نشده و هزینه اصلاح مسیر خیلی کمه.</p>
+
+        <p>اگر چیزی رو اشتباه فهمیده باشه، اگر روشی که انتخاب کرده مناسب نباشه، یا اگر کاری باشه که نمی‌خوام انجام بده، همین‌جا اصلاحش می‌کنم.</p>
+
+        <p>بعد مسئله رو به کارهای کوچک‌تر، مشخص‌تر و قابل ارزیابی تبدیل می‌کنم.</p>
+
+        <p>برای این مرحله از این دو مهارت استفاده می‌کنم:</p>
+
+        <p class="cmd"><code>/to-spec</code></p>
+        <p class="cmd"><code>/to-ticket</code></p>
+
+        <p>و تازه بعد از این مراحل می‌رم سراغ پیاده‌سازی.</p>
+
+        <p class="cmd"><code>/implement</code></p>
+
+        <p>برای من این روش خیلی بهتر از حالتی جواب داده که فقط نیازمندی رو توضیح بدم و بگم:</p>
+
+        <blockquote><p>«خب، حالا خودت همه‌ش رو انجام بده.»</p></blockquote>
+
+        <p>چیزی که از این تجربه برای خودم گرفتم اینه که:</p>
+
+        <p><strong>کار کردن مؤثر با هوش مصنوعی بیشتر از اینکه شبیه دستور دادن به یک ابزار باشه، شبیه درست سپردن یک کاره.</strong></p>
+
+        <p>هرچقدر زمینه مسئله، محدودیت‌ها، انتظارمون از خروجی و معیار تمام‌شدن کار شفاف‌تر باشه، احتمال اینکه هوش مصنوعی از همون ابتدا مسیر درستی رو بره بیشتر می‌شه.</p>
+
+        <p>و شاید خیلی از چیزهایی که سال‌ها درباره سپردن کار، مدیریت تیم و تعریف درست تسک یاد گرفتیم، الان دوباره توی کار کردن با هوش مصنوعی به دردمون بخوره.</p>
+
+        <p>مهارت‌هایی که در این روند استفاده کردم رو از این مخزن برداشتم:</p>
+
+        <p><a href="https://github.com/mattpocock/skills" dir="ltr">https://github.com/mattpocock/skills</a></p>
+      </div>
+
+      <ul class="tags" aria-label="برچسب‌ها">
+        <li>#هوش_مصنوعی</li>
+        <li>#مهندسی_نرم_افزار</li>
+        <li>#توسعه_نرم_افزار</li>
+        <li>#مدیریت_مهندسی</li>
+        <li>#مدیریت_تیم</li>
+        <li>#بهره_وری</li>
+        <li><bdi>#AI</bdi></li>
+        <li><bdi>#SoftwareEngineering</bdi></li>
+      </ul>
+    </article>
+
+    <footer>
+      <a href="/blog/">بازگشت به نوشته‌ها</a>
+    </footer>
+  </div>
+</body>
+</html>

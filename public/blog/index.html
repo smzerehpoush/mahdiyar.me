@@ -74,19 +74,13 @@
   }
   .card h2{color:var(--t-hi);font-weight:800;font-size:1.4rem;line-height:1.5;margin-bottom:12px}
   .card p{color:var(--t-body);line-height:1.95;font-size:1rem;flex:1}
+  .card .date{margin-top:16px;color:var(--t-mut);font-size:.85rem}
   .card .go{
-    margin-top:22px;color:var(--indigo);font-weight:700;font-size:.95rem;
+    margin-top:14px;color:var(--indigo);font-weight:700;font-size:.95rem;
     display:flex;align-items:center;gap:8px;
   }
   .card .go::after{content:"←";transition:transform .2s}
   .card:hover .go::after{transform:translateX(-5px)}
-
-  .empty{
-    grid-column:1/-1;text-align:center;
-    border:1px dashed rgba(140,128,255,.3);border-radius:var(--radius);
-    padding:clamp(40px,7vw,64px) 24px;
-    color:var(--t-mut);font-size:1.05rem;line-height:2;
-  }
 
   footer{
     margin-top:clamp(40px,7vw,72px);padding-top:22px;
@@ -105,7 +99,13 @@
     <p class="lede">یادداشت‌هایم دربارهٔ مهندسی نرم‌افزار، رهبری تیم‌های فنی و ابزارهای هوش مصنوعی.</p>
 
     <div class="grid">
-      <p class="empty">هنوز نوشته‌ای منتشر نشده است.</p>
+      <a class="card" href="/blog/delegating-to-ai/">
+        <span class="kicker">AI · ENGINEERING</span>
+        <h2>درست سپردن کار به هوش مصنوعی</h2>
+        <p>مشکل این نیست که هوش مصنوعی نمی‌تونه کار رو انجام بده؛ مشکل اینه که ما کار رو درست بهش نسپردیم.</p>
+        <time class="date" datetime="2026-09-14">۲۳ شهریور ۱۴۰۵</time>
+        <span class="go">خواندن نوشته</span>
+      </a>
     </div>
 
     <footer>
