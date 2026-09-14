@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نوشته‌ها · مهدیار زره‌پوش</title>
+<meta name="description" content="یادداشت‌هایم دربارهٔ مهندسی نرم‌افزار، رهبری تیم‌های فنی و ابزارهای هوش مصنوعی.">
+<meta name="theme-color" content="#04050B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304050B'/%3E%3Ccircle cx='32' cy='38' r='17' fill='%2310112A' stroke='%238C80FF' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#04050B;
+    --surface:rgba(124,108,255,.05);
+    --surface-hi:rgba(124,108,255,.09);
+    --line:rgba(140,128,255,.18);
+    --line-strong:rgba(140,128,255,.45);
+    --indigo:#8C80FF;
+    --indigo-hi:#B3AAFF;
+    --t-hi:#FFFFFF;
+    --t-body:#C9CCE0;
+    --t-mut:#7E829E;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    background:
+      radial-gradient(1100px 600px at 85% -10%, rgba(91,75,255,.16), transparent 60%),
+      radial-gradient(900px 500px at 0% 110%, rgba(91,75,255,.08), transparent 55%),
+      var(--bg);
+    color:var(--t-body);
+    font-family:'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+    min-height:100vh;
+  }
+  .wrap{width:min(980px,100%);margin:auto;padding:clamp(40px,7vw,88px) clamp(22px,5vw,56px)}
+  .ltr{direction:ltr;unicode-bidi:isolate}
+
+  .eyebrow{
+    color:var(--indigo);font-size:.86rem;font-weight:600;margin-bottom:18px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .eyebrow::before{
+    content:"";width:26px;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,var(--indigo),transparent);
+  }
+  h1{
+    color:var(--t-hi);font-weight:900;line-height:1.4;
+    font-size:clamp(2rem,5vw,3.2rem);margin-bottom:18px;
+  }
+  .lede{font-size:clamp(1.02rem,2vw,1.2rem);color:var(--t-body);max-width:52ch;line-height:2;text-wrap:pretty}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:clamp(34px,6vw,56px)}
+  @media (max-width:720px){.grid{grid-template-columns:1fr}}
+
+  /* Post card — one per Post, newest first. */
+  .card{
+    display:flex;flex-direction:column;text-decoration:none;
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);padding:clamp(22px,3vw,30px);
+    transition:border-color .2s,background .2s,transform .2s;
+  }
+  .card:hover,.card:focus-visible{
+    border-color:var(--line-strong);background:var(--surface-hi);
+    transform:translateY(-3px);outline:none;
+  }
+  .card .kicker{
+    direction:ltr;unicode-bidi:isolate;align-self:flex-start;
+    font-size:.7rem;font-weight:700;letter-spacing:.16em;
+    color:var(--indigo-hi);border:1px solid var(--line-strong);
+    padding:.34em .95em;border-radius:999px;margin-bottom:18px;
+  }
+  .card h2{color:var(--t-hi);font-weight:800;font-size:1.4rem;line-height:1.5;margin-bottom:12px}
+  .card p{color:var(--t-body);line-height:1.95;font-size:1rem;flex:1}
+  .card .go{
+    margin-top:22px;color:var(--indigo);font-weight:700;font-size:.95rem;
+    display:flex;align-items:center;gap:8px;
+  }
+  .card .go::after{content:"←";transition:transform .2s}
+  .card:hover .go::after{transform:translateX(-5px)}
+
+  .empty{
+    grid-column:1/-1;text-align:center;
+    border:1px dashed rgba(140,128,255,.3);border-radius:var(--radius);
+    padding:clamp(40px,7vw,64px) 24px;
+    color:var(--t-mut);font-size:1.05rem;line-height:2;
+  }
+
+  footer{
+    margin-top:clamp(40px,7vw,72px);padding-top:22px;
+    border-top:1px solid var(--line);
+    color:var(--t-mut);font-size:.85rem;line-height:2;
+  }
+  footer a{color:var(--indigo);text-decoration:none}
+  footer a::before{content:"→ "}
+  footer a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">مهدیار زره‌پوش</p>
+    <h1>نوشته‌ها</h1>
+    <p class="lede">یادداشت‌هایم دربارهٔ مهندسی نرم‌افزار، رهبری تیم‌های فنی و ابزارهای هوش مصنوعی.</p>
+
+    <div class="grid">
+      <p class="empty">هنوز نوشته‌ای منتشر نشده است.</p>
+    </div>
+
+    <footer>
+      <a href="/">بازگشت به <span class="ltr">mahdiyar.me</span></a>
+    </footer>
+  </div>
+</body>
+</html>

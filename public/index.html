@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mahdiyar Zerehpoush</title>
+<meta name="description" content="The personal site of Mahdiyar Zerehpoush — coming soon.">
+<meta name="theme-color" content="#04050B">
+<meta property="og:title" content="Mahdiyar Zerehpoush">
+<meta property="og:description" content="Personal site — coming soon.">
+<meta property="og:url" content="https://mahdiyar.me/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304050B'/%3E%3Ccircle cx='32' cy='38' r='17' fill='%2310112A' stroke='%238C80FF' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#04050B;
+    --indigo:#5B4BFF;
+    --indigo-soft:#8C80FF;
+    --t-hi:#E9E9F2;
+    --t-mut:#6E7191;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(120% 70% at 50% 115%, #0C0D1A 0%, var(--bg) 62%);
+    color:var(--t-hi);
+    font-family:'Jost', 'Futura', 'Avenir Next', 'Segoe UI', sans-serif;
+    font-weight:400;
+    min-height:100vh;min-height:100svh;
+    display:grid;place-items:center;overflow-x:hidden;
+  }
+  main{display:flex;flex-direction:column;align-items:center;text-align:center;padding:32px 20px}
+
+  /* Eclipse: a dark planet whose upper rim catches indigo light, fading into the dark below. */
+  .eclipse{
+    --size:min(460px,90vw);
+    position:relative;width:var(--size);aspect-ratio:1;
+    margin-bottom:calc(var(--size) * -.3);
+    -webkit-mask-image:linear-gradient(to bottom,#000 38%,transparent 70%);
+            mask-image:linear-gradient(to bottom,#000 38%,transparent 70%);
+    animation:rise 2.6s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .eclipse::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(closest-side circle at 50% 44%, rgba(91,75,255,.5) 0%, rgba(91,75,255,.14) 55%, transparent 100%);
+    filter:blur(10px);
+    animation:breathe 7s ease-in-out 2.6s infinite;
+  }
+  .planet{
+    position:absolute;inset:18%;border-radius:50%;
+    background:radial-gradient(circle at 50% 0%, #26274A 0%, #121329 34%, #06070F 70%);
+    box-shadow:
+      inset 0 3px 0 rgba(160,150,255,.85),
+      inset 0 14px 28px -10px rgba(120,105,255,.55),
+      0 -10px 46px -8px rgba(91,75,255,.7);
+  }
+
+  .title{
+    font-weight:400;text-transform:uppercase;
+    font-size:clamp(1.05rem,3.4vw,1.9rem);
+    letter-spacing:.62em;margin-right:-.62em;
+    animation:fade 2s ease 1s both;
+  }
+  h1{
+    margin-top:clamp(14px,2.4vh,22px);
+    font-weight:500;text-transform:uppercase;color:var(--indigo-soft);
+    font-size:clamp(.62rem,1.6vw,.78rem);
+    letter-spacing:.5em;margin-right:-.5em;
+    animation:fade 2s ease 1.5s both;
+  }
+  nav{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:10px clamp(22px,5vw,44px);
+    margin-top:clamp(48px,10vh,96px);
+    animation:fade 2s ease 2.1s both;
+  }
+  nav a{
+    color:var(--t-mut);text-decoration:none;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.3em;margin-right:-.3em;padding:6px 2px;
+    transition:color .25s;
+  }
+  nav a:hover,nav a:focus-visible{color:var(--t-hi)}
+  nav a:focus-visible{outline:1px solid var(--indigo-soft);outline-offset:4px;border-radius:2px}
+
+  @keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+  @keyframes breathe{0%,100%{opacity:1}50%{opacity:.7}}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before{animation:none!important}
+  }
+</style>
+</head>
+<body>
+  <main>
+    <div class="eclipse" aria-hidden="true"><div class="planet"></div></div>
+    <p class="title">Coming soon</p>
+    <h1>Mahdiyar Zerehpoush</h1>
+    <nav aria-label="Links">
+      <a href="/blog/">Blog</a>
+      <a href="https://github.com/smzerehpoush" rel="me">GitHub</a>
+      <a href="https://www.linkedin.com/in/mahdiyar-zerehpoush" rel="me">LinkedIn</a>
+    </nav>
+  </main>
+</body>
+</html>

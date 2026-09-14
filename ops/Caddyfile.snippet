@@ -1,0 +1,27 @@
+# Mirror of the Personal Site part of the mahdiyar.me block in the edge Caddy config
+# (server: /opt/padelyar/deploy/caddy/Caddyfile). The block's other routes — /padelyar,
+# /supabase-api, /padelyar-old, /api, /tldrss — belong to other projects and sit above this.
+# Edit the server file, then update this mirror; see ops/README.md.
+
+mahdiyar.me {
+    # ... tls, encode and the other projects' routes ...
+
+    # Personal Site — static files synced from this repo's public/ into /srv/mahdiyar-me.
+    # Must stay the last handle: it is the catch-all. file_server redirects
+    # directories to a trailing slash (/blog -> /blog/).
+    handle {
+        root * /srv/mahdiyar-me
+        file_server
+    }
+
+    # Missing paths get the Personal Site's 404 page (status stays 404).
+    # /tldrss keeps its own bare 404.
+    handle_errors 404 {
+        @site not path /tldrss/*
+        handle @site {
+            root * /srv/mahdiyar-me
+            rewrite * /404.html
+            file_server
+        }
+    }
+}
