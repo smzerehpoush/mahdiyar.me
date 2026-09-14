@@ -55,6 +55,25 @@ sudo docker inspect padelyar-caddy --format '{{range $k,$v := .NetworkSettings.N
 # must list tablo-edge, or tablo.gold goes down
 ```
 
+## TLS certificate
+
+Caddy serves the `mahdiyar.me` certificate from files (`tls /certs/live/mahdiyar.me/...`);
+certbot on the host renews them (`certbot.timer`, from 30 days before expiry).
+
+- **Challenge:** HTTP-01 via webroot `/srv/mahdiyar-me` — certbot drops a file in
+  `.well-known/acme-challenge/` and Caddy's catch-all serves it. That is why
+  `server-pull.sh` excludes `/.well-known/` from `rsync --delete`.
+  (The original DNS-01 setup used a Cloudflare token that expired on 2026-07-31;
+  `/root/.secrets/cloudflare.ini` is dead.)
+- **After renewal:** `/etc/letsencrypt/renewal-hooks/deploy/restart-caddy.sh` restarts
+  `padelyar-caddy` so it loads the new files — a few seconds of downtime for every site
+  behind it, about once every 60 days.
+- **Test renewal** (Let's Encrypt staging; changes nothing):
+
+```bash
+sudo certbot renew --dry-run --no-random-sleep-on-renew --cert-name mahdiyar.me
+```
+
 ## Smoke test
 
 ```bash

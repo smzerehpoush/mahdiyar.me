@@ -23,4 +23,5 @@ if [ ! -f "$CHECKOUT/public/index.html" ]; then
   exit 1
 fi
 
-rsync -a --delete "$CHECKOUT"/public/ "$DEST"/
+# .well-known/ holds certbot's HTTP-01 challenge files during a renewal; never delete them.
+rsync -a --delete --exclude=/.well-known/ "$CHECKOUT"/public/ "$DEST"/
