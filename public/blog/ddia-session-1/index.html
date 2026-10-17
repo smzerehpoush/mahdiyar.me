@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DDIA Session 1: Reliable, Scalable, Maintainable</title>
+<meta name="description" content="Three questions to answer before you pick any database, cache, or queue. Slides from a Designing Data-Intensive Applications book-club session, covering Chapter 1.">
+<link rel="canonical" href="https://mahdiyar.me/blog/ddia-session-1/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="DDIA Session 1: Reliable, Scalable, Maintainable">
+<meta property="og:description" content="Three questions to answer before you pick any database, cache, or queue. Slides from a Designing Data-Intensive Applications book-club session, covering Chapter 1.">
+<meta property="og:url" content="https://mahdiyar.me/blog/ddia-session-1/">
+<meta property="article:published_time" content="2026-10-18">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304050B'/%3E%3Ccircle cx='32' cy='38' r='17' fill='%2310112A' stroke='%238C80FF' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F5F8; --surface:#FFFFFF; --ink:#0F1B2D; --muted:#55657A; --line:#D3DAE3;
+  --rel:#0E7C6B; --sca:#B4480A; --mai:#5236B8; --bad:#D21F3C;
+  --rel-bg:#0E7C6B; --sca-bg:#B4480A; --mai-bg:#4B30AE;
+  --hl:#FFD66B; --on:#FFFFFF; --on-muted:rgba(255,255,255,.8);
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1621; --surface:#172231; --ink:#E7EDF4; --muted:#9AAABD; --line:#2A394B;
+    --rel:#4FD1BC; --sca:#FFA24D; --mai:#B3A2FF; --bad:#FF6B7F;
+    --rel-bg:#0A5A4E; --sca-bg:#8A3606; --mai-bg:#36247E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1621; --surface:#172231; --ink:#E7EDF4; --muted:#9AAABD; --line:#2A394B;
+  --rel:#4FD1BC; --sca:#FFA24D; --mai:#B3A2FF; --bad:#FF6B7F;
+  --rel-bg:#0A5A4E; --sca-bg:#8A3606; --mai-bg:#36247E;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  height:100%;margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Bricolage Grotesque","Helvetica Neue",Arial,system-ui,sans-serif;
+  font-size:clamp(16px,1vw + 8px,22px);line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow:hidden;
+}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,Consolas,monospace;font-size:.82em}
+.deck{position:relative;height:100%;display:flex;flex-direction:column}
+.stage{position:relative;flex:1;min-height:0}
+
+/* slides */
+.slide{position:absolute;inset:0;display:none;overflow-y:auto;padding:clamp(1.4rem,4vw,3.6rem) clamp(1.2rem,6vw,6rem) 2rem;
+  background:var(--paper);color:var(--ink);--acc:var(--ink);--pc:var(--ink)}
+.slide.active{display:block}
+.slide.c{color:var(--on);--acc:var(--on)}
+.slide[data-p="rel"]{--pc:var(--rel)} .slide[data-p="rel"].c{background:var(--rel-bg)}
+.slide[data-p="sca"]{--pc:var(--sca)} .slide[data-p="sca"].c{background:var(--sca-bg)}
+.slide[data-p="mai"]{--pc:var(--mai)} .slide[data-p="mai"].c{background:var(--mai-bg)}
+.inner{max-width:1180px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:1.4rem}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.03em;line-height:1.02}
+h1{font-size:clamp(2.8rem,7.5vw,6.6rem)}
+h2{font-size:clamp(2rem,4.6vw,4rem)}
+h3{font-size:1.25em;letter-spacing:-.015em;line-height:1.15;margin-bottom:.3em}
+p{margin:0;max-width:60ch}
+.sub{font-size:clamp(1.1rem,1.8vw,1.5rem);opacity:.85;max-width:44ch;line-height:1.4}
+.c .sub,.c .dim{color:var(--on-muted);opacity:1}
+.dim{color:var(--muted)}
+.hl{background:var(--hl);color:#0F1B2D;padding:0 .18em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,24rem),1fr));gap:clamp(1.2rem,3vw,3rem);align-items:center}
+.row3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:clamp(1rem,2vw,1.6rem)}
+.card{background:var(--surface);color:var(--ink);padding:clamp(1rem,2vw,1.6rem);border-radius:18px;--acc:var(--pc)}
+.c .card{box-shadow:0 18px 40px -18px rgba(0,0,0,.45)}
+.card .dim{color:var(--muted)}
+svg{max-width:100%;height:auto;display:block}
+svg text{font-family:"Bricolage Grotesque",Arial,sans-serif}
+
+/* stats */
+.stat .n{font-size:clamp(2.6rem,6vw,5.2rem);font-weight:800;letter-spacing:-.04em;line-height:1}
+.stat .l{font-size:1.02em;margin-top:.4em;max-width:26ch}
+.c .stat .l{color:var(--on-muted)}
+.stat .n.hlc{color:var(--hl)}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{border:2px solid currentColor;border-radius:999px;padding:.25em .9em;font-weight:600;font-size:.95em}
+.c .chip{border-color:rgba(255,255,255,.55)}
+
+/* motion: one orchestrated entrance per slide */
+.slide.active .rise{animation:rise .7s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0) * 110ms)}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.flow{stroke-dasharray:6 9;animation:flow 1.2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-30}}
+
+/* title */
+.title{display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;min-height:100%}
+@media (max-width:760px){.title{grid-template-columns:1fr}}
+.title h1 span{display:block}
+.bands{display:flex;gap:clamp(.5rem,1.2vw,1rem);height:min(62vh,520px);align-items:flex-end}
+.bands div{flex:1;border-radius:16px 16px 4px 4px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:1.1rem;color:#fff;font-weight:800;font-size:clamp(1rem,1.6vw,1.4rem);transform-origin:bottom}
+.bands div span{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+.slide.active .bands div{animation:grow 1s cubic-bezier(.2,.75,.2,1) both}
+.bands div:nth-child(1){background:var(--rel-bg);height:70%;animation-delay:.1s}
+.bands div:nth-child(2){background:var(--sca-bg);height:100%;animation-delay:.25s}
+.bands div:nth-child(3){background:var(--mai-bg);height:84%;animation-delay:.4s}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.kicker{font-weight:600;color:var(--muted);font-size:1.05em}
+
+/* divider */
+.divider .num{font-size:clamp(7rem,22vw,18rem);font-weight:800;line-height:.8;letter-spacing:-.06em;color:rgba(255,255,255,.18)}
+.divider h2{font-size:clamp(3rem,8vw,7rem)}
+
+/* icons */
+.icons{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10rem),1fr));gap:1rem}
+.icon{background:var(--surface);border-radius:18px;padding:1.2rem 1rem;text-align:center}
+.icon svg{width:64px;height:64px;margin:0 auto .6rem;stroke:var(--ink);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.icon b{display:block;font-size:1.1em}
+.icon span{font-size:.85em;color:var(--muted)}
+
+/* pillars */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:1rem}
+.pillars>div{color:#fff;border-radius:22px;padding:clamp(1.2rem,2.4vw,2rem);min-height:clamp(14rem,40vh,22rem);display:flex;flex-direction:column;justify-content:space-between}
+.pillars h3{font-size:clamp(1.6rem,2.6vw,2.4rem)}
+.pillars p{color:var(--on-muted);font-size:1.05em}
+
+/* strike */
+.strike{font-size:clamp(2rem,5.4vw,4.6rem);font-weight:800;letter-spacing:-.03em;position:relative;display:inline-block;opacity:.6}
+.strike::after{content:"";position:absolute;left:-2%;right:-2%;top:52%;height:.12em;background:var(--hl);transform:rotate(-3deg) scaleX(0);transform-origin:left}
+.slide.active .strike::after{animation:strike .5s .5s ease-out forwards}
+@keyframes strike{to{transform:rotate(-3deg) scaleX(1)}}
+
+/* labs */
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr));gap:.6rem 1.6rem;margin-bottom:1rem}
+label.ctl{display:flex;flex-direction:column;gap:.1rem;font-size:.92em}
+label.ctl .row{display:flex;justify-content:space-between;gap:1rem}
+label.ctl output{font-weight:800;color:var(--acc)}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:1rem}
+.readout .v{font-size:clamp(1.8rem,3.4vw,2.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;color:var(--acc)}
+.readout .k{font-size:.88em;color:var(--muted)}
+button{font:inherit;cursor:pointer}
+.btn{background:transparent;color:var(--ink);border:2px solid var(--acc);border-radius:999px;padding:.35em 1.1em;font-weight:700;font-size:.92em}
+.btn:hover,.btn[aria-pressed="true"]{background:var(--acc);color:var(--surface)}
+:focus-visible{outline:3px solid var(--hl);outline-offset:3px}
+.dots{display:grid;grid-template-columns:repeat(20,1fr);gap:5px}
+.dots i{aspect-ratio:1;background:var(--line);display:block;border-radius:50%;transition:background .15s}
+.dots i.hit{background:var(--bad)}
+.disks{display:grid;grid-template-columns:repeat(25,1fr);gap:5px}
+.disks i{aspect-ratio:1;border-radius:4px;background:var(--line);display:block;transition:background .3s,transform .3s}
+.disks i.dead{background:var(--bad);transform:scale(1.35)}
+
+pre{background:#0F1B2D;color:#E7EDF4;border-radius:12px;padding:1em 1.2em;overflow-x:auto;margin:.6em 0 0;line-height:1.55}
+.scroll-x{overflow-x:auto;max-width:100%}
+
+/* quiz */
+.qwrap{max-width:900px}
+.qn{font-weight:700;color:var(--muted)}
+.qtext{font-size:clamp(1.5rem,3vw,2.4rem);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:.3em 0 1em}
+.opts{display:grid;gap:.7rem}
+.opt{background:var(--surface);border:2px solid var(--line);color:var(--ink);border-radius:14px;padding:.8em 1.1em;text-align:left;font-size:1.05em;font-weight:600}
+.opt:hover{border-color:var(--ink)}
+.opt.right{border-color:var(--rel);background:color-mix(in srgb,var(--rel) 16%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
+.fb{min-height:2.6em;margin-top:1rem;color:var(--muted)}
+.qnav{display:flex;gap:.6rem;align-items:center}
+
+/* discussion */
+.disc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:1rem}
+.disc>div{border-radius:18px;padding:1.3rem 1.4rem;color:#fff}
+.disc h3{font-size:1.4em}
+.disc p{color:var(--on-muted)}
+
+/* footer */
+.bar{flex:none;display:flex;align-items:center;gap:1rem;padding:.55rem clamp(1rem,6vw,6rem) .65rem;
+  background:var(--cur-bg,var(--paper));color:var(--cur-fg,var(--ink));font-size:.82em;position:relative;transition:background .3s}
+.progress{position:absolute;top:0;left:0;height:4px;background:var(--hl);transition:width .3s ease}
+.sec{font-weight:800}
+.count{opacity:.75;margin-inline-start:auto}
+.nav{display:flex;gap:.4rem}
+.nav button{background:transparent;border:1.5px solid currentColor;color:inherit;border-radius:999px;width:2.5rem;height:2.1rem;font-size:1rem;opacity:.85}
+.nav button:hover{opacity:1}
+.notes-panel{display:none;position:absolute;left:0;right:0;bottom:100%;background:var(--surface);color:var(--ink);
+  border-top:4px solid var(--hl);padding:1rem clamp(1rem,6vw,6rem);max-height:40vh;overflow:auto;font-size:1.05em;line-height:1.55}
+.notes-panel.open{display:block}
+aside.notes{display:none}
+.hint{color:var(--muted);font-size:.85em}
+@media (max-width:640px){.hint{display:none}.bands{height:28vh}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.strike::after{transform:rotate(-3deg) scaleX(1)}}
+</style>
+</head>
+<body>
+<div class="deck">
+<main class="stage" id="stage">
+
+<!-- 1 Title -->
+<section class="slide" data-p="neu" data-sec="DDIA · Session 1">
+  <div class="title">
+    <div style="display:grid;gap:1.4rem">
+      <div class="kicker rise">Designing Data-Intensive Applications, session 1</div>
+      <h1 class="rise"><span style="color:var(--rel)">Reliable.</span><span style="color:var(--sca)">Scalable.</span><span style="color:var(--mai)">Maintainable.</span></h1>
+      <p class="sub rise">Three questions to answer before you pick any database, cache, or queue.</p>
+      <p class="hint rise">→ next · ← back · N notes · F full screen</p>
+    </div>
+    <div class="bands" aria-hidden="true"><div><span>Reliability</span></div><div><span>Scalability</span></div><div><span>Maintainability</span></div></div>
+  </div>
+  <aside class="notes">Goal: a shared vocabulary for three words everyone uses and few define precisely. The rest of the book builds on these three pillars. This session covers Chapter 1 of Martin Kleppmann's book.</aside>
+</section>
+
+<!-- 2 Building blocks -->
+<section class="slide" data-p="neu" data-sec="Introduction">
+  <div class="inner">
+    <h2 class="rise">The bottleneck isn’t the CPU anymore.</h2>
+    <p class="sub rise">It’s the <span class="hl">amount</span> of data, its <span class="hl">complexity</span>, and how fast it <span class="hl">changes</span>.</p>
+    <div class="icons">
+      <div class="icon rise"><svg viewBox="0 0 64 64"><ellipse cx="32" cy="14" rx="20" ry="7"/><path d="M12 14v36c0 4 9 7 20 7s20-3 20-7V14"/><path d="M12 32c0 4 9 7 20 7s20-3 20-7"/></svg><b>Database</b><span>store, find later</span></div>
+      <div class="icon rise"><svg viewBox="0 0 64 64"><path d="M36 6 16 36h14l-4 22 22-32H34z"/></svg><b>Cache</b><span>remember expensive work</span></div>
+      <div class="icon rise"><svg viewBox="0 0 64 64"><circle cx="27" cy="27" r="16"/><path d="m39 39 15 15"/></svg><b>Search index</b><span>keyword &amp; filter</span></div>
+      <div class="icon rise"><svg viewBox="0 0 64 64"><path d="M6 20h40m-8-8 8 8-8 8M6 44h40m-8-8 8 8-8 8"/><circle cx="54" cy="20" r="3"/><circle cx="54" cy="44" r="3"/></svg><b>Stream</b><span>async messages</span></div>
+      <div class="icon rise"><svg viewBox="0 0 64 64"><path d="M8 20 32 8l24 12-24 12z"/><path d="m8 32 24 12 24-12M8 44l24 12 24-12"/></svg><b>Batch</b><span>crunch big piles</span></div>
+    </div>
+  </div>
+  <aside class="notes">These building blocks work so well that we rarely think about them. But each has many implementations with different trade-offs. Ask the team: which of these five does our system use? Probably more than we think.</aside>
+</section>
+
+<!-- 3 Composite system -->
+<section class="slide" data-p="neu" data-sec="Introduction">
+  <div class="inner">
+    <div class="split">
+      <div style="display:grid;gap:1.2rem">
+        <h2 class="rise">Glue code makes you a data system designer.</h2>
+        <p class="sub rise">Put a cache and a search index next to your database, and <span class="hl">keeping them in sync is now your job</span>.</p>
+        <div class="chips rise"><span class="chip">Redis: store or queue?</span><span class="chip">Kafka: queue or log-database?</span></div>
+      </div>
+      <div class="card rise" style="--pc:var(--rel)">
+        <svg viewBox="0 0 420 330" role="img" aria-label="Composite system: client, application code, cache, primary database, search index, change queue, workers">
+          <g stroke="var(--rel)" stroke-width="2.4" fill="none">
+            <path class="flow" d="M210 44 V80"/><path class="flow" d="M150 124 L80 172"/><path class="flow" d="M210 124 V172"/>
+            <path class="flow" d="M270 124 L340 172"/><path class="flow" d="M210 216 V254"/><path class="flow" d="M265 277 H302"/>
+            <path class="flow" d="M352 254 V218"/>
+          </g>
+          <g font-size="14" fill="var(--ink)" text-anchor="middle">
+            <rect x="160" y="8" width="100" height="36" rx="10" fill="var(--line)"/><text x="210" y="31">Client</text>
+            <rect x="120" y="80" width="180" height="44" rx="12" fill="var(--ink)"/><text x="210" y="107" fill="var(--surface)" font-weight="800">Application code</text>
+            <rect x="20" y="172" width="110" height="44" rx="10" fill="var(--line)"/><text x="75" y="199">Cache</text>
+            <rect x="155" y="172" width="110" height="44" rx="10" fill="var(--line)"/><text x="210" y="199">Primary DB</text>
+            <rect x="290" y="172" width="120" height="44" rx="10" fill="var(--line)"/><text x="350" y="199">Search index</text>
+            <rect x="155" y="254" width="110" height="44" rx="10" fill="var(--line)"/><text x="210" y="281">Change queue</text>
+            <rect x="302" y="254" width="100" height="44" rx="10" fill="none" stroke="var(--muted)" stroke-dasharray="4 4"/><text x="352" y="281">Workers</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">The categories are blurring: Redis is a datastore that can act as a queue; Kafka is a queue with database-like durability. Once we combine tools behind an API, we've built a new special-purpose data system and must uphold its guarantees ourselves — e.g. that the cache is correctly invalidated. Whoever writes the invalidation logic is designing a consistency guarantee.</aside>
+</section>
+
+<!-- 4 Pillars -->
+<section class="slide" data-p="neu" data-sec="Three concerns">
+  <div class="inner">
+    <h2 class="rise">Three words we use daily and rarely define.</h2>
+    <div class="pillars">
+      <div class="rise" style="background:var(--rel-bg)"><h3>Reliability</h3><p>Keeps working correctly, even when things go wrong.</p></div>
+      <div class="rise" style="background:var(--sca-bg)"><h3>Scalability</h3><p>Has reasonable ways to cope as load grows.</p></div>
+      <div class="rise" style="background:var(--mai-bg)"><h3>Maintainability</h3><p>Many people, over years, can work on it productively.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 Divider Reliability -->
+<section class="slide c divider" data-p="rel" data-sec="Reliability">
+  <div class="inner">
+    <div class="num rise">01</div>
+    <h2 class="rise">Reliability</h2>
+    <p class="sub rise">Continuing to work correctly, even when things go wrong.</p>
+  </div>
+</section>
+
+<!-- 6 Fault vs failure -->
+<section class="slide c" data-p="rel" data-sec="Reliability">
+  <div class="inner">
+    <div class="split">
+      <div style="display:grid;gap:1.2rem">
+        <h2 class="rise">A fault is not a failure.</h2>
+        <p class="sub rise"><b style="color:#fff">Fault</b>: one component breaks its spec.<br><b style="color:#fff">Failure</b>: users stop getting service.</p>
+        <p class="sub rise">Faults will happen. The job is to <span class="hl">stop them becoming failures</span>.</p>
+      </div>
+      <div class="card rise">
+        <svg viewBox="0 0 440 260" role="img" aria-label="With fault tolerance a broken node leaves users unaffected; without it, users see an outage">
+          <g font-size="14" fill="var(--ink)">
+            <text x="0" y="22" font-weight="800">With fault tolerance</text>
+            <rect x="0" y="36" width="56" height="40" rx="8" fill="var(--line)"/><rect x="66" y="36" width="56" height="40" rx="8" fill="var(--bad)"/><rect x="132" y="36" width="56" height="40" rx="8" fill="var(--line)"/>
+            <text x="94" y="62" text-anchor="middle" fill="#fff" font-weight="800">✕</text>
+            <path class="flow" d="M196 56 H290" stroke="var(--rel)" stroke-width="3" fill="none"/>
+            <rect x="296" y="30" width="144" height="52" rx="26" fill="var(--rel)"/><text x="368" y="61" text-anchor="middle" fill="#fff" font-weight="800">Users fine ✓</text>
+            <text x="0" y="152" font-weight="800">Without</text>
+            <rect x="0" y="166" width="56" height="40" rx="8" fill="var(--line)"/><rect x="66" y="166" width="56" height="40" rx="8" fill="var(--bad)"/><rect x="132" y="166" width="56" height="40" rx="8" fill="var(--line)"/>
+            <text x="94" y="192" text-anchor="middle" fill="#fff" font-weight="800">✕</text>
+            <path d="M196 186 H290" stroke="var(--bad)" stroke-width="3" stroke-dasharray="3 6" fill="none"/>
+            <rect x="296" y="160" width="144" height="52" rx="26" fill="var(--bad)"/><text x="368" y="191" text-anchor="middle" fill="#fff" font-weight="800">Outage</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">A fault is one component deviating from its spec; a failure is the system as a whole no longer providing service. You can't make fault probability zero, and you can't tolerate every fault (the book's example: Earth swallowed by a black hole). So we tolerate specific kinds of faults. Example: a DB replica going down is a fault; if users see errors, it became a failure. Exception: security — where no cure exists, prevention wins.</aside>
+</section>
+
+<!-- 7 Sources -->
+<section class="slide c" data-p="rel" data-sec="Reliability">
+  <div class="inner">
+    <h2 class="rise">Where faults come from</h2>
+    <div class="row3">
+      <div class="stat rise"><div class="n hlc">~1/day</div><div class="l"><b style="color:#fff">Hardware.</b> Disk failures in a 10,000-disk cluster. Random, mostly independent.</div></div>
+      <div class="stat rise"><div class="n hlc">1 second</div><div class="l"><b style="color:#fff">Software.</b> The 2012 leap second hung many services at once. Bugs are correlated across nodes.</div></div>
+      <div class="stat rise"><div class="n hlc">#1</div><div class="l"><b style="color:#fff">Humans.</b> Operator config errors led outages in one study; hardware played a role in only 10–25%.</div></div>
+    </div>
+  </div>
+  <aside class="notes">Hardware: MTTF of disks is 10–50 years, so at scale failures are daily. Old fix: redundancy (RAID, dual PSUs). Modern fix: tolerate losing whole machines in software — which also enables rolling upgrades. Software: systematic faults like a bug triggered by one bad input on every node, runaway processes, slow dependencies, cascading failures. They're usually environment assumptions that were always true until they weren't. Humans: configuration errors were the top cause in a study of large internet services.</aside>
+</section>
+
+<!-- 8 Designing for humans -->
+<section class="slide c" data-p="rel" data-sec="Reliability">
+  <div class="inner">
+    <div class="split">
+      <div style="display:grid;gap:1.2rem">
+        <h2 class="rise">Break things on purpose.</h2>
+        <p class="sub rise">Many critical bugs hide in error handling. Netflix’s <span class="hl">Chaos Monkey</span> randomly kills processes so the recovery path is always tested.</p>
+      </div>
+      <div style="display:grid;gap:1rem">
+        <h3 class="rise">Designing for unreliable humans</h3>
+        <div class="chips rise" style="font-size:1.1em">
+          <span class="chip">APIs that make the right thing easy</span>
+          <span class="chip">Sandboxes with real data</span>
+          <span class="chip">Tests at every level</span>
+          <span class="chip">Fast rollback</span>
+          <span class="chip">Gradual rollouts</span>
+          <span class="chip">Tools to recompute data</span>
+          <span class="chip">Detailed telemetry</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Deliberately inducing faults keeps fault-tolerance machinery exercised. For human error: minimise opportunities for error (but don't over-restrict or people work around it), decouple where mistakes happen from where they cause damage, test thoroughly, make recovery quick, monitor clearly. A system can also check its own guarantees while running and alert on discrepancies.</aside>
+</section>
+
+<!-- 9 Disk lab -->
+<section class="slide c" data-p="rel" data-sec="Reliability">
+  <div class="inner">
+    <h2 class="rise">Lab: at scale, failure is routine</h2>
+    <div class="card rise">
+      <div class="controls">
+        <label class="ctl"><span class="row"><span>Number of disks</span><output id="dN"></output></span><input type="range" id="disks" min="100" max="100000" step="100" value="10000"></label>
+        <label class="ctl"><span class="row"><span>Disk MTTF (years)</span><output id="dM"></output></span><input type="range" id="mttf" min="10" max="50" value="27"></label>
+      </div>
+      <div class="split" style="align-items:center;gap:1.5rem">
+        <div class="readouts">
+          <div class="readout"><div class="v" id="dDay"></div><div class="k">Failures per day</div></div>
+          <div class="readout"><div class="v" id="dEvery"></div><div class="k">One failure every</div></div>
+          <div class="readout"><div class="v" id="simDays" style="color:var(--ink)">0</div><div class="k">Simulated days (1 s = 1 day)</div></div>
+          <div class="readout"><div class="v" id="simLost" style="color:var(--bad)">0</div><div class="k">Disks lost so far</div></div>
+        </div>
+        <div class="disks" id="diskGrid" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Each red flash is a disk dying in the simulation. With 10,000 disks you lose about one per day. At this scale, failure is a normal operating condition, not an exceptional event.</aside>
+</section>
+
+<!-- 10 Divider Scalability -->
+<section class="slide c divider" data-p="sca" data-sec="Scalability">
+  <div class="inner">
+    <div class="num rise">02</div>
+    <h2 class="rise">Scalability</h2>
+    <p class="sub rise">Not a label. A question about growth.</p>
+  </div>
+</section>
+
+<!-- 11 X is scalable -->
+<section class="slide c" data-p="sca" data-sec="Scalability">
+  <div class="inner">
+    <div class="rise"><span class="strike">“Our system is scalable.”</span></div>
+    <h2 class="rise">“If load grows <span class="hl">like this</span>, what are our options?”</h2>
+    <p class="sub rise">First describe today’s load with a few <b style="color:#fff">load parameters</b>:</p>
+    <div class="chips rise" style="font-size:1.1em"><span class="chip">requests / sec</span><span class="chip">read : write ratio</span><span class="chip">concurrent users</span><span class="chip">cache hit rate</span><span class="chip">a few extreme cases</span></div>
+  </div>
+  <aside class="notes">Saying "X is scalable" or "Y doesn't scale" is meaningless. Scalability means asking: if the system grows in a particular way, what are our options; and how do we add resources to handle extra load? Which load parameters matter depends on the architecture. Sometimes the average matters, sometimes the bottleneck is a small number of extreme cases.</aside>
+</section>
+
+<!-- 12 Twitter numbers -->
+<section class="slide c" data-p="sca" data-sec="Scalability">
+  <div class="inner">
+    <div class="split">
+      <div style="display:grid;gap:1.4rem">
+        <h2 class="rise">Twitter, 2012: the problem was fan-out.</h2>
+        <div class="row3" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat rise"><div class="n hlc" style="font-size:clamp(2rem,4vw,3.4rem)">4.6k</div><div class="l">tweets / sec</div></div>
+          <div class="stat rise"><div class="n hlc" style="font-size:clamp(2rem,4vw,3.4rem)">300k</div><div class="l">timeline reads / sec</div></div>
+          <div class="stat rise"><div class="n hlc" style="font-size:clamp(2rem,4vw,3.4rem)">30M</div><div class="l">followers of one celebrity</div></div>
+        </div>
+      </div>
+      <div class="rise"><svg id="fanSvg" viewBox="0 0 420 320" role="img" aria-label="One tweet fanning out to many follower timelines"></svg></div>
+    </div>
+  </div>
+  <aside class="notes">Posting averages 4.6k requests/sec (12k at peak) — easy on its own. Home timeline reads are ~300k/sec. The hard part: each user follows many people and is followed by many. One tweet has to reach every follower's timeline.</aside>
+</section>
+
+<!-- 13 Two approaches -->
+<section class="slide c" data-p="sca" data-sec="Scalability">
+  <div class="inner">
+    <h2 class="rise">Work at read time, or at write time?</h2>
+    <div class="split" style="align-items:stretch">
+      <div class="card rise">
+        <h3>1. Join when reading</h3>
+        <p class="dim">One global tweets table. Each timeline read runs:</p>
+<pre><code>SELECT tweets.*, users.* FROM tweets
+JOIN users   ON tweets.sender_id = users.id
+JOIN follows ON follows.followee_id = users.id
+WHERE follows.follower_id = :me</code></pre>
+        <p style="margin-top:.8em"><b style="color:var(--bad)">Couldn’t keep up</b> with 300k reads/sec.</p>
+      </div>
+      <div class="card rise">
+        <h3>2. Fan out when writing</h3>
+        <p class="dim">A cached “mailbox” per user. Each tweet is pushed into every follower’s timeline.</p>
+        <p style="margin:.8em 0"><b style="color:var(--rel)">Reads become cheap</b>, and reads outnumber posts ~100×.</p>
+        <p><b style="color:var(--bad)">But</b> 4.6k tweets × 75 followers = 345k writes/sec, and one celebrity tweet = 30M writes.</p>
+      </div>
+    </div>
+    <p class="sub rise">Final answer: <span class="hl">a hybrid</span>. Fan out for most users; merge celebrities in at read time.</p>
+  </div>
+  <aside class="notes">The key load parameter for Twitter is the distribution of followers per user (weighted by tweet frequency), not tweet volume. The read-time vs write-time trade-off recurs throughout the book: indexes, materialized views, and Chapter 12 revisits this exact example.</aside>
+</section>
+
+<!-- 14 Fan-out lab -->
+<section class="slide c" data-p="sca" data-sec="Scalability">
+  <div class="inner">
+    <h2 class="rise">Lab: fan-out calculator</h2>
+    <div class="card rise">
+      <div class="controls">
+        <label class="ctl"><span class="row"><span>Tweets per second</span><output id="oT"></output></span><input type="range" id="fT" min="500" max="20000" step="100" value="4600"></label>
+        <label class="ctl"><span class="row"><span>Average followers</span><output id="oF"></output></span><input type="range" id="fF" min="5" max="500" value="75"></label>
+        <label class="ctl"><span class="row"><span>Timeline reads per second</span><output id="oR"></output></span><input type="range" id="fR" min="10000" max="1000000" step="10000" value="300000"></label>
+        <label class="ctl"><span class="row"><span>Followers of one celebrity</span><output id="oC"></output></span><input type="range" id="fC" min="1000000" max="100000000" step="1000000" value="30000000"></label>
+      </div>
+      <div class="readouts">
+        <div class="readout"><div class="v" id="rW"></div><div class="k">Cache writes/sec with fan-out on write</div></div>
+        <div class="readout"><div class="v" id="rRatio"></div><div class="k">Timeline reads per tweet posted</div></div>
+        <div class="readout"><div class="v" id="rCeleb" style="color:var(--bad)"></div><div class="k">Writes/sec to deliver one celebrity tweet in 5 s</div></div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Raise the average followers and watch fan-out cost explode while tweet volume stays the same. Twitter aims to deliver tweets within five seconds — that's where the celebrity number comes from.</aside>
+</section>
+
+<!-- 15 Response time distribution -->
+<section class="slide c" data-p="sca" data-sec="Scalability">
+  <div class="inner">
+    <h2 class="rise">Response time is a distribution, not a number.</h2>
+    <div class="card rise">
+      <svg viewBox="0 0 800 190" role="img" aria-label="Response time is made of network delay, queueing latency, service time, and network delay">
+        <g font-size="16" text-anchor="middle" fill="#fff" font-weight="700">
+          <rect x="0" y="70" width="140" height="56" rx="8" fill="var(--muted)"/><text x="70" y="104">network</text>
+          <rect x="144" y="70" width="230" height="56" rx="8" fill="var(--sca)"/><text x="259" y="104">waiting in queue</text>
+          <rect x="378" y="70" width="280" height="56" rx="8" fill="var(--ink)"/><text x="518" y="104" fill="var(--surface)">service time</text>
+          <rect x="662" y="70" width="138" height="56" rx="8" fill="var(--muted)"/><text x="731" y="104">network</text>
+        </g>
+        <g stroke="var(--ink)" stroke-width="2" fill="none"><path d="M0 40 V30 H800 V40"/><path d="M144 150 V160 H374 V150" stroke="var(--sca)"/></g>
+        <text x="400" y="22" text-anchor="middle" font-size="16" font-weight="800" fill="var(--ink)">Response time: what the client sees</text>
+        <text x="259" y="184" text-anchor="middle" font-size="16" font-weight="800" fill="var(--sca)">Latency: waiting to be handled</text>
+      </svg>
+    </div>
+    <div class="chips rise" style="font-size:1.05em"><span class="chip">GC pause</span><span class="chip">context switch</span><span class="chip">lost packet + TCP retransmit</span><span class="chip">page fault</span><span class="chip">rack vibration (really)</span></div>
+  </div>
+  <aside class="notes">Batch systems care about throughput; online systems care about response time. Latency and response time are often used interchangeably but differ: response time includes network and queueing delays; latency is the time a request waits to be handled. Even an identical repeated request varies — the chips are the book's examples of random added latency. For a Java team: when did we last look at GC logs?</aside>
+</section>
+
+<!-- 16 Percentile lab -->
+<section class="slide c" data-p="sca" data-sec="Scalability">
+  <div class="inner">
+    <h2 class="rise">Lab: why the mean misleads</h2>
+    <div class="card rise">
+      <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem">
+        <button class="btn" id="pNormal" aria-pressed="true">Normal traffic</button>
+        <button class="btn" id="pTail" aria-pressed="false">Add a few GC pauses</button>
+        <button class="btn" id="pAgain">New sample</button>
+      </div>
+      <div class="scroll-x"><svg id="pChart" viewBox="0 0 800 260" role="img" aria-label="Response times of 100 requests with mean and percentile lines"></svg></div>
+      <div class="readouts" style="margin-top:.6rem">
+        <div class="readout"><div class="v" id="vMean" style="color:var(--muted)"></div><div class="k">Mean</div></div>
+        <div class="readout"><div class="v" id="vP50"></div><div class="k">Median (p50)</div></div>
+        <div class="readout"><div class="v" id="vP95"></div><div class="k">p95</div></div>
+        <div class="readout"><div class="v" id="vP99" style="color:var(--bad)"></div><div class="k">p99</div></div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Each bar is one of 100 requests in arrival order. Click "Add a few GC pauses": the median barely moves, the mean rises a little, p99 jumps several times over. The mean doesn't tell you how many users actually experienced a delay. Median = typical wait; p95/p99/p999 = tail latencies.</aside>
+</section>
+
+<!-- 17 Tail stats -->
+<section class="slide c" data-p="sca" data-sec="Scalability">
+  <div class="inner">
+    <h2 class="rise">The tail is your best customers.</h2>
+    <div class="row3">
+      <div class="stat rise"><div class="n hlc">p99.9</div><div class="l">Amazon’s target for internal services. The slowest requests often belong to customers with the most data.</div></div>
+      <div class="stat rise"><div class="n hlc">100 ms</div><div class="l">of extra response time cost Amazon about 1% in sales.</div></div>
+      <div class="stat rise"><div class="n hlc">p50 &lt; 200ms</div><div class="l">plus p99 &lt; 1 s: what an SLA might define as “up”.</div></div>
+    </div>
+    <p class="sub rise">Measure on the <span class="hl">client side</span>: a few slow requests block the fast ones behind them.</p>
+  </div>
+  <aside class="notes">Optimising p99.99 was deemed too expensive for Amazon — diminishing returns. Head-of-line blocking: a server processes few things in parallel, so slow requests hold up the queue, and the client sees slow responses even for fast requests. Load testing: the load generator must keep sending regardless of responses, or queues stay artificially short.</aside>
+</section>
+
+<!-- 18 Amplification lab -->
+<section class="slide c" data-p="sca" data-sec="Scalability">
+  <div class="inner">
+    <h2 class="rise">Lab: one slow call ruins the request</h2>
+    <div class="card rise">
+      <div class="controls">
+        <label class="ctl"><span class="row"><span>Backend calls per user request</span><output id="oN"></output></span><input type="range" id="tN" min="1" max="100" value="10"></label>
+        <label class="ctl"><span class="row"><span>Chance each call is slow</span><output id="oP"></output></span><input type="range" id="tP" min="1" max="100" value="10"></label>
+      </div>
+      <div class="split" style="align-items:center">
+        <div class="readout"><div class="v" id="rAmp" style="color:var(--bad);font-size:clamp(3rem,7vw,5.5rem)"></div><div class="k">of user requests end up slow. Formula: 1 − (1 − p)<sup>n</sup></div></div>
+        <div class="dots" id="dots" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Tail latency amplification: parallel backend calls mean the user waits for the slowest. With 1% slow calls and 100 calls per request, about 63% of user requests are slow. The probability slider moves in 0.1% steps.</aside>
+</section>
+
+<!-- 19 Never average -->
+<section class="slide c" data-p="sca" data-sec="Scalability">
+  <div class="inner">
+    <h2 class="rise" style="font-size:clamp(2.6rem,6.4vw,5.6rem)">Never average percentiles.</h2>
+    <p class="sub rise">To combine servers or time windows, <span class="hl">add the histograms</span>, then read the percentile.</p>
+    <div class="chips rise" style="font-size:1.1em"><span class="chip">HdrHistogram</span><span class="chip">t-digest</span><span class="chip">forward decay</span><span class="chip">Micrometer percentile histograms</span></div>
+  </div>
+  <aside class="notes">For dashboards: keep a rolling window (e.g. 10 minutes) and compute percentiles each minute. Sorting all values works but is costly; approximation algorithms like t-digest and HdrHistogram are cheap. Question for the team: do our dashboards show averages or percentiles, and how are they aggregated across instances?</aside>
+</section>
+
+<!-- 20 Scale up vs out -->
+<section class="slide c" data-p="sca" data-sec="Scalability">
+  <div class="inner">
+    <h2 class="rise">No magic scaling sauce.</h2>
+    <div class="split">
+      <div class="card rise">
+        <svg viewBox="0 0 420 220" role="img" aria-label="Scale up uses one large machine; scale out uses many small machines">
+          <rect x="20" y="40" width="150" height="150" rx="14" fill="var(--sca)"/>
+          <text x="95" y="24" text-anchor="middle" font-size="17" font-weight="800" fill="var(--ink)">Scale up</text>
+          <g fill="var(--ink)"><rect x="240" y="40" width="44" height="44" rx="8"/><rect x="294" y="40" width="44" height="44" rx="8"/><rect x="348" y="40" width="44" height="44" rx="8"/>
+          <rect x="240" y="94" width="44" height="44" rx="8"/><rect x="294" y="94" width="44" height="44" rx="8"/><rect x="348" y="94" width="44" height="44" rx="8"/>
+          <rect x="240" y="148" width="44" height="44" rx="8"/><rect x="294" y="148" width="44" height="44" rx="8"/><rect x="348" y="148" width="44" height="44" rx="8"/></g>
+          <text x="316" y="24" text-anchor="middle" font-size="17" font-weight="800" fill="var(--ink)">Scale out</text>
+        </svg>
+        <p class="dim" style="margin-top:.6rem">Real systems mix both. Stateless services spread easily; a stateful database doesn’t.</p>
+      </div>
+      <div style="display:grid;gap:1.2rem">
+        <div class="stat rise"><div class="n hlc" style="font-size:clamp(2rem,4vw,3.4rem)">100k × 1 kB / s</div><div class="l">vs</div><div class="n hlc" style="font-size:clamp(2rem,4vw,3.4rem)">3 × 2 GB / min</div></div>
+        <p class="sub rise">Same throughput. Completely different systems.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Expect to rethink architecture at every order-of-magnitude growth. Scale up = bigger machine; scale out = shared-nothing across many machines. Elastic scaling helps with unpredictable load; manual scaling is simpler. Common wisdom: keep the database on one node until cost or availability forces distribution. Scalable architectures are built on assumptions about which operations are common; wrong assumptions waste effort. For unproven products, iteration speed beats hypothetical scale.</aside>
+</section>
+
+<!-- 21 Divider Maintainability -->
+<section class="slide c divider" data-p="mai" data-sec="Maintainability">
+  <div class="inner">
+    <div class="num rise">03</div>
+    <h2 class="rise">Maintainability</h2>
+    <p class="sub rise">Most of the cost of software comes after launch.</p>
+  </div>
+  <aside class="notes">Bug fixes, operations, investigating failures, platform migrations, new use cases, tech debt. Every legacy system is unpleasant in its own way; the goal is to avoid creating new ones.</aside>
+</section>
+
+<!-- 22 Principles -->
+<section class="slide c" data-p="mai" data-sec="Maintainability">
+  <div class="inner">
+    <div class="row3">
+      <div class="card rise"><h3 style="color:var(--mai);font-size:1.7em">Operability</h3><p>Make it easy for ops to keep it healthy.</p><p class="dim" style="margin-top:.6em">Monitoring, automation, no single-machine dependency, predictable behaviour, good defaults you can override.</p></div>
+      <div class="card rise"><h3 style="color:var(--mai);font-size:1.7em">Simplicity</h3><p>Make it easy for a new engineer to understand.</p><p class="dim" style="margin-top:.6em">Remove <b>accidental complexity</b>: the kind that comes from the implementation, not the problem.</p></div>
+      <div class="card rise"><h3 style="color:var(--mai);font-size:1.7em">Evolvability</h3><p>Make change easy when requirements shift.</p><p class="dim" style="margin-top:.6em">Agility, but at the level of the whole data system, not just the code.</p></div>
+    </div>
+    <p class="sub rise">Best weapon against complexity: <span class="hl">good abstractions</span>. SQL hides disk layouts, concurrency, and crash recovery.</p>
+  </div>
+  <aside class="notes">Operability: good ops can work around bad software, but good software can't run reliably with bad ops. Simplicity: symptoms of complexity include state-space explosion, tight coupling, inconsistent naming, performance hacks, special cases ("big ball of mud"). Moseley and Marks define accidental complexity as not inherent in the user's problem. Evolvability: requirements change constantly — business priorities, regulation, platforms, growth.</aside>
+</section>
+
+<!-- 23 Quiz -->
+<section class="slide" data-p="neu" data-sec="Review">
+  <div class="inner qwrap" id="quiz"></div>
+  <aside class="notes">Let the team answer out loud before anyone clicks.</aside>
+</section>
+
+<!-- 24 Discussion -->
+<section class="slide" data-p="neu" data-sec="Team discussion">
+  <div class="inner">
+    <h2 class="rise">Now, our system.</h2>
+    <div class="disc">
+      <div class="rise" style="background:var(--rel-bg)"><h3>Reliability</h3><p>A settlement run crashes halfway: fault or failure? Can we recompute safely? Do we detect amount mismatches automatically?</p></div>
+      <div class="rise" style="background:var(--sca-bg)"><h3>Scalability</h3><p>What’s our key load parameter? Transactions per settlement window, read/write ratio, or skew across merchants (our “celebrities”)?</p></div>
+      <div class="rise" style="background:var(--sca-bg)"><h3>Performance</h3><p>Do we track response times and batch durations as percentiles or averages? How much of our p99 is GC?</p></div>
+      <div class="rise" style="background:var(--mai-bg)"><h3>Maintainability</h3><p>Where is our accidental complexity? How long would a new engineer need to trace one settlement into PostgreSQL?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 25 Next -->
+<section class="slide" data-p="neu" data-sec="Next session">
+  <div class="title">
+    <div style="display:grid;gap:1.4rem">
+      <div class="kicker rise">Next session</div>
+      <h1 class="rise" style="font-size:clamp(2.4rem,6vw,5.2rem)">Data models &amp; query languages</h1>
+      <p class="sub rise">Relational or document? The object-relational mismatch we meet daily with JPA, declarative queries, and graphs.</p>
+    </div>
+    <div class="bands" aria-hidden="true"><div><span>Relational</span></div><div><span>Document</span></div><div><span>Graph</span></div></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="bar">
+  <div class="progress" id="progress"></div>
+  <div class="notes-panel" id="notesPanel" aria-live="polite"></div>
+  <span class="sec" id="secName"></span>
+  <span class="count" id="count"></span>
+  <div class="nav">
+    <button id="prev" aria-label="Previous slide">←</button>
+    <button id="next" aria-label="Next slide">→</button>
+  </div>
+</footer>
+</div>
+
+<script>
+(function(){
+  const fmt = (n, o) => Number(n).toLocaleString('en-US', o);
+  const compact = n => fmt(n,{notation:'compact',maximumFractionDigits:1});
+  const slides = [...document.querySelectorAll('.slide')];
+  slides.forEach(s => s.querySelectorAll('.rise').forEach((el,i)=>el.style.setProperty('--i',i)));
+  const prog = document.getElementById('progress'), secName = document.getElementById('secName'),
+        count = document.getElementById('count'), notesPanel = document.getElementById('notesPanel');
+  const bgs = {rel:'var(--rel-bg)',sca:'var(--sca-bg)',mai:'var(--mai-bg)'};
+  let cur = 0;
+  function show(i){
+    cur = Math.max(0, Math.min(slides.length-1, i));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+    const s = slides[cur], colored = s.classList.contains('c');
+    document.documentElement.style.setProperty('--cur-bg', colored ? bgs[s.dataset.p] : 'var(--paper)');
+    document.documentElement.style.setProperty('--cur-fg', colored ? '#fff' : 'var(--ink)');
+    prog.style.width = ((cur+1)/slides.length*100)+'%';
+    secName.textContent = s.dataset.sec||'';
+    count.textContent = (cur+1)+' / '+slides.length;
+    const n = s.querySelector('aside.notes');
+    notesPanel.textContent = n ? n.textContent : 'No notes for this slide.';
+    s.scrollTop = 0;
+    try{ history.replaceState(null,'','#'+(cur+1)); }catch(e){}
+  }
+  const go = d => show(cur+d);
+  document.getElementById('next').onclick = ()=>go(1);
+  document.getElementById('prev').onclick = ()=>go(-1);
+  document.addEventListener('keydown', e=>{
+    if (e.target.matches && e.target.matches('input')) return;
+    if (['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); go(1); }
+    else if (['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); go(-1); }
+    else if (e.key==='Home') show(0);
+    else if (e.key==='End') show(slides.length-1);
+    else if (e.key==='n'||e.key==='N') notesPanel.classList.toggle('open');
+    else if (e.key==='f'||e.key==='F'){ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); }
+  });
+  let tx=null, ty=null; const stage=document.getElementById('stage');
+  stage.addEventListener('touchstart',e=>{ if(e.target.closest('input,button')){tx=null;return;} tx=e.touches[0].clientX; ty=e.touches[0].clientY; },{passive:true});
+  stage.addEventListener('touchend',e=>{ if(tx===null) return; const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty; if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5) go(dx<0?1:-1); tx=null; },{passive:true});
+
+  /* fan-out illustration */
+  (function(){
+    const svg=document.getElementById('fanSvg'); let g='';
+    const cx=70, cy=160, n=22;
+    for(let k=0;k<n;k++){
+      const a=(-70+140*k/(n-1))*Math.PI/180, x=cx+300*Math.cos(a), y=cy+150*Math.sin(a);
+      g+=`<path class="flow" d="M${cx} ${cy} L${x.toFixed(1)} ${y.toFixed(1)}" stroke="rgba(255,255,255,.55)" stroke-width="1.6" fill="none" style="animation-delay:${(k%5)*-.2}s"/>`;
+      g+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9" fill="#fff"/>`;
+    }
+    g+=`<circle cx="${cx}" cy="${cy}" r="44" fill="var(--hl)"/><text x="${cx}" y="${cy+6}" text-anchor="middle" font-size="17" font-weight="800" fill="#0F1B2D">1 tweet</text>`;
+    g+=`<text x="410" y="316" text-anchor="end" font-size="14" fill="rgba(255,255,255,.85)">→ every follower’s timeline</text>`;
+    svg.innerHTML=g;
+  })();
+
+  /* disk lab */
+  const disks=document.getElementById('disks'), mttf=document.getElementById('mttf'), grid=document.getElementById('diskGrid');
+  grid.innerHTML='<i></i>'.repeat(200);
+  let perDay=0, days=0, lost=0;
+  function disk(){
+    const n=+disks.value, y=+mttf.value; perDay=n/(y*365);
+    document.getElementById('dN').textContent=fmt(n);
+    document.getElementById('dM').textContent=fmt(y);
+    document.getElementById('dDay').textContent=fmt(perDay,{maximumFractionDigits:perDay<1?2:1});
+    const h=24/perDay;
+    document.getElementById('dEvery').textContent = h<1 ? fmt(Math.round(h*60))+' min' : h<48 ? fmt(h,{maximumFractionDigits:1})+' h' : fmt(h/24,{maximumFractionDigits:0})+' days';
+    days=0; lost=0; document.getElementById('simDays').textContent='0'; document.getElementById('simLost').textContent='0';
+  }
+  disks.oninput=mttf.oninput=disk; disk();
+  function poisson(l){ if(l>30) return Math.max(0,Math.round(l+Math.sqrt(l)*(Math.random()*2-1)*1.7)); let L=Math.exp(-l),k=0,p=1; do{k++;p*=Math.random();}while(p>L); return k-1; }
+  setInterval(()=>{
+    if(!grid.closest('.slide').classList.contains('active')) return;
+    days++; const k=Math.min(60,poisson(perDay)); lost+=k;
+    document.getElementById('simDays').textContent=fmt(days);
+    document.getElementById('simLost').textContent=fmt(lost);
+    const cells=grid.children;
+    for(let j=0;j<k;j++){ const c=cells[Math.floor(Math.random()*cells.length)]; c.classList.add('dead'); setTimeout(()=>c.classList.remove('dead'),700); }
+  },1000);
+
+  /* fan-out lab */
+  const fT=document.getElementById('fT'), fF=document.getElementById('fF'), fR=document.getElementById('fR'), fC=document.getElementById('fC');
+  function fan(){
+    const t=+fT.value,f=+fF.value,r=+fR.value,c=+fC.value;
+    document.getElementById('oT').textContent=fmt(t);
+    document.getElementById('oF').textContent=fmt(f);
+    document.getElementById('oR').textContent=compact(r);
+    document.getElementById('oC').textContent=compact(c);
+    document.getElementById('rW').textContent=compact(t*f);
+    document.getElementById('rRatio').textContent=fmt(r/t,{maximumFractionDigits:0})+' : 1';
+    document.getElementById('rCeleb').textContent=compact(c/5);
+  }
+  [fT,fF,fR,fC].forEach(x=>x.oninput=fan); fan();
+
+  /* percentile lab */
+  const svg=document.getElementById('pChart'); let tail=false, data=[];
+  function gauss(){ let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+  function sample(){ data=Array.from({length:100},()=>Math.round(110*Math.exp(.32*gauss()))); if(tail){ for(let k=0;k<5;k++) data[Math.floor(Math.random()*100)]=700+Math.round(Math.random()*1600); } }
+  function pct(s,p){ return s[Math.max(0,Math.ceil(p/100*s.length)-1)]; }
+  function draw(){
+    const s=[...data].sort((a,b)=>a-b), mean=data.reduce((a,b)=>a+b,0)/data.length;
+    const p50=pct(s,50),p95=pct(s,95),p99=pct(s,99), max=Math.max(...data)*1.08;
+    const W=800,H=260,L=46,B=22,T=10,bw=(W-L-10)/100, y=v=>H-B-(v/max)*(H-B-T);
+    let g='';
+    for(let k=0;k<=4;k++){ const v=max/4*k; g+=`<line x1="${L}" x2="${W-6}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" font-size="11" text-anchor="end" fill="var(--muted)">${Math.round(v)}</text>`; }
+    data.forEach((v,k)=>{ g+=`<rect x="${L+k*bw+1}" y="${y(v)}" width="${bw-2}" height="${H-B-y(v)}" rx="2" fill="${v>=p99?'var(--bad)':v>=p95?'var(--sca)':'var(--line)'}"/>`; });
+    const line=(v,col,lab,dash)=>`<line x1="${L}" x2="${W-6}" y1="${y(v)}" y2="${y(v)}" stroke="${col}" stroke-width="2.5" ${dash?'stroke-dasharray="6 4"':''}/><text x="${W-8}" y="${y(v)-6}" font-size="13" font-weight="800" text-anchor="end" fill="${col}">${lab}</text>`;
+    g+=line(mean,'var(--ink)','mean',true)+line(p50,'var(--rel)','p50')+line(p95,'var(--sca)','p95')+line(p99,'var(--bad)','p99');
+    g+=`<text x="${L}" y="${H-4}" font-size="11" fill="var(--muted)">100 requests in arrival order (ms)</text>`;
+    svg.innerHTML=g;
+    const ms=v=>fmt(Math.round(v))+' ms';
+    vMean.textContent=ms(mean); vP50.textContent=ms(p50); vP95.textContent=ms(p95); vP99.textContent=ms(p99);
+  }
+  const vMean=document.getElementById('vMean'),vP50=document.getElementById('vP50'),vP95=document.getElementById('vP95'),vP99=document.getElementById('vP99');
+  vP50.style.color='var(--rel)'; vP95.style.color='var(--sca)';
+  const bN=document.getElementById('pNormal'), bT=document.getElementById('pTail');
+  bN.onclick=()=>{tail=false;bN.setAttribute('aria-pressed','true');bT.setAttribute('aria-pressed','false');sample();draw();};
+  bT.onclick=()=>{tail=true;bT.setAttribute('aria-pressed','true');bN.setAttribute('aria-pressed','false');sample();draw();};
+  document.getElementById('pAgain').onclick=()=>{sample();draw();};
+  sample(); draw();
+
+  /* amplification lab */
+  const tN=document.getElementById('tN'), tP=document.getElementById('tP'), dots=document.getElementById('dots');
+  dots.innerHTML='<i></i>'.repeat(100);
+  function amp(){
+    const n=+tN.value, p=+tP.value/1000, r=1-Math.pow(1-p,n);
+    document.getElementById('oN').textContent=fmt(n);
+    document.getElementById('oP').textContent=fmt(p*100,{maximumFractionDigits:1})+'%';
+    document.getElementById('rAmp').textContent=fmt(r*100,{maximumFractionDigits:1})+'%';
+    const hits=Math.round(r*100); [...dots.children].forEach((d,k)=>d.classList.toggle('hit',k<hits));
+  }
+  tN.oninput=tP.oninput=amp; amp();
+
+  /* quiz: one question at a time */
+  const Q=[
+    {q:'A database replica went down, but users noticed nothing. What was it?',o:['A failure','A fault','Neither'],a:1,e:'A component deviated from its spec, but the system kept serving users: a fault that never became a failure.'},
+    {q:'p95 is 1.5 seconds. What does that mean?',o:['The mean of 95 requests is 1.5 s','95 of every 100 requests take less than 1.5 s','95% of requests take more than 1.5 s'],a:1,e:'And 5 of every 100 requests take 1.5 s or longer.'},
+    {q:'You have the p99 of three servers. How do you get the p99 of the whole service?',o:['Average the three numbers','Take the maximum','Add the histograms, then compute p99'],a:2,e:'Averaging percentiles is mathematically meaningless.'},
+    {q:'Why did Twitter move to fan-out at write time?',o:['Writes are cheaper than reads','Timeline reads outnumbered posts by ~100×','SQL joins were impossible'],a:1,e:'More work when writing, less when reading — with celebrities as the exception.'},
+    {q:'Accidental complexity is…',o:['Complexity inherent in the user’s problem','Complexity that comes only from the implementation','Bugs that happen at random'],a:1,e:'Moseley and Marks’ definition. Good abstractions are the main tool for removing it.'}
+  ];
+  const qz=document.getElementById('quiz'); let qi=0;
+  function renderQ(){
+    const it=Q[qi];
+    qz.innerHTML=`<div class="qn">Question ${qi+1} of ${Q.length}</div><div class="qtext">${it.q}</div><div class="opts"></div><div class="fb"></div>
+      <div class="qnav"><button class="btn" id="qPrev" ${qi===0?'disabled':''}>Previous question</button><button class="btn" id="qNext" ${qi===Q.length-1?'disabled':''}>Next question</button></div>`;
+    const opts=qz.querySelector('.opts'), fb=qz.querySelector('.fb');
+    it.o.forEach((t,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t;
+      b.onclick=()=>{ [...opts.children].forEach(x=>x.classList.remove('right','wrong')); b.classList.add(oi===it.a?'right':'wrong'); if(oi!==it.a) opts.children[it.a].classList.add('right'); fb.textContent=(oi===it.a?'Correct. ':'Not quite. ')+it.e; };
+      opts.appendChild(b); });
+    qz.querySelector('#qPrev').onclick=()=>{qi--;renderQ();};
+    qz.querySelector('#qNext').onclick=()=>{qi++;renderQ();};
+  }
+  renderQ();
+
+  const start=parseInt(location.hash.slice(1),10); show(isNaN(start)?0:start-1);
+})();
+</script>
+</body>
+</html>
