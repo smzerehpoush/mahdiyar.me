@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DDIA Session 7: Replication, part 2</title>
+<meta name="description" content="When more than one node accepts writes, conflicts become your problem. Slides from a Designing Data-Intensive Applications book-club session, covering Chapter 5.">
+<link rel="canonical" href="https://mahdiyar.me/blog/ddia-session-7/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="DDIA Session 7: Replication, part 2">
+<meta property="og:description" content="When more than one node accepts writes, conflicts become your problem. Slides from a Designing Data-Intensive Applications book-club session, covering Chapter 5.">
+<meta property="og:url" content="https://mahdiyar.me/blog/ddia-session-7/">
+<meta property="article:published_time" content="2026-10-18">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304050B'/%3E%3Ccircle cx='32' cy='38' r='17' fill='%2310112A' stroke='%238C80FF' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F5F8; --surface:#FFFFFF; --ink:#0F1B2D; --muted:#55657A; --line:#D3DAE3;
+  --rel:#0E7C6B; --sca:#B4480A; --mai:#5236B8; --bad:#D21F3C;
+  --rel-bg:#0E7C6B; --sca-bg:#B4480A; --mai-bg:#4B30AE;
+  --hl:#FFD66B; --on:#FFFFFF; --on-muted:rgba(255,255,255,.8);
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1621; --surface:#172231; --ink:#E7EDF4; --muted:#9AAABD; --line:#2A394B;
+    --rel:#4FD1BC; --sca:#FFA24D; --mai:#B3A2FF; --bad:#FF6B7F;
+    --rel-bg:#0A5A4E; --sca-bg:#8A3606; --mai-bg:#36247E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1621; --surface:#172231; --ink:#E7EDF4; --muted:#9AAABD; --line:#2A394B;
+  --rel:#4FD1BC; --sca:#FFA24D; --mai:#B3A2FF; --bad:#FF6B7F;
+  --rel-bg:#0A5A4E; --sca-bg:#8A3606; --mai-bg:#36247E;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  height:100%;margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Bricolage Grotesque","Helvetica Neue",Arial,system-ui,sans-serif;
+  font-size:clamp(16px,1vw + 8px,22px);line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow:hidden;
+}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,Consolas,monospace;font-size:.82em}
+.deck{position:relative;height:100%;display:flex;flex-direction:column}
+.stage{position:relative;flex:1;min-height:0}
+
+/* slides */
+.slide{position:absolute;inset:0;display:none;overflow-y:auto;padding:clamp(1.4rem,4vw,3.6rem) clamp(1.2rem,6vw,6rem) 2rem;
+  background:var(--paper);color:var(--ink);--acc:var(--ink);--pc:var(--ink)}
+.slide.active{display:block}
+.slide.c{color:var(--on);--acc:var(--on)}
+.slide[data-p="rel"]{--pc:var(--rel)} .slide[data-p="rel"].c{background:var(--rel-bg)}
+.slide[data-p="sca"]{--pc:var(--sca)} .slide[data-p="sca"].c{background:var(--sca-bg)}
+.slide[data-p="mai"]{--pc:var(--mai)} .slide[data-p="mai"].c{background:var(--mai-bg)}
+.inner{max-width:1180px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:1.4rem}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.03em;line-height:1.02}
+h1{font-size:clamp(2.8rem,7.5vw,6.6rem)}
+h2{font-size:clamp(2rem,4.6vw,4rem)}
+h3{font-size:1.25em;letter-spacing:-.015em;line-height:1.15;margin-bottom:.3em}
+p{margin:0;max-width:60ch}
+.sub{font-size:clamp(1.1rem,1.8vw,1.5rem);opacity:.85;max-width:44ch;line-height:1.4}
+.c .sub,.c .dim{color:var(--on-muted);opacity:1}
+.dim{color:var(--muted)}
+.hl{background:var(--hl);color:#0F1B2D;padding:0 .18em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,24rem),1fr));gap:clamp(1.2rem,3vw,3rem);align-items:center}
+.row3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:clamp(1rem,2vw,1.6rem)}
+.card{background:var(--surface);color:var(--ink);padding:clamp(1rem,2vw,1.6rem);border-radius:18px;--acc:var(--pc)}
+.c .card{box-shadow:0 18px 40px -18px rgba(0,0,0,.45)}
+.card .dim{color:var(--muted)}
+svg{max-width:100%;height:auto;display:block}
+svg text{font-family:"Bricolage Grotesque",Arial,sans-serif}
+
+/* stats */
+.stat .n{font-size:clamp(2.6rem,6vw,5.2rem);font-weight:800;letter-spacing:-.04em;line-height:1}
+.stat .l{font-size:1.02em;margin-top:.4em;max-width:26ch}
+.c .stat .l{color:var(--on-muted)}
+.stat .n.hlc{color:var(--hl)}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{border:2px solid currentColor;border-radius:999px;padding:.25em .9em;font-weight:600;font-size:.95em}
+.c .chip{border-color:rgba(255,255,255,.55)}
+
+/* motion: one orchestrated entrance per slide */
+.slide.active .rise{animation:rise .7s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0) * 110ms)}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.flow{stroke-dasharray:6 9;animation:flow 1.2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-30}}
+
+/* title */
+.title{display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;min-height:100%}
+@media (max-width:760px){.title{grid-template-columns:1fr}}
+.title h1 span{display:block}
+.bands{display:flex;gap:clamp(.5rem,1.2vw,1rem);height:min(62vh,520px);align-items:flex-end}
+.bands div{flex:1;border-radius:16px 16px 4px 4px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:1.1rem;color:#fff;font-weight:800;font-size:clamp(1rem,1.6vw,1.4rem);transform-origin:bottom}
+.bands div span{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+.slide.active .bands div{animation:grow 1s cubic-bezier(.2,.75,.2,1) both}
+.bands div:nth-child(1){background:var(--rel-bg);height:70%;animation-delay:.1s}
+.bands div:nth-child(2){background:var(--sca-bg);height:100%;animation-delay:.25s}
+.bands div:nth-child(3){background:var(--mai-bg);height:84%;animation-delay:.4s}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.kicker{font-weight:600;color:var(--muted);font-size:1.05em}
+
+/* divider */
+.divider .num{font-size:clamp(7rem,22vw,18rem);font-weight:800;line-height:.8;letter-spacing:-.06em;color:rgba(255,255,255,.18)}
+.divider h2{font-size:clamp(3rem,8vw,7rem)}
+
+/* icons */
+.icons{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10rem),1fr));gap:1rem}
+.icon{background:var(--surface);border-radius:18px;padding:1.2rem 1rem;text-align:center}
+.icon svg{width:64px;height:64px;margin:0 auto .6rem;stroke:var(--ink);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.icon b{display:block;font-size:1.1em}
+.icon span{font-size:.85em;color:var(--muted)}
+
+/* pillars */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:1rem}
+.pillars>div{color:#fff;border-radius:22px;padding:clamp(1.2rem,2.4vw,2rem);min-height:clamp(14rem,40vh,22rem);display:flex;flex-direction:column;justify-content:space-between}
+.pillars h3{font-size:clamp(1.6rem,2.6vw,2.4rem)}
+.pillars p{color:var(--on-muted);font-size:1.05em}
+
+/* strike */
+.strike{font-size:clamp(2rem,5.4vw,4.6rem);font-weight:800;letter-spacing:-.03em;position:relative;display:inline-block;opacity:.6}
+.strike::after{content:"";position:absolute;left:-2%;right:-2%;top:52%;height:.12em;background:var(--hl);transform:rotate(-3deg) scaleX(0);transform-origin:left}
+.slide.active .strike::after{animation:strike .5s .5s ease-out forwards}
+@keyframes strike{to{transform:rotate(-3deg) scaleX(1)}}
+
+/* labs */
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr));gap:.6rem 1.6rem;margin-bottom:1rem}
+label.ctl{display:flex;flex-direction:column;gap:.1rem;font-size:.92em}
+label.ctl .row{display:flex;justify-content:space-between;gap:1rem}
+label.ctl output{font-weight:800;color:var(--acc)}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:1rem}
+.readout .v{font-size:clamp(1.8rem,3.4vw,2.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;color:var(--acc)}
+.readout .k{font-size:.88em;color:var(--muted)}
+button{font:inherit;cursor:pointer}
+.btn{background:transparent;color:var(--ink);border:2px solid var(--acc);border-radius:999px;padding:.35em 1.1em;font-weight:700;font-size:.92em}
+.btn:hover,.btn[aria-pressed="true"]{background:var(--acc);color:var(--surface)}
+:focus-visible{outline:3px solid var(--hl);outline-offset:3px}
+.dots{display:grid;grid-template-columns:repeat(20,1fr);gap:5px}
+.dots i{aspect-ratio:1;background:var(--line);display:block;border-radius:50%;transition:background .15s}
+.dots i.hit{background:var(--bad)}
+.disks{display:grid;grid-template-columns:repeat(25,1fr);gap:5px}
+.disks i{aspect-ratio:1;border-radius:4px;background:var(--line);display:block;transition:background .3s,transform .3s}
+.disks i.dead{background:var(--bad);transform:scale(1.35)}
+
+pre{background:#0F1B2D;color:#E7EDF4;border-radius:12px;padding:1em 1.2em;overflow-x:auto;margin:.6em 0 0;line-height:1.55}
+.scroll-x{overflow-x:auto;max-width:100%}
+
+/* quiz */
+.qwrap{max-width:900px}
+.qn{font-weight:700;color:var(--muted)}
+.qtext{font-size:clamp(1.5rem,3vw,2.4rem);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:.3em 0 1em}
+.opts{display:grid;gap:.7rem}
+.opt{background:var(--surface);border:2px solid var(--line);color:var(--ink);border-radius:14px;padding:.8em 1.1em;text-align:left;font-size:1.05em;font-weight:600}
+.opt:hover{border-color:var(--ink)}
+.opt.right{border-color:var(--rel);background:color-mix(in srgb,var(--rel) 16%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
+.fb{min-height:2.6em;margin-top:1rem;color:var(--muted)}
+.qnav{display:flex;gap:.6rem;align-items:center}
+
+/* discussion */
+.disc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:1rem}
+.disc>div{border-radius:18px;padding:1.3rem 1.4rem;color:#fff}
+.disc h3{font-size:1.4em}
+.disc p{color:var(--on-muted)}
+
+/* footer */
+.bar{flex:none;display:flex;align-items:center;gap:1rem;padding:.55rem clamp(1rem,6vw,6rem) .65rem;
+  background:var(--cur-bg,var(--paper));color:var(--cur-fg,var(--ink));font-size:.82em;position:relative;transition:background .3s}
+.progress{position:absolute;top:0;left:0;height:4px;background:var(--hl);transition:width .3s ease}
+.sec{font-weight:800}
+.count{opacity:.75;margin-inline-start:auto}
+.nav{display:flex;gap:.4rem}
+.nav button{background:transparent;border:1.5px solid currentColor;color:inherit;border-radius:999px;width:2.5rem;height:2.1rem;font-size:1rem;opacity:.85}
+.nav button:hover{opacity:1}
+.notes-panel{display:none;position:absolute;left:0;right:0;bottom:100%;background:var(--surface);color:var(--ink);
+  border-top:4px solid var(--hl);padding:1rem clamp(1rem,6vw,6rem);max-height:40vh;overflow:auto;font-size:1.05em;line-height:1.55}
+.notes-panel.open{display:block}
+aside.notes{display:none}
+.hint{color:var(--muted);font-size:.85em}
+@media (max-width:640px){.hint{display:none}.bands{height:28vh}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.strike::after{transform:rotate(-3deg) scaleX(1)}}
+/* session 2 additions */
+.layers{display:grid;gap:.55rem}
+.layer{display:flex;align-items:center;gap:1rem;border-radius:14px;padding:.75rem 1.1rem;background:var(--surface);border:2px solid transparent}
+.layer b{font-size:1.1em;min-width:13ch}
+.layer span{color:var(--muted)}
+.layer.focus{background:var(--ink);color:var(--surface)}
+.layer.focus span{color:var(--surface);opacity:.75}
+.layer .tag{margin-inline-start:auto;background:var(--hl);color:#0F1B2D;border-radius:999px;padding:.1em .8em;font-weight:700;font-size:.85em;opacity:1!important}
+.tl{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:.4rem;padding-top:2.2rem}
+.tl::before{content:"";position:absolute;left:0;right:0;top:.9rem;height:4px;background:rgba(255,255,255,.4);border-radius:4px}
+.tl>div{position:relative}
+.tl>div::before{content:"";position:absolute;top:-1.65rem;left:0;width:18px;height:18px;border-radius:50%;background:var(--hl)}
+.tl b{display:block;font-size:clamp(1.2rem,2.2vw,1.9rem);letter-spacing:-.02em}
+.tl span{display:block;color:var(--on-muted);font-size:.88em;line-height:1.35}
+@media (max-width:820px){.tl{grid-template-columns:1fr 1fr}}
+.seg{display:inline-flex;border:2px solid var(--acc);border-radius:999px;overflow:hidden}
+.seg button{background:transparent;border:0;color:var(--ink);padding:.35em 1.1em;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--acc);color:var(--surface)}
+.tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:.8rem 1.4rem}
+table.mini{border-collapse:collapse;width:100%;font-size:.78em;font-family:"JetBrains Mono",ui-monospace,monospace}
+table.mini caption{text-align:left;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.15em;padding-bottom:.25em;color:var(--acc)}
+table.mini th,table.mini td{border:1px solid var(--line);padding:.25em .45em;text-align:left;white-space:nowrap}
+table.mini th{background:var(--paper)}
+.side{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:1rem;align-items:stretch}
+.side pre{margin:0;height:100%}
+.tag-label{font-weight:800;font-size:.9em;margin-bottom:.35rem;display:block}
+.tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.8rem}
+.tabpane pre{min-height:16rem;margin:0}
+.lc{display:grid;gap:.45rem;margin-top:.4rem}
+.lc div{display:grid;grid-template-columns:7.5rem 1fr 2.5rem;align-items:center;gap:.6rem;font-size:.9em}
+.lc i{display:block;height:14px;border-radius:7px;background:var(--acc);transition:width .5s}
+.navdemo ul{list-style:none;margin:0;padding:0}
+.navdemo li{margin:.2rem 0}
+.navdemo li>p{margin:0;padding:.25em .6em;border-radius:8px;font-weight:700}
+.navdemo li li{padding-left:1.4rem;color:var(--muted);font-size:.9em}
+.decl li.selected>p{background:var(--hl);color:#0F1B2D}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:18px;overflow:hidden}
+.vs>div{padding:.7rem 1.1rem;border-bottom:1px solid rgba(255,255,255,.18)}
+.vs .h{font-weight:800;font-size:1.15em}
+.vs>div:nth-child(odd){background:rgba(0,0,0,.18)}
+.vs>div:nth-child(even){background:rgba(255,255,255,.1)}
+select{font:inherit;padding:.3em .6em;border-radius:10px;border:2px solid var(--acc);background:var(--surface);color:var(--ink);font-weight:700}
+.gctl{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:center;margin-bottom:.6rem}
+.match{font-weight:800;color:var(--acc)}
+.fitq .qtext{font-size:clamp(1.3rem,2.6vw,2rem)}
+.fitq .opts{grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr))}
+.gsplit{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:1rem;align-items:center}
+@media (max-width:820px){.gsplit{grid-template-columns:1fr}}
+/* generator additions */
+.blk{display:grid;gap:1rem}
+.lst{margin:0;padding-left:1.2em;line-height:1.55}
+.c .lst li::marker{color:var(--hl)}
+.card .lst li::marker{color:var(--pc)}
+.stepnav{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.6rem}
+.cap{min-height:2.8em;margin-top:.5rem;font-weight:600}
+.seqsvg{width:100%;height:auto}
+table.mx{border-collapse:collapse;width:100%;font-size:.95em}
+table.mx th,table.mx td{padding:.5em .7em;border-bottom:1px solid var(--line);text-align:left}
+table.mx th{font-weight:800}
+.c table.mx th,.c table.mx td{border-color:rgba(255,255,255,.25)}
+td.y{color:var(--rel);font-weight:800} td.n{color:var(--bad);font-weight:800}
+.c td.y{color:#BFF5E6} .c td.n{color:#FFC2CB}
+input[type=text],textarea{font:inherit;padding:.35em .6em;border-radius:10px;border:2px solid var(--acc);background:var(--surface);color:var(--ink)}
+textarea{width:100%;min-height:4.5em;font-family:"JetBrains Mono",monospace;font-size:.85em}
+.cells{display:flex;flex-wrap:wrap;gap:5px}
+.cells span{font-family:"JetBrains Mono",monospace;font-size:.78em;background:var(--line);color:var(--ink);padding:.2em .5em;border-radius:6px}
+.cells span.new{background:var(--hl);color:#0F1B2D}
+.cells span.dead{opacity:.35;text-decoration:line-through}
+.cells span.on{background:var(--pc);color:#fff}
+.kvrow{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.cols3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr));gap:1rem}
+.mono{font-family:"JetBrains Mono",monospace}
+.big-out{font-size:clamp(2rem,4vw,3.2rem);font-weight:800;letter-spacing:-.03em;color:var(--acc)}
+.inner{justify-content:safe center}
+.seqsvg{max-height:48vh}
+.side>div{display:flex;flex-direction:column}
+.side pre{height:auto;flex:1}
+.node{background:var(--paper);border-radius:14px;padding:.7rem .8rem;border:2px solid var(--line)}
+.node.hot{border-color:var(--pc)}
+.node b{display:block;margin-bottom:.3rem}
+.dotrow{display:flex;flex-wrap:wrap;gap:.6rem}
+.dotrow span{width:3.2rem;height:3.2rem;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--line);color:var(--ink);border:3px solid transparent}
+.dotrow span.w{background:var(--pc);color:#fff}
+.dotrow span.r{border-color:var(--hl);box-shadow:0 0 0 3px var(--ink) inset}
+.vbars{display:flex;align-items:flex-end;gap:.5rem;height:180px}
+.vbars div{flex:1;background:var(--pc);border-radius:8px 8px 2px 2px;position:relative;min-height:2px;transition:height .4s}
+.vbars div span{position:absolute;top:-1.4em;left:0;right:0;text-align:center;font-size:.8em;font-weight:700;color:var(--ink)}
+.vlabels{display:flex;gap:.5rem}.vlabels span{flex:1;text-align:center;font-size:.8em;color:var(--muted)}
+label.chk{display:flex;gap:.4rem;align-items:center;font-weight:600}
+.lst{font-size:1.12em}
+</style>
+</head>
+<body>
+<div class="deck">
+<main class="stage" id="stage">
+<section class="slide" data-p="neu" data-sec="DDIA · Session 7"><div class="title"><div style="display:grid;gap:1.4rem"><div class="kicker rise">Designing Data-Intensive Applications, session 7</div><h1 class="rise">Many leaders,<br>or none at all</h1><p class="sub rise">When more than one node accepts writes, conflicts become your problem.</p><p class="hint rise">→ next · ← back · N notes · F full screen</p></div><div class="bands" aria-hidden="true"><div><span>Multi-leader</span></div><div><span>Leaderless</span></div><div><span>Quorums</span></div></div></div><aside class="notes">Chapter 5, second half.</aside></section>
+<section class="slide c divider" data-p="rel" data-sec="Multi-leader"><div class="inner"><div class="num rise">01</div><h2 class="rise">Multi-leader</h2><p class="sub rise">Every datacenter, device, or editor is a leader.</p></div></section>
+<section class="slide c" data-p="rel" data-sec="Multi-leader"><div class="inner"><h2 class="rise">When does it make sense?</h2><div class="row3"><div class="card rise"><h3 style="color:var(--pc)">Several datacenters</h3><p>A leader per region: local write latency, and a region can fail or lose its link without stopping writes elsewhere.</p></div><div class="card rise"><h3 style="color:var(--pc)">Offline clients</h3><p>A calendar app on your phone accepts edits offline. Every device is effectively its own datacenter.</p></div><div class="card rise"><h3 style="color:var(--pc)">Collaborative editing</h3><p>Google Docs style: each user’s local copy accepts edits and syncs later.</p></div></div><p class="sub rise">Often bolted on after the fact, and it interacts badly with auto-increment keys, triggers, and constraints. <span class="hl">Avoid it if you can.</span></p></div><aside class="notes">Within one datacenter, multi-leader rarely pays off. CouchDB was designed for the offline case. Collaborative editors either take a lock (effectively single leader) or merge concurrent edits.</aside></section>
+<section class="slide c" data-p="rel" data-sec="Multi-leader"><div class="inner"><h2 class="rise">Write conflicts arrive late.</h2><div class="card rise" data-seq="s0"></div></div><aside class="notes">With a single leader, the second write would have waited or failed. Making conflict detection synchronous would remove the main benefit of multi-leader.</aside></section>
+<section class="slide c" data-p="rel" data-sec="Multi-leader"><div class="inner"><h2 class="rise">Resolving conflicts.</h2><div class="row3"><div class="card rise"><h3 style="color:var(--pc)">Avoid them</h3><p>Route all writes for one record to the same leader, e.g. the user’s home region. The most common recommendation.</p></div><div class="card rise"><h3 style="color:var(--pc)">Converge</h3><p>Last write wins by timestamp or ID (simple, loses data), or merge values, or keep both and let code or a human decide.</p></div><div class="card rise"><h3 style="color:var(--pc)">Merge automatically</h3><p>CRDTs, mergeable data structures, operational transformation (used by collaborative editors).</p></div></div><div class="card rise"><svg viewBox="0 0 720 200" role="img" aria-label="Three multi-leader topologies: circular, star, and all-to-all">
+<g font-size="15" font-weight="800" fill="var(--ink)" text-anchor="middle"><text x="110" y="195">Circular</text><text x="360" y="195">Star</text><text x="610" y="195">All-to-all</text></g>
+<g stroke="var(--rel)" stroke-width="2.5" fill="none"><path d="M110 30 L170 90 L110 150 L50 90 Z"/><path d="M360 90 L360 30 M360 90 L420 90 M360 90 L360 150 M360 90 L300 90"/><path d="M610 30 L670 90 L610 150 L550 90 Z M610 30 L610 150 M550 90 L670 90"/></g>
+<g fill="var(--rel)"><circle cx="110" cy="30" r="12"/><circle cx="170" cy="90" r="12"/><circle cx="110" cy="150" r="12"/><circle cx="50" cy="90" r="12"/><circle cx="360" cy="90" r="14"/><circle cx="360" cy="30" r="12"/><circle cx="420" cy="90" r="12"/><circle cx="360" cy="150" r="12"/><circle cx="300" cy="90" r="12"/><circle cx="610" cy="30" r="12"/><circle cx="670" cy="90" r="12"/><circle cx="610" cy="150" r="12"/><circle cx="550" cy="90" r="12"/></g></svg></div></div><aside class="notes">Custom resolution code can run on write (when the replication log sees a conflict) or on read (all versions are returned to the app). In all-to-all topologies, writes can arrive out of order — an update before the insert it depends on — so leaders need version vectors to order them. Circular and star topologies break if one node fails.</aside></section>
+<section class="slide c divider" data-p="sca" data-sec="Leaderless"><div class="inner"><div class="num rise">02</div><h2 class="rise">Leaderless</h2><p class="sub rise">Write to several replicas. Read from several. Vote.</p></div></section>
+<section class="slide c" data-p="sca" data-sec="Leaderless"><div class="inner"><h2 class="rise">Dynamo-style replication.</h2><div class="split"><div class="blk"><p class="sub rise">The client (or a coordinator) sends every write to all <b style="color:#fff">n</b> replicas and waits for <b style="color:#fff">w</b> acks. Reads ask <b style="color:#fff">r</b> replicas and take the newest version.</p><div class="chips rise" style="font-size:1.05em"><span class="chip">Amazon Dynamo</span><span class="chip">Cassandra</span><span class="chip">Riak</span><span class="chip">Voldemort</span></div></div><div class="blk"><div class="row3"><div class="card rise"><h3 style="color:var(--pc)">Read repair</h3><p>A read that sees a stale replica writes the new value back to it.</p></div><div class="card rise"><h3 style="color:var(--pc)">Anti-entropy</h3><p>A background process compares replicas and copies missing data.</p></div></div></div></div></div><aside class="notes">No failover needed: if a node is down, writes simply go to the others. Read repair works well for frequently read values; anti-entropy catches rarely read ones, without ordering guarantees.</aside></section>
+<section class="slide c" data-p="sca" data-sec="Leaderless"><div class="inner"><h2 class="rise">Lab: quorums</h2><div class="card rise"><div class="controls"><label class="ctl"><span class="row"><span>Replicas n</span><output id="qnO"></output></span><input type="range" id="qn" min="1" max="9" value="5"></label>
+<label class="ctl"><span class="row"><span>Write quorum w</span><output id="qwO"></output></span><input type="range" id="qw" min="1" max="9" value="3"></label>
+<label class="ctl"><span class="row"><span>Read quorum r</span><output id="qrO"></output></span><input type="range" id="qr" min="1" max="9" value="3"></label></div>
+<div class="kvrow" style="margin-bottom:.8rem"><button class="btn" id="qsim">Write v2, then read</button><span class="dim">Filled = has v2 · ringed = asked by the read</span></div>
+<div class="dotrow" id="qnodes"></div>
+<div class="readouts" style="margin-top:1rem"><div class="readout"><div class="v" id="qcond"></div><div class="k">w + r &gt; n?</div></div>
+<div class="readout"><div class="v" id="qtol"></div><div class="k">nodes that can be down: writes / reads</div></div>
+<div class="readout"><div class="v" id="qres">–</div><div class="k">what the read returned</div></div></div></div></div><aside class="notes">Run it several times with n=5, w=3, r=3: the read always overlaps the write. Then set w=2, r=2: sometimes you read stale data. A common choice is n odd (3 or 5), w = r = (n+1)/2.</aside></section>
+<section class="slide c" data-p="sca" data-sec="Leaderless"><div class="inner"><h2 class="rise">Even with w + r &gt; n, edge cases leak.</h2><ul class="lst rise"><li>A <b>sloppy quorum</b> writes to stand-in nodes during an outage (hinted handoff), so the overlap guarantee is gone.</li><li>Two concurrent writes: which one wins isn’t clear, and last-write-wins by clock can drop one.</li><li>A write concurrent with a read may or may not be seen.</li><li>A write that reached fewer than w nodes is reported as failed but is <b>not rolled back</b>.</li><li>A node holding the new value fails and is restored from an older one.</li></ul><p class="sub rise">Quorums give probabilities, not guarantees. Monitoring staleness is also harder than measuring a follower’s lag.</p></div><aside class="notes">Dynamo-style databases are built for use cases that tolerate eventual consistency. For stronger guarantees you need transactions or consensus (sessions 9–13).</aside></section>
+<section class="slide c divider" data-p="mai" data-sec="Concurrent writes"><div class="inner"><div class="num rise">03</div><h2 class="rise">Concurrent writes</h2><p class="sub rise">“Concurrent” has nothing to do with clocks.</p></div></section>
+<section class="slide c" data-p="mai" data-sec="Concurrent writes"><div class="inner"><h2 class="rise">Capturing happens-before with versions.</h2><div class="card rise" data-seq="s1"></div></div><aside class="notes">Two operations are concurrent if neither knew about the other, regardless of wall-clock time. With multiple replicas, a single version number becomes a version vector: one counter per replica. Last-write-wins (Cassandra’s only option) drops concurrent writes silently; it’s only safe if each key is written once, e.g. with UUID keys.</aside></section>
+<section class="slide" data-p="neu" data-sec="Review"><div class="inner"><div class="rise" data-quiz="q2" data-label="Question"></div></div><aside class="notes">Let the team answer out loud before anyone clicks.</aside></section>
+<section class="slide" data-p="neu" data-sec="Team discussion"><div class="inner"><h2 class="rise">Now, our system.</h2><div class="disc" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,28rem),1fr))"><div class="rise" style="background:var(--rel-bg)"><h3>Multi-region?</h3><p>Do we write to more than one region today, or plan to? Which records would conflict?</p></div><div class="rise" style="background:var(--rel-bg)"><h3>Offline clients</h3><p>Do any apps (mobile, back-office tools) let users edit offline and sync later?</p></div><div class="rise" style="background:var(--sca-bg)"><h3>LWW hiding in plain sight</h3><p>Where do we overwrite by “latest updated_at wins”, e.g. syncing partner data or caches?</p></div><div class="rise" style="background:var(--mai-bg)"><h3>Merging, not overwriting</h3><p>Which of our updates could be modelled as merges or append-only records instead of overwrites?</p></div></div></div></section>
+<section class="slide" data-p="neu" data-sec="Next session"><div class="title"><div style="display:grid;gap:1.4rem"><div class="kicker rise">Next session</div><h1 class="rise" style="font-size:clamp(2.4rem,6vw,5.2rem)">Partitioning</h1><p class="sub rise">Splitting data across machines: hot spots, secondary indexes, and rebalancing. Chapter 6.</p></div><div class="bands" aria-hidden="true"><div><span>Key range</span></div><div><span>Hash</span></div><div><span>Rebalance</span></div></div></div></section></main>
+<footer class="bar">
+  <div class="progress" id="progress"></div>
+  <div class="notes-panel" id="notesPanel" aria-live="polite"></div>
+  <span class="sec" id="secName"></span>
+  <span class="count" id="count"></span>
+  <div class="nav"><button id="prev" aria-label="Previous slide">←</button><button id="next" aria-label="Next slide">→</button></div>
+</footer>
+</div>
+<script>
+const DATA={"s0": {"lanes": ["User 1", "Leader A", "Leader B", "User 2"], "v": [{"name": "Concurrent edits", "intro": "A merchant\u2019s display name is \u201cAcme\u201d. Two operators edit it at the same moment in two regions.", "m": [[0, 1, "set name = \u201cAcme Pay\u201d", "acc", "User 1 renames the merchant via leader A."], [3, 2, "set name = \u201cAcme GmbH\u201d", "acc", "At the same time, user 2 renames it via leader B."], [1, 0, "OK", "ok", "Both writes succeed locally. Each user is happy."], [2, 3, "OK", "ok", "Neither leader knows about the other write yet."], [1, 2, "replicate \u201cAcme Pay\u201d", "mut", "Asynchronous replication runs later\u2026"], [2, 1, "replicate \u201cAcme GmbH\u201d", "mut", "\u2026and both leaders now hold conflicting values."], [1, 1, "conflict!", "bad", "Too late to ask either user. The system has to resolve it somehow."]]}]}, "s1": {"lanes": ["Client A", "Server", "Client B"], "v": [{"name": "Shopping cart", "intro": "The server keeps a version number per key and returns all values that weren\u2019t overwritten.", "m": [[0, 1, "add coffee (no version)", "acc", "Client A adds coffee. The server stores it as version 1."], [1, 0, "v1: [coffee]", "ok", "A now knows version 1."], [2, 1, "add tea (no version)", "acc", "Client B never read the cart, so its write is concurrent with A\u2019s."], [1, 2, "v2: [coffee] and [tea]", "mut", "The server keeps both as siblings: neither overwrote the other."], [0, 1, "[coffee, milk] based on v1", "acc", "A adds milk, saying it builds on version 1."], [1, 1, "v1 replaced; [tea] kept", "ok", "v1 is overwritten, but [tea] is concurrent, so it stays."], [2, 1, "[coffee, tea, sugar] based on v2", "acc", "B merges the siblings it saw and adds sugar."], [1, 1, "merge siblings on read", "ok", "Eventually a client merges everything. Removals need tombstones, or deleted items come back."]]}]}, "q2": [{"q": "Most recommended way to deal with multi-leader conflicts?", "o": ["Last write wins", "Avoid them by routing a record\u2019s writes to one leader", "Manual repair"], "a": 1, "e": "Prevention beats resolution."}, {"q": "With n = 5, which settings guarantee reads overlap writes?", "o": ["w = 2, r = 2", "w = 3, r = 3", "w = 1, r = 3"], "a": 1, "e": "3 + 3 > 5."}, {"q": "A leaderless write succeeded on only 1 of the required 3 nodes. What happens to that copy?", "o": ["It is rolled back", "It stays, and may be read later", "It is moved to a leader"], "a": 1, "e": "There is no rollback in Dynamo-style systems."}, {"q": "Two writes are concurrent when\u2026", "o": ["They happen within 1 ms", "Neither knew about the other", "They hit the same node"], "a": 1, "e": "It\u2019s about knowledge, not time."}, {"q": "What does last-write-wins cost you?", "o": ["Nothing", "Silently dropped concurrent writes", "Extra disk space"], "a": 1, "e": "Only one of the concurrent writes survives."}]};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fmt = (n,o) => Number(n).toLocaleString('en-US',o);
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  slides.forEach(s=>s.querySelectorAll('.rise').forEach((el,i)=>el.style.setProperty('--i',i)));
+  const bgs={rel:'var(--rel-bg)',sca:'var(--sca-bg)',mai:'var(--mai-bg)'};
+  let cur=0;
+  function show(i){
+    cur=Math.max(0,Math.min(slides.length-1,i));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+    const s=slides[cur], c=s.classList.contains('c');
+    document.documentElement.style.setProperty('--cur-bg',c?bgs[s.dataset.p]:'var(--paper)');
+    document.documentElement.style.setProperty('--cur-fg',c?'#fff':'var(--ink)');
+    $('progress').style.width=((cur+1)/slides.length*100)+'%';
+    $('secName').textContent=s.dataset.sec||'';
+    $('count').textContent=(cur+1)+' / '+slides.length;
+    const n=s.querySelector('aside.notes');
+    $('notesPanel').textContent=n?n.textContent:'No notes for this slide.';
+    s.scrollTop=0;
+    try{history.replaceState(null,'','#'+(cur+1));}catch(e){}
+  }
+  window.__show=show;
+  const go=d=>show(cur+d);
+  $('next').onclick=()=>go(1); $('prev').onclick=()=>go(-1);
+  document.addEventListener('keydown',e=>{
+    if(e.target.matches&&e.target.matches('input,select,textarea'))return;
+    if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(1);}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(-1);}
+    else if(e.key==='Home')show(0); else if(e.key==='End')show(slides.length-1);
+    else if(e.key==='n'||e.key==='N')$('notesPanel').classList.toggle('open');
+    else if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();}
+  });
+  let tx=null,ty=null;const st=$('stage');
+  st.addEventListener('touchstart',e=>{if(e.target.closest('input,button,select,pre,textarea')){tx=null;return;}tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+  st.addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)go(dx<0?1:-1);tx=null;},{passive:true});
+})();
+
+function quiz(el,Q,label){
+  let qi=0;
+  function render(){
+    const it=Q[qi];
+    el.innerHTML=`<div class="qn">${label} ${qi+1} of ${Q.length}</div><div class="qtext">${it.q}</div><div class="opts"></div><div class="fb"></div><div class="qnav"><button class="btn" data-d="-1" ${qi===0?'disabled':''}>Previous</button><button class="btn" data-d="1" ${qi===Q.length-1?'disabled':''}>Next</button></div>`;
+    const opts=el.querySelector('.opts'),fb=el.querySelector('.fb');
+    it.o.forEach((t,oi)=>{const b=document.createElement('button');b.className='opt';b.textContent=t;
+      b.onclick=()=>{[...opts.children].forEach(x=>x.classList.remove('right','wrong'));b.classList.add(oi===it.a?'right':'wrong');if(oi!==it.a)opts.children[it.a].classList.add('right');fb.textContent=(oi===it.a?'Yes. ':'Not quite. ')+it.e;};
+      opts.appendChild(b);});
+    el.querySelectorAll('.qnav button').forEach(b=>b.onclick=()=>{qi+=+b.dataset.d;render();});
+  }
+  render();
+}
+function tabs(el,items){
+  el.innerHTML='<div class="tabs"></div><div class="tabpane"></div><p class="dim tabnote" style="margin-top:.6rem"></p>';
+  const T=el.querySelector('.tabs'),P=el.querySelector('.tabpane'),N=el.querySelector('.tabnote');
+  const set=k=>{[...T.children].forEach((b,j)=>b.setAttribute('aria-pressed',String(j===k)));P.innerHTML='<pre><code>'+esc(items[k][1])+'</code></pre>';N.textContent=items[k][2]||'';};
+  items.forEach((it,k)=>{const b=document.createElement('button');b.className='btn';b.textContent=it[0];b.onclick=()=>set(k);T.appendChild(b);});
+  set(0);
+}
+/* sequence diagram stepper: d={lanes:[..], v:[{name,intro,m:[[from,to,label,color,caption]]}]} */
+function seq(el,d){
+  let vi=0,k=0;
+  const col={ok:'var(--rel)',bad:'var(--bad)',acc:'var(--pc)',mut:'var(--muted)',ink:'var(--ink)'};
+  el.innerHTML=(d.v.length>1?'<div class="seg" style="margin-bottom:.6rem"></div>':'')+'<svg class="seqsvg"></svg><div class="cap"></div><div class="stepnav"><button class="btn" data-a="r">Reset</button><button class="btn" data-a="p">← Step</button><button class="btn" data-a="n">Step →</button><button class="btn" data-a="all">Show all</button><span class="dim stepn"></span></div>';
+  const svg=el.querySelector('svg'),cap=el.querySelector('.cap'),sn=el.querySelector('.stepn'),seg=el.querySelector('.seg');
+  if(seg){d.v.forEach((v,j)=>{const b=document.createElement('button');b.textContent=v.name;b.onclick=()=>{vi=j;k=0;draw();};seg.appendChild(b);});}
+  const uid='m'+Math.random().toString(36).slice(2,7);
+  function draw(){
+    const V=d.v[vi],L=d.lanes.length,W=800,lx=i=>80+i*(W-160)/Math.max(1,L-1),rh=50,H=80+V.m.length*rh;
+    if(seg)[...seg.children].forEach((b,j)=>b.setAttribute('aria-pressed',String(j===vi)));
+    let g='<defs>'+Object.entries(col).map(([n,c])=>`<marker id="${uid+n}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="${c}"/></marker>`).join('')+'</defs>';
+    d.lanes.forEach((l,i)=>{g+=`<line x1="${lx(i)}" y1="44" x2="${lx(i)}" y2="${H}" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 5"/><rect x="${lx(i)-70}" y="6" width="140" height="36" rx="18" fill="var(--ink)"/><text x="${lx(i)}" y="30" text-anchor="middle" font-size="15" font-weight="800" fill="var(--surface)">${esc(l)}</text>`;});
+    V.m.forEach((m,i)=>{ if(i>=k)return; const y=72+i*rh,[f,t,lab,c]=m,cc=col[c||'acc'],last=i===k-1;
+      if(f===t){const w=Math.min(260,lab.length*8+30);g+=`<rect x="${lx(f)-w/2}" y="${y-16}" width="${w}" height="30" rx="8" fill="${cc}" opacity="${last?1:.85}"/><text x="${lx(f)}" y="${y+4}" text-anchor="middle" font-size="13.5" font-weight="700" fill="#fff">${esc(lab)}</text>`;}
+      else{const x1=lx(f),x2=lx(t),dir=x2>x1?1:-1;g+=`<line x1="${x1}" y1="${y}" x2="${x2-dir*4}" y2="${y+8}" stroke="${cc}" stroke-width="${last?3.5:2.5}" marker-end="url(#${uid+(c||'acc')})"/><text x="${(x1+x2)/2}" y="${y-4}" text-anchor="middle" font-size="13.5" font-weight="700" fill="${cc}">${esc(lab)}</text>`;}
+    });
+    svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=g;
+    cap.innerHTML=k===0?(V.intro||'Press Step to begin.'):(V.m[k-1][4]||'');
+    sn.textContent=`${k} / ${V.m.length}`;
+  }
+  el.querySelectorAll('.stepnav button').forEach(b=>b.onclick=()=>{const n=d.v[vi].m.length;const a=b.dataset.a;k=a==='r'?0:a==='p'?Math.max(0,k-1):a==='n'?Math.min(n,k+1):n;draw();});
+  draw();
+}
+document.querySelectorAll('[data-quiz]').forEach(el=>quiz(el,DATA[el.dataset.quiz],el.dataset.label||'Question'));
+document.querySelectorAll('[data-tabs]').forEach(el=>tabs(el,DATA[el.dataset.tabs]));
+document.querySelectorAll('[data-seq]').forEach(el=>seq(el,DATA[el.dataset.seq]));
+
+
+(function(){
+  const pick=(n,k)=>{const a=[...Array(n).keys()];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return new Set(a.slice(0,k));};
+  let ws=new Set(),rs=new Set();
+  function draw(){const n=+$('qn').value;['qw','qr'].forEach(id=>{$(id).max=n;if(+$(id).value>n)$(id).value=n;});const w=+$('qw').value,r=+$('qr').value;
+    $('qnO').textContent=n;$('qwO').textContent=w;$('qrO').textContent=r;
+    $('qnodes').innerHTML=[...Array(n).keys()].map(i=>`<span class="${ws.has(i)?'w':''} ${rs.has(i)?'r':''}">${ws.has(i)?'v2':'v1'}</span>`).join('');
+    const ok=w+r>n;$('qcond').textContent=ok?'✓ Yes':'✕ No';$('qcond').style.color=ok?'var(--rel)':'var(--bad)';$('qtol').textContent=`${n-w} / ${n-r}`;}
+  $('qsim').onclick=()=>{const n=+$('qn').value;ws=pick(n,+$('qw').value);rs=pick(n,+$('qr').value);const got=[...rs].some(i=>ws.has(i));draw();$('qres').textContent=got?'v2 (fresh)':'v1 (stale!)';$('qres').style.color=got?'var(--rel)':'var(--bad)';};
+  ['qn','qw','qr'].forEach(id=>$(id).oninput=()=>{ws=new Set();rs=new Set();$('qres').textContent='–';draw();});draw();
+})();
+
+(function(){const s=parseInt(location.hash.slice(1),10);__show(isNaN(s)?0:s-1);})();
+</script>
+</body>
+</html>

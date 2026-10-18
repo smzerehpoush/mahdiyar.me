@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DDIA Session 8: Partitioning</title>
+<meta name="description" content="When one machine can’t hold the data or the load, split it and spread the pieces evenly. Slides from a Designing Data-Intensive Applications book-club session, covering Chapter 6.">
+<link rel="canonical" href="https://mahdiyar.me/blog/ddia-session-8/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="DDIA Session 8: Partitioning">
+<meta property="og:description" content="When one machine can’t hold the data or the load, split it and spread the pieces evenly. Slides from a Designing Data-Intensive Applications book-club session, covering Chapter 6.">
+<meta property="og:url" content="https://mahdiyar.me/blog/ddia-session-8/">
+<meta property="article:published_time" content="2026-10-18">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304050B'/%3E%3Ccircle cx='32' cy='38' r='17' fill='%2310112A' stroke='%238C80FF' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F5F8; --surface:#FFFFFF; --ink:#0F1B2D; --muted:#55657A; --line:#D3DAE3;
+  --rel:#0E7C6B; --sca:#B4480A; --mai:#5236B8; --bad:#D21F3C;
+  --rel-bg:#0E7C6B; --sca-bg:#B4480A; --mai-bg:#4B30AE;
+  --hl:#FFD66B; --on:#FFFFFF; --on-muted:rgba(255,255,255,.8);
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1621; --surface:#172231; --ink:#E7EDF4; --muted:#9AAABD; --line:#2A394B;
+    --rel:#4FD1BC; --sca:#FFA24D; --mai:#B3A2FF; --bad:#FF6B7F;
+    --rel-bg:#0A5A4E; --sca-bg:#8A3606; --mai-bg:#36247E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1621; --surface:#172231; --ink:#E7EDF4; --muted:#9AAABD; --line:#2A394B;
+  --rel:#4FD1BC; --sca:#FFA24D; --mai:#B3A2FF; --bad:#FF6B7F;
+  --rel-bg:#0A5A4E; --sca-bg:#8A3606; --mai-bg:#36247E;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  height:100%;margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Bricolage Grotesque","Helvetica Neue",Arial,system-ui,sans-serif;
+  font-size:clamp(16px,1vw + 8px,22px);line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow:hidden;
+}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,Consolas,monospace;font-size:.82em}
+.deck{position:relative;height:100%;display:flex;flex-direction:column}
+.stage{position:relative;flex:1;min-height:0}
+
+/* slides */
+.slide{position:absolute;inset:0;display:none;overflow-y:auto;padding:clamp(1.4rem,4vw,3.6rem) clamp(1.2rem,6vw,6rem) 2rem;
+  background:var(--paper);color:var(--ink);--acc:var(--ink);--pc:var(--ink)}
+.slide.active{display:block}
+.slide.c{color:var(--on);--acc:var(--on)}
+.slide[data-p="rel"]{--pc:var(--rel)} .slide[data-p="rel"].c{background:var(--rel-bg)}
+.slide[data-p="sca"]{--pc:var(--sca)} .slide[data-p="sca"].c{background:var(--sca-bg)}
+.slide[data-p="mai"]{--pc:var(--mai)} .slide[data-p="mai"].c{background:var(--mai-bg)}
+.inner{max-width:1180px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:1.4rem}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.03em;line-height:1.02}
+h1{font-size:clamp(2.8rem,7.5vw,6.6rem)}
+h2{font-size:clamp(2rem,4.6vw,4rem)}
+h3{font-size:1.25em;letter-spacing:-.015em;line-height:1.15;margin-bottom:.3em}
+p{margin:0;max-width:60ch}
+.sub{font-size:clamp(1.1rem,1.8vw,1.5rem);opacity:.85;max-width:44ch;line-height:1.4}
+.c .sub,.c .dim{color:var(--on-muted);opacity:1}
+.dim{color:var(--muted)}
+.hl{background:var(--hl);color:#0F1B2D;padding:0 .18em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,24rem),1fr));gap:clamp(1.2rem,3vw,3rem);align-items:center}
+.row3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:clamp(1rem,2vw,1.6rem)}
+.card{background:var(--surface);color:var(--ink);padding:clamp(1rem,2vw,1.6rem);border-radius:18px;--acc:var(--pc)}
+.c .card{box-shadow:0 18px 40px -18px rgba(0,0,0,.45)}
+.card .dim{color:var(--muted)}
+svg{max-width:100%;height:auto;display:block}
+svg text{font-family:"Bricolage Grotesque",Arial,sans-serif}
+
+/* stats */
+.stat .n{font-size:clamp(2.6rem,6vw,5.2rem);font-weight:800;letter-spacing:-.04em;line-height:1}
+.stat .l{font-size:1.02em;margin-top:.4em;max-width:26ch}
+.c .stat .l{color:var(--on-muted)}
+.stat .n.hlc{color:var(--hl)}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{border:2px solid currentColor;border-radius:999px;padding:.25em .9em;font-weight:600;font-size:.95em}
+.c .chip{border-color:rgba(255,255,255,.55)}
+
+/* motion: one orchestrated entrance per slide */
+.slide.active .rise{animation:rise .7s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0) * 110ms)}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.flow{stroke-dasharray:6 9;animation:flow 1.2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-30}}
+
+/* title */
+.title{display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;min-height:100%}
+@media (max-width:760px){.title{grid-template-columns:1fr}}
+.title h1 span{display:block}
+.bands{display:flex;gap:clamp(.5rem,1.2vw,1rem);height:min(62vh,520px);align-items:flex-end}
+.bands div{flex:1;border-radius:16px 16px 4px 4px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:1.1rem;color:#fff;font-weight:800;font-size:clamp(1rem,1.6vw,1.4rem);transform-origin:bottom}
+.bands div span{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+.slide.active .bands div{animation:grow 1s cubic-bezier(.2,.75,.2,1) both}
+.bands div:nth-child(1){background:var(--rel-bg);height:70%;animation-delay:.1s}
+.bands div:nth-child(2){background:var(--sca-bg);height:100%;animation-delay:.25s}
+.bands div:nth-child(3){background:var(--mai-bg);height:84%;animation-delay:.4s}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.kicker{font-weight:600;color:var(--muted);font-size:1.05em}
+
+/* divider */
+.divider .num{font-size:clamp(7rem,22vw,18rem);font-weight:800;line-height:.8;letter-spacing:-.06em;color:rgba(255,255,255,.18)}
+.divider h2{font-size:clamp(3rem,8vw,7rem)}
+
+/* icons */
+.icons{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10rem),1fr));gap:1rem}
+.icon{background:var(--surface);border-radius:18px;padding:1.2rem 1rem;text-align:center}
+.icon svg{width:64px;height:64px;margin:0 auto .6rem;stroke:var(--ink);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.icon b{display:block;font-size:1.1em}
+.icon span{font-size:.85em;color:var(--muted)}
+
+/* pillars */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:1rem}
+.pillars>div{color:#fff;border-radius:22px;padding:clamp(1.2rem,2.4vw,2rem);min-height:clamp(14rem,40vh,22rem);display:flex;flex-direction:column;justify-content:space-between}
+.pillars h3{font-size:clamp(1.6rem,2.6vw,2.4rem)}
+.pillars p{color:var(--on-muted);font-size:1.05em}
+
+/* strike */
+.strike{font-size:clamp(2rem,5.4vw,4.6rem);font-weight:800;letter-spacing:-.03em;position:relative;display:inline-block;opacity:.6}
+.strike::after{content:"";position:absolute;left:-2%;right:-2%;top:52%;height:.12em;background:var(--hl);transform:rotate(-3deg) scaleX(0);transform-origin:left}
+.slide.active .strike::after{animation:strike .5s .5s ease-out forwards}
+@keyframes strike{to{transform:rotate(-3deg) scaleX(1)}}
+
+/* labs */
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr));gap:.6rem 1.6rem;margin-bottom:1rem}
+label.ctl{display:flex;flex-direction:column;gap:.1rem;font-size:.92em}
+label.ctl .row{display:flex;justify-content:space-between;gap:1rem}
+label.ctl output{font-weight:800;color:var(--acc)}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:1rem}
+.readout .v{font-size:clamp(1.8rem,3.4vw,2.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;color:var(--acc)}
+.readout .k{font-size:.88em;color:var(--muted)}
+button{font:inherit;cursor:pointer}
+.btn{background:transparent;color:var(--ink);border:2px solid var(--acc);border-radius:999px;padding:.35em 1.1em;font-weight:700;font-size:.92em}
+.btn:hover,.btn[aria-pressed="true"]{background:var(--acc);color:var(--surface)}
+:focus-visible{outline:3px solid var(--hl);outline-offset:3px}
+.dots{display:grid;grid-template-columns:repeat(20,1fr);gap:5px}
+.dots i{aspect-ratio:1;background:var(--line);display:block;border-radius:50%;transition:background .15s}
+.dots i.hit{background:var(--bad)}
+.disks{display:grid;grid-template-columns:repeat(25,1fr);gap:5px}
+.disks i{aspect-ratio:1;border-radius:4px;background:var(--line);display:block;transition:background .3s,transform .3s}
+.disks i.dead{background:var(--bad);transform:scale(1.35)}
+
+pre{background:#0F1B2D;color:#E7EDF4;border-radius:12px;padding:1em 1.2em;overflow-x:auto;margin:.6em 0 0;line-height:1.55}
+.scroll-x{overflow-x:auto;max-width:100%}
+
+/* quiz */
+.qwrap{max-width:900px}
+.qn{font-weight:700;color:var(--muted)}
+.qtext{font-size:clamp(1.5rem,3vw,2.4rem);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:.3em 0 1em}
+.opts{display:grid;gap:.7rem}
+.opt{background:var(--surface);border:2px solid var(--line);color:var(--ink);border-radius:14px;padding:.8em 1.1em;text-align:left;font-size:1.05em;font-weight:600}
+.opt:hover{border-color:var(--ink)}
+.opt.right{border-color:var(--rel);background:color-mix(in srgb,var(--rel) 16%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
+.fb{min-height:2.6em;margin-top:1rem;color:var(--muted)}
+.qnav{display:flex;gap:.6rem;align-items:center}
+
+/* discussion */
+.disc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:1rem}
+.disc>div{border-radius:18px;padding:1.3rem 1.4rem;color:#fff}
+.disc h3{font-size:1.4em}
+.disc p{color:var(--on-muted)}
+
+/* footer */
+.bar{flex:none;display:flex;align-items:center;gap:1rem;padding:.55rem clamp(1rem,6vw,6rem) .65rem;
+  background:var(--cur-bg,var(--paper));color:var(--cur-fg,var(--ink));font-size:.82em;position:relative;transition:background .3s}
+.progress{position:absolute;top:0;left:0;height:4px;background:var(--hl);transition:width .3s ease}
+.sec{font-weight:800}
+.count{opacity:.75;margin-inline-start:auto}
+.nav{display:flex;gap:.4rem}
+.nav button{background:transparent;border:1.5px solid currentColor;color:inherit;border-radius:999px;width:2.5rem;height:2.1rem;font-size:1rem;opacity:.85}
+.nav button:hover{opacity:1}
+.notes-panel{display:none;position:absolute;left:0;right:0;bottom:100%;background:var(--surface);color:var(--ink);
+  border-top:4px solid var(--hl);padding:1rem clamp(1rem,6vw,6rem);max-height:40vh;overflow:auto;font-size:1.05em;line-height:1.55}
+.notes-panel.open{display:block}
+aside.notes{display:none}
+.hint{color:var(--muted);font-size:.85em}
+@media (max-width:640px){.hint{display:none}.bands{height:28vh}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.strike::after{transform:rotate(-3deg) scaleX(1)}}
+/* session 2 additions */
+.layers{display:grid;gap:.55rem}
+.layer{display:flex;align-items:center;gap:1rem;border-radius:14px;padding:.75rem 1.1rem;background:var(--surface);border:2px solid transparent}
+.layer b{font-size:1.1em;min-width:13ch}
+.layer span{color:var(--muted)}
+.layer.focus{background:var(--ink);color:var(--surface)}
+.layer.focus span{color:var(--surface);opacity:.75}
+.layer .tag{margin-inline-start:auto;background:var(--hl);color:#0F1B2D;border-radius:999px;padding:.1em .8em;font-weight:700;font-size:.85em;opacity:1!important}
+.tl{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:.4rem;padding-top:2.2rem}
+.tl::before{content:"";position:absolute;left:0;right:0;top:.9rem;height:4px;background:rgba(255,255,255,.4);border-radius:4px}
+.tl>div{position:relative}
+.tl>div::before{content:"";position:absolute;top:-1.65rem;left:0;width:18px;height:18px;border-radius:50%;background:var(--hl)}
+.tl b{display:block;font-size:clamp(1.2rem,2.2vw,1.9rem);letter-spacing:-.02em}
+.tl span{display:block;color:var(--on-muted);font-size:.88em;line-height:1.35}
+@media (max-width:820px){.tl{grid-template-columns:1fr 1fr}}
+.seg{display:inline-flex;border:2px solid var(--acc);border-radius:999px;overflow:hidden}
+.seg button{background:transparent;border:0;color:var(--ink);padding:.35em 1.1em;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--acc);color:var(--surface)}
+.tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:.8rem 1.4rem}
+table.mini{border-collapse:collapse;width:100%;font-size:.78em;font-family:"JetBrains Mono",ui-monospace,monospace}
+table.mini caption{text-align:left;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.15em;padding-bottom:.25em;color:var(--acc)}
+table.mini th,table.mini td{border:1px solid var(--line);padding:.25em .45em;text-align:left;white-space:nowrap}
+table.mini th{background:var(--paper)}
+.side{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:1rem;align-items:stretch}
+.side pre{margin:0;height:100%}
+.tag-label{font-weight:800;font-size:.9em;margin-bottom:.35rem;display:block}
+.tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.8rem}
+.tabpane pre{min-height:16rem;margin:0}
+.lc{display:grid;gap:.45rem;margin-top:.4rem}
+.lc div{display:grid;grid-template-columns:7.5rem 1fr 2.5rem;align-items:center;gap:.6rem;font-size:.9em}
+.lc i{display:block;height:14px;border-radius:7px;background:var(--acc);transition:width .5s}
+.navdemo ul{list-style:none;margin:0;padding:0}
+.navdemo li{margin:.2rem 0}
+.navdemo li>p{margin:0;padding:.25em .6em;border-radius:8px;font-weight:700}
+.navdemo li li{padding-left:1.4rem;color:var(--muted);font-size:.9em}
+.decl li.selected>p{background:var(--hl);color:#0F1B2D}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:18px;overflow:hidden}
+.vs>div{padding:.7rem 1.1rem;border-bottom:1px solid rgba(255,255,255,.18)}
+.vs .h{font-weight:800;font-size:1.15em}
+.vs>div:nth-child(odd){background:rgba(0,0,0,.18)}
+.vs>div:nth-child(even){background:rgba(255,255,255,.1)}
+select{font:inherit;padding:.3em .6em;border-radius:10px;border:2px solid var(--acc);background:var(--surface);color:var(--ink);font-weight:700}
+.gctl{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:center;margin-bottom:.6rem}
+.match{font-weight:800;color:var(--acc)}
+.fitq .qtext{font-size:clamp(1.3rem,2.6vw,2rem)}
+.fitq .opts{grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr))}
+.gsplit{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:1rem;align-items:center}
+@media (max-width:820px){.gsplit{grid-template-columns:1fr}}
+/* generator additions */
+.blk{display:grid;gap:1rem}
+.lst{margin:0;padding-left:1.2em;line-height:1.55}
+.c .lst li::marker{color:var(--hl)}
+.card .lst li::marker{color:var(--pc)}
+.stepnav{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.6rem}
+.cap{min-height:2.8em;margin-top:.5rem;font-weight:600}
+.seqsvg{width:100%;height:auto}
+table.mx{border-collapse:collapse;width:100%;font-size:.95em}
+table.mx th,table.mx td{padding:.5em .7em;border-bottom:1px solid var(--line);text-align:left}
+table.mx th{font-weight:800}
+.c table.mx th,.c table.mx td{border-color:rgba(255,255,255,.25)}
+td.y{color:var(--rel);font-weight:800} td.n{color:var(--bad);font-weight:800}
+.c td.y{color:#BFF5E6} .c td.n{color:#FFC2CB}
+input[type=text],textarea{font:inherit;padding:.35em .6em;border-radius:10px;border:2px solid var(--acc);background:var(--surface);color:var(--ink)}
+textarea{width:100%;min-height:4.5em;font-family:"JetBrains Mono",monospace;font-size:.85em}
+.cells{display:flex;flex-wrap:wrap;gap:5px}
+.cells span{font-family:"JetBrains Mono",monospace;font-size:.78em;background:var(--line);color:var(--ink);padding:.2em .5em;border-radius:6px}
+.cells span.new{background:var(--hl);color:#0F1B2D}
+.cells span.dead{opacity:.35;text-decoration:line-through}
+.cells span.on{background:var(--pc);color:#fff}
+.kvrow{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.cols3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr));gap:1rem}
+.mono{font-family:"JetBrains Mono",monospace}
+.big-out{font-size:clamp(2rem,4vw,3.2rem);font-weight:800;letter-spacing:-.03em;color:var(--acc)}
+.inner{justify-content:safe center}
+.seqsvg{max-height:48vh}
+.side>div{display:flex;flex-direction:column}
+.side pre{height:auto;flex:1}
+.node{background:var(--paper);border-radius:14px;padding:.7rem .8rem;border:2px solid var(--line)}
+.node.hot{border-color:var(--pc)}
+.node b{display:block;margin-bottom:.3rem}
+.dotrow{display:flex;flex-wrap:wrap;gap:.6rem}
+.dotrow span{width:3.2rem;height:3.2rem;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--line);color:var(--ink);border:3px solid transparent}
+.dotrow span.w{background:var(--pc);color:#fff}
+.dotrow span.r{border-color:var(--hl);box-shadow:0 0 0 3px var(--ink) inset}
+.vbars{display:flex;align-items:flex-end;gap:.5rem;height:180px}
+.vbars div{flex:1;background:var(--pc);border-radius:8px 8px 2px 2px;position:relative;min-height:2px;transition:height .4s}
+.vbars div span{position:absolute;top:-1.4em;left:0;right:0;text-align:center;font-size:.8em;font-weight:700;color:var(--ink)}
+.vlabels{display:flex;gap:.5rem}.vlabels span{flex:1;text-align:center;font-size:.8em;color:var(--muted)}
+label.chk{display:flex;gap:.4rem;align-items:center;font-weight:600}
+.lst{font-size:1.12em}
+</style>
+</head>
+<body>
+<div class="deck">
+<main class="stage" id="stage">
+<section class="slide" data-p="neu" data-sec="DDIA · Session 8"><div class="title"><div style="display:grid;gap:1.4rem"><div class="kicker rise">Designing Data-Intensive Applications, session 8</div><h1 class="rise">Partitioning</h1><p class="sub rise">When one machine can’t hold the data or the load: split it, and spread the pieces evenly.</p><p class="hint rise">→ next · ← back · N notes · F full screen</p></div><div class="bands" aria-hidden="true"><div><span>Key range</span></div><div><span>Hash</span></div><div><span>Rebalance</span></div></div></div><aside class="notes">Chapter 6. Also called sharding; a partition is a shard in MongoDB, a region in HBase, a tablet in Bigtable, a vnode in Cassandra.</aside></section>
+<section class="slide" data-p="neu" data-sec="Introduction"><div class="inner"><h2 class="rise">Partition for scale, replicate for safety.</h2><div class="split"><div class="blk"><p class="sub rise">Each record belongs to exactly one partition. Each partition is a small database of its own.</p><p class="sub rise">Combined with replication, every node leads some partitions and follows others.</p></div><div class="blk"><div class="card rise"><svg viewBox="0 0 600 190" role="img" aria-label="Three nodes, each leader for some partitions and follower for others">
+<g font-size="14" font-weight="800" text-anchor="middle"><text x="100" y="20" fill="var(--ink)">Node 1</text><text x="300" y="20" fill="var(--ink)">Node 2</text><text x="500" y="20" fill="var(--ink)">Node 3</text></g>
+<g font-size="13" font-weight="700" text-anchor="middle">
+<rect x="30" y="35" width="140" height="38" rx="10" fill="var(--rel)"/><text x="100" y="59" fill="#fff">P1 leader</text>
+<rect x="30" y="83" width="140" height="38" rx="10" fill="var(--line)"/><text x="100" y="107" fill="var(--ink)">P2 follower</text>
+<rect x="30" y="131" width="140" height="38" rx="10" fill="var(--line)"/><text x="100" y="155" fill="var(--ink)">P3 follower</text>
+<rect x="230" y="35" width="140" height="38" rx="10" fill="var(--rel)"/><text x="300" y="59" fill="#fff">P2 leader</text>
+<rect x="230" y="83" width="140" height="38" rx="10" fill="var(--line)"/><text x="300" y="107" fill="var(--ink)">P1 follower</text>
+<rect x="230" y="131" width="140" height="38" rx="10" fill="var(--line)"/><text x="300" y="155" fill="var(--ink)">P3 follower</text>
+<rect x="430" y="35" width="140" height="38" rx="10" fill="var(--rel)"/><text x="500" y="59" fill="#fff">P3 leader</text>
+<rect x="430" y="83" width="140" height="38" rx="10" fill="var(--line)"/><text x="500" y="107" fill="var(--ink)">P1 follower</text>
+<rect x="430" y="131" width="140" height="38" rx="10" fill="var(--line)"/><text x="500" y="155" fill="var(--ink)">P2 follower</text></g></svg></div></div></div></div></section>
+<section class="slide c divider" data-p="rel" data-sec="Partitioning key-value data"><div class="inner"><div class="num rise">01</div><h2 class="rise">Partitioning key-value data</h2><p class="sub rise">The goal: no hot spots.</p></div></section>
+<section class="slide c" data-p="rel" data-sec="Partitioning key-value data"><div class="inner"><h2 class="rise">Key range or hash?</h2><div class="row3"><div class="card rise"><h3 style="color:var(--pc)">Key range</h3><p>Contiguous ranges of keys per partition, like encyclopedia volumes. Range scans are cheap. Risk: sequential keys like timestamps pile into one partition.</p></div><div class="card rise"><h3 style="color:var(--pc)">Hash of key</h3><p>A good hash spreads keys evenly. Range queries now have to ask every partition.</p></div><div class="card rise"><h3 style="color:var(--pc)">Compound key</h3><p>Cassandra’s trick: hash the first column, sort by the rest. One user’s posts by time stay together.</p></div></div></div><aside class="notes">Bigtable, HBase, and MongoDB before 2.4 use key ranges; Cassandra, Voldemort, and MongoDB’s hashed sharding use hashes. The hash doesn’t need to be cryptographic, but it must be stable across processes — Java’s Object.hashCode is not.</aside></section>
+<section class="slide c" data-p="rel" data-sec="Partitioning key-value data"><div class="inner"><h2 class="rise">Lab: where does the load go?</h2><div class="card rise"><div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1.6rem">
+<div class="seg"><button id="pR" aria-pressed="true">Key range</button><button id="pH" aria-pressed="false">Hash</button></div>
+<select id="pW" aria-label="Workload"><option value="ts">Keys are timestamps (writes happen now)</option><option value="uid">Keys are random user IDs</option><option value="hot">One celebrity key gets half the traffic</option></select>
+<label class="chk"><input type="checkbox" id="pSplit"> Split hot key into 10 sub-keys</label></div>
+<div class="vbars" id="pBars"></div><div class="vlabels" id="pLab"></div>
+<p id="pMsg" style="margin-top:.8rem;font-weight:600"></p></div></div><aside class="notes">Hash partitioning can’t fix a single hot key. The workaround of adding a random suffix to a known hot key spreads writes but makes reads gather from all sub-keys, and you have to track which keys are split.</aside></section>
+<section class="slide c divider" data-p="sca" data-sec="Secondary indexes"><div class="inner"><div class="num rise">02</div><h2 class="rise">Secondary indexes</h2><p class="sub rise">Indexes don’t partition neatly.</p></div></section>
+<section class="slide c" data-p="sca" data-sec="Secondary indexes"><div class="inner"><h2 class="rise">Local index or global index?</h2><div class="vs rise"><div class="h">Partitioned by document (local)</div><div class="h">Partitioned by term (global)</div><div>Each partition indexes only its own records</div><div>The index itself is split by the indexed value</div><div>Writes touch one partition</div><div>Writes may touch several index partitions</div><div>Reads scatter to <b>all</b> partitions and gather</div><div>Reads go to the one partition holding that term</div><div>Tail latency amplification on reads</div><div>Index updates are usually asynchronous</div><div>MongoDB, Cassandra, Elasticsearch</div><div>DynamoDB global secondary indexes</div></div></div><aside class="notes">Scatter/gather means the slowest partition decides your read latency — the same tail amplification effect from session 1.</aside></section>
+<section class="slide c divider" data-p="mai" data-sec="Rebalancing and routing"><div class="inner"><div class="num rise">03</div><h2 class="rise">Rebalancing and routing</h2><p class="sub rise">Moving partitions without moving everything.</p></div></section>
+<section class="slide c" data-p="mai" data-sec="Rebalancing"><div class="inner"><h2 class="rise">Lab: never use hash mod N.</h2><div class="card rise"><div class="controls"><label class="ctl"><span class="row"><span>Nodes before adding one</span><output id="rnO"></output></span><input type="range" id="rn" min="2" max="50" value="10"></label></div>
+<div class="readouts"><div class="readout"><div class="v" id="rMod" style="color:var(--bad)"></div><div class="k">of keys move with <code>hash mod N</code></div></div>
+<div class="readout"><div class="v" id="rFix"></div><div class="k">move with a fixed number of partitions</div></div></div></div><div class="row3"><div class="card rise"><h3 style="color:var(--pc)">Fixed partitions</h3><p>Create many more partitions than nodes (say 1,000 for 10 nodes). New nodes steal whole partitions.</p></div><div class="card rise"><h3 style="color:var(--pc)">Dynamic</h3><p>Split a partition when it grows too big (HBase: 10 GB), merge when it shrinks.</p></div><div class="card rise"><h3 style="color:var(--pc)">Per node</h3><p>A fixed number of partitions per node (Cassandra), split when a node joins.</p></div></div></div><aside class="notes">With mod N, adding one node moves almost every key. Rebalancing should be supervised by a human: automatic rebalancing plus automatic failure detection can cascade — an overloaded node is declared dead, its load moves to others, which become overloaded too.</aside></section>
+<section class="slide c" data-p="mai" data-sec="Routing"><div class="inner"><h2 class="rise">Which node has key “merchant:7”?</h2><div class="card rise"><svg viewBox="0 0 720 200" role="img" aria-label="Three request routing approaches: any node forwards, a routing tier, or a partition-aware client">
+<g font-size="14" font-weight="800" text-anchor="middle" fill="var(--ink)"><text x="120" y="195">Any node forwards</text><text x="360" y="195">Routing tier</text><text x="600" y="195">Partition-aware client</text></g>
+<g font-size="12" font-weight="700" text-anchor="middle">
+<rect x="70" y="10" width="100" height="30" rx="15" fill="var(--ink)"/><text x="120" y="30" fill="var(--surface)">client</text>
+<rect x="310" y="10" width="100" height="30" rx="15" fill="var(--ink)"/><text x="360" y="30" fill="var(--surface)">client</text>
+<rect x="550" y="10" width="100" height="30" rx="15" fill="var(--ink)"/><text x="600" y="30" fill="var(--surface)">client</text>
+<rect x="300" y="70" width="120" height="30" rx="8" fill="var(--hl)"/><text x="360" y="90" fill="#0F1B2D">router</text></g>
+<g fill="var(--mai)"><rect x="20" y="130" width="60" height="34" rx="8"/><rect x="90" y="130" width="60" height="34" rx="8"/><rect x="160" y="130" width="60" height="34" rx="8"/><rect x="260" y="130" width="60" height="34" rx="8"/><rect x="330" y="130" width="60" height="34" rx="8"/><rect x="400" y="130" width="60" height="34" rx="8"/><rect x="500" y="130" width="60" height="34" rx="8"/><rect x="570" y="130" width="60" height="34" rx="8"/><rect x="640" y="130" width="60" height="34" rx="8"/></g>
+<g stroke="var(--ink)" stroke-width="2.2" fill="none"><path class="flow" d="M110 40 L50 130"/><path class="flow" d="M80 147 H160"/><path class="flow" d="M360 40 V70"/><path class="flow" d="M360 100 L430 130"/><path class="flow" d="M620 40 L670 130"/></g></svg></div><p class="sub rise">Someone must know the current assignment: <b style="color:#fff">ZooKeeper</b> (HBase, Kafka, SolrCloud) or a <b style="color:#fff">gossip protocol</b> (Cassandra, Riak).</p></div><aside class="notes">This is an instance of service discovery. Analytic MPP databases go further and split one complex query into stages across partitions.</aside></section>
+<section class="slide" data-p="neu" data-sec="Review"><div class="inner"><div class="rise" data-quiz="q0" data-label="Question"></div></div><aside class="notes">Let the team answer out loud before anyone clicks.</aside></section>
+<section class="slide" data-p="neu" data-sec="Team discussion"><div class="inner"><h2 class="rise">Now, our system.</h2><div class="disc" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,28rem),1fr))"><div class="rise" style="background:var(--rel-bg)"><h3>Do we need it yet?</h3><p>PostgreSQL scales a long way on one node. What would force us to shard: data size, write rate, or isolation between merchants?</p></div><div class="rise" style="background:var(--rel-bg)"><h3>Our hot keys</h3><p>Do a few merchants produce most of the volume? Which tables or locks feel that skew?</p></div><div class="rise" style="background:var(--sca-bg)"><h3>Partitioning by date</h3><p>Are big settlement tables partitioned by date in PostgreSQL? Does that create a hot “today” partition?</p></div><div class="rise" style="background:var(--mai-bg)"><h3>Cross-partition queries</h3><p>If we sharded by merchant, which reports would become scatter/gather?</p></div></div></div><aside class="notes">PostgreSQL declarative partitioning splits a table on a single node; the same key-choice trade-offs apply, just without the network.</aside></section>
+<section class="slide" data-p="neu" data-sec="Next session"><div class="title"><div style="display:grid;gap:1.4rem"><div class="kicker rise">Next session</div><h1 class="rise" style="font-size:clamp(2.4rem,6vw,5.2rem)">Transactions, part 1</h1><p class="sub rise">ACID, and the weaker isolation levels most databases actually give you. Chapter 7.</p></div><div class="bands" aria-hidden="true"><div><span>Atomicity</span></div><div><span>Isolation</span></div><div><span>Durability</span></div></div></div></section></main>
+<footer class="bar">
+  <div class="progress" id="progress"></div>
+  <div class="notes-panel" id="notesPanel" aria-live="polite"></div>
+  <span class="sec" id="secName"></span>
+  <span class="count" id="count"></span>
+  <div class="nav"><button id="prev" aria-label="Previous slide">←</button><button id="next" aria-label="Next slide">→</button></div>
+</footer>
+</div>
+<script>
+const DATA={"q0": [{"q": "Why are timestamp keys risky under key-range partitioning?", "o": ["They\u2019re too long", "All current writes hit one partition", "They can\u2019t be hashed"], "a": 1, "e": "Today\u2019s data all falls into the latest range."}, {"q": "What do you lose with hash partitioning?", "o": ["Even distribution", "Efficient range queries", "Replication"], "a": 1, "e": "Adjacent keys end up on different partitions."}, {"q": "A local secondary index means reads must\u2026", "o": ["Hit one partition", "Scatter to all partitions and gather", "Read from the leader"], "a": 1, "e": "Each partition only knows its own records."}, {"q": "Going from 10 to 11 nodes with hash mod N moves roughly\u2026", "o": ["9% of keys", "50% of keys", "91% of keys"], "a": 2, "e": "Almost everything moves."}, {"q": "Why keep a human in the loop for rebalancing?", "o": ["It\u2019s faster", "Automatic rebalancing can cascade into overload", "Databases can\u2019t move data"], "a": 1, "e": "Moving data is expensive and can make an overloaded cluster worse."}]};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fmt = (n,o) => Number(n).toLocaleString('en-US',o);
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  slides.forEach(s=>s.querySelectorAll('.rise').forEach((el,i)=>el.style.setProperty('--i',i)));
+  const bgs={rel:'var(--rel-bg)',sca:'var(--sca-bg)',mai:'var(--mai-bg)'};
+  let cur=0;
+  function show(i){
+    cur=Math.max(0,Math.min(slides.length-1,i));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+    const s=slides[cur], c=s.classList.contains('c');
+    document.documentElement.style.setProperty('--cur-bg',c?bgs[s.dataset.p]:'var(--paper)');
+    document.documentElement.style.setProperty('--cur-fg',c?'#fff':'var(--ink)');
+    $('progress').style.width=((cur+1)/slides.length*100)+'%';
+    $('secName').textContent=s.dataset.sec||'';
+    $('count').textContent=(cur+1)+' / '+slides.length;
+    const n=s.querySelector('aside.notes');
+    $('notesPanel').textContent=n?n.textContent:'No notes for this slide.';
+    s.scrollTop=0;
+    try{history.replaceState(null,'','#'+(cur+1));}catch(e){}
+  }
+  window.__show=show;
+  const go=d=>show(cur+d);
+  $('next').onclick=()=>go(1); $('prev').onclick=()=>go(-1);
+  document.addEventListener('keydown',e=>{
+    if(e.target.matches&&e.target.matches('input,select,textarea'))return;
+    if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(1);}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(-1);}
+    else if(e.key==='Home')show(0); else if(e.key==='End')show(slides.length-1);
+    else if(e.key==='n'||e.key==='N')$('notesPanel').classList.toggle('open');
+    else if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();}
+  });
+  let tx=null,ty=null;const st=$('stage');
+  st.addEventListener('touchstart',e=>{if(e.target.closest('input,button,select,pre,textarea')){tx=null;return;}tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+  st.addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)go(dx<0?1:-1);tx=null;},{passive:true});
+})();
+
+function quiz(el,Q,label){
+  let qi=0;
+  function render(){
+    const it=Q[qi];
+    el.innerHTML=`<div class="qn">${label} ${qi+1} of ${Q.length}</div><div class="qtext">${it.q}</div><div class="opts"></div><div class="fb"></div><div class="qnav"><button class="btn" data-d="-1" ${qi===0?'disabled':''}>Previous</button><button class="btn" data-d="1" ${qi===Q.length-1?'disabled':''}>Next</button></div>`;
+    const opts=el.querySelector('.opts'),fb=el.querySelector('.fb');
+    it.o.forEach((t,oi)=>{const b=document.createElement('button');b.className='opt';b.textContent=t;
+      b.onclick=()=>{[...opts.children].forEach(x=>x.classList.remove('right','wrong'));b.classList.add(oi===it.a?'right':'wrong');if(oi!==it.a)opts.children[it.a].classList.add('right');fb.textContent=(oi===it.a?'Yes. ':'Not quite. ')+it.e;};
+      opts.appendChild(b);});
+    el.querySelectorAll('.qnav button').forEach(b=>b.onclick=()=>{qi+=+b.dataset.d;render();});
+  }
+  render();
+}
+function tabs(el,items){
+  el.innerHTML='<div class="tabs"></div><div class="tabpane"></div><p class="dim tabnote" style="margin-top:.6rem"></p>';
+  const T=el.querySelector('.tabs'),P=el.querySelector('.tabpane'),N=el.querySelector('.tabnote');
+  const set=k=>{[...T.children].forEach((b,j)=>b.setAttribute('aria-pressed',String(j===k)));P.innerHTML='<pre><code>'+esc(items[k][1])+'</code></pre>';N.textContent=items[k][2]||'';};
+  items.forEach((it,k)=>{const b=document.createElement('button');b.className='btn';b.textContent=it[0];b.onclick=()=>set(k);T.appendChild(b);});
+  set(0);
+}
+/* sequence diagram stepper: d={lanes:[..], v:[{name,intro,m:[[from,to,label,color,caption]]}]} */
+function seq(el,d){
+  let vi=0,k=0;
+  const col={ok:'var(--rel)',bad:'var(--bad)',acc:'var(--pc)',mut:'var(--muted)',ink:'var(--ink)'};
+  el.innerHTML=(d.v.length>1?'<div class="seg" style="margin-bottom:.6rem"></div>':'')+'<svg class="seqsvg"></svg><div class="cap"></div><div class="stepnav"><button class="btn" data-a="r">Reset</button><button class="btn" data-a="p">← Step</button><button class="btn" data-a="n">Step →</button><button class="btn" data-a="all">Show all</button><span class="dim stepn"></span></div>';
+  const svg=el.querySelector('svg'),cap=el.querySelector('.cap'),sn=el.querySelector('.stepn'),seg=el.querySelector('.seg');
+  if(seg){d.v.forEach((v,j)=>{const b=document.createElement('button');b.textContent=v.name;b.onclick=()=>{vi=j;k=0;draw();};seg.appendChild(b);});}
+  const uid='m'+Math.random().toString(36).slice(2,7);
+  function draw(){
+    const V=d.v[vi],L=d.lanes.length,W=800,lx=i=>80+i*(W-160)/Math.max(1,L-1),rh=50,H=80+V.m.length*rh;
+    if(seg)[...seg.children].forEach((b,j)=>b.setAttribute('aria-pressed',String(j===vi)));
+    let g='<defs>'+Object.entries(col).map(([n,c])=>`<marker id="${uid+n}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="${c}"/></marker>`).join('')+'</defs>';
+    d.lanes.forEach((l,i)=>{g+=`<line x1="${lx(i)}" y1="44" x2="${lx(i)}" y2="${H}" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 5"/><rect x="${lx(i)-70}" y="6" width="140" height="36" rx="18" fill="var(--ink)"/><text x="${lx(i)}" y="30" text-anchor="middle" font-size="15" font-weight="800" fill="var(--surface)">${esc(l)}</text>`;});
+    V.m.forEach((m,i)=>{ if(i>=k)return; const y=72+i*rh,[f,t,lab,c]=m,cc=col[c||'acc'],last=i===k-1;
+      if(f===t){const w=Math.min(260,lab.length*8+30);g+=`<rect x="${lx(f)-w/2}" y="${y-16}" width="${w}" height="30" rx="8" fill="${cc}" opacity="${last?1:.85}"/><text x="${lx(f)}" y="${y+4}" text-anchor="middle" font-size="13.5" font-weight="700" fill="#fff">${esc(lab)}</text>`;}
+      else{const x1=lx(f),x2=lx(t),dir=x2>x1?1:-1;g+=`<line x1="${x1}" y1="${y}" x2="${x2-dir*4}" y2="${y+8}" stroke="${cc}" stroke-width="${last?3.5:2.5}" marker-end="url(#${uid+(c||'acc')})"/><text x="${(x1+x2)/2}" y="${y-4}" text-anchor="middle" font-size="13.5" font-weight="700" fill="${cc}">${esc(lab)}</text>`;}
+    });
+    svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=g;
+    cap.innerHTML=k===0?(V.intro||'Press Step to begin.'):(V.m[k-1][4]||'');
+    sn.textContent=`${k} / ${V.m.length}`;
+  }
+  el.querySelectorAll('.stepnav button').forEach(b=>b.onclick=()=>{const n=d.v[vi].m.length;const a=b.dataset.a;k=a==='r'?0:a==='p'?Math.max(0,k-1):a==='n'?Math.min(n,k+1):n;draw();});
+  draw();
+}
+document.querySelectorAll('[data-quiz]').forEach(el=>quiz(el,DATA[el.dataset.quiz],el.dataset.label||'Question'));
+document.querySelectorAll('[data-tabs]').forEach(el=>tabs(el,DATA[el.dataset.tabs]));
+document.querySelectorAll('[data-seq]').forEach(el=>seq(el,DATA[el.dataset.seq]));
+
+
+(function(){
+  let hash=false;const P=8;
+  const h=x=>{let s=Math.sin(x*12.9898)*43758.5453;return s-Math.floor(s);};
+  function draw(){
+    const w=$('pW').value,split=$('pSplit').checked,load=Array(P).fill(0);
+    for(let i=0;i<4000;i++){let key;
+      if(w==='ts')key=0.9+0.1*Math.random();else if(w==='uid')key=Math.random();else key=(i%2===0)?(split?0.5+(i%10)*1e-4:0.5):Math.random();
+      const p=hash?Math.floor(h(key*1e4+0.123)*P):Math.min(P-1,Math.floor(key*P));load[p]++;}
+    const mx=Math.max(...load);
+    $('pBars').innerHTML=load.map(v=>`<div style="height:${v/mx*100}%;${v===mx&&mx>800?'background:var(--bad)':''}"><span>${Math.round(v/40)}%</span></div>`).join('');
+    $('pLab').innerHTML=load.map((_,i)=>`<span>P${i}</span>`).join('');
+    let m;
+    if(w==='ts')m=hash?'Hashing spreads timestamps evenly, but range scans by time now hit every partition.':'All of today’s writes land in the last partition: a hot spot. Prefix keys with something else (e.g. sensor ID) to spread them.';
+    else if(w==='uid')m='Random keys spread evenly under either scheme.';
+    else m=split?'The hot key is split across sub-keys, so even hashing can spread it. Reads must now combine 10 keys.':'Neither scheme helps: every request for the same key goes to the same partition.';
+    $('pMsg').textContent=m;$('pR').setAttribute('aria-pressed',String(!hash));$('pH').setAttribute('aria-pressed',String(hash));}
+  $('pR').onclick=()=>{hash=false;draw();};$('pH').onclick=()=>{hash=true;draw();};$('pW').onchange=draw;$('pSplit').onchange=draw;draw();
+  function rb(){const n=+$('rn').value;$('rnO').textContent=n;$('rMod').textContent=Math.round(n/(n+1)*100)+'%';$('rFix').textContent=Math.round(100/(n+1))+'%';}
+  $('rn').oninput=rb;rb();
+})();
+
+(function(){const s=parseInt(location.hash.slice(1),10);__show(isNaN(s)?0:s-1);})();
+</script>
+</body>
+</html>

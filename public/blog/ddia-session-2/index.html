@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DDIA Session 2: Data Models &amp; Query Languages</title>
+<meta name="description" content="The shape you give your data decides what’s easy, what’s awkward, and how you think about the problem. Slides from a Designing Data-Intensive Applications book-club session, covering Chapter 2.">
+<link rel="canonical" href="https://mahdiyar.me/blog/ddia-session-2/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="DDIA Session 2: Data Models &amp; Query Languages">
+<meta property="og:description" content="The shape you give your data decides what’s easy, what’s awkward, and how you think about the problem. Slides from a Designing Data-Intensive Applications book-club session, covering Chapter 2.">
+<meta property="og:url" content="https://mahdiyar.me/blog/ddia-session-2/">
+<meta property="article:published_time" content="2026-10-18">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304050B'/%3E%3Ccircle cx='32' cy='38' r='17' fill='%2310112A' stroke='%238C80FF' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F5F8; --surface:#FFFFFF; --ink:#0F1B2D; --muted:#55657A; --line:#D3DAE3;
+  --rel:#0E7C6B; --sca:#B4480A; --mai:#5236B8; --bad:#D21F3C;
+  --rel-bg:#0E7C6B; --sca-bg:#B4480A; --mai-bg:#4B30AE;
+  --hl:#FFD66B; --on:#FFFFFF; --on-muted:rgba(255,255,255,.8);
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1621; --surface:#172231; --ink:#E7EDF4; --muted:#9AAABD; --line:#2A394B;
+    --rel:#4FD1BC; --sca:#FFA24D; --mai:#B3A2FF; --bad:#FF6B7F;
+    --rel-bg:#0A5A4E; --sca-bg:#8A3606; --mai-bg:#36247E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1621; --surface:#172231; --ink:#E7EDF4; --muted:#9AAABD; --line:#2A394B;
+  --rel:#4FD1BC; --sca:#FFA24D; --mai:#B3A2FF; --bad:#FF6B7F;
+  --rel-bg:#0A5A4E; --sca-bg:#8A3606; --mai-bg:#36247E;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  height:100%;margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Bricolage Grotesque","Helvetica Neue",Arial,system-ui,sans-serif;
+  font-size:clamp(16px,1vw + 8px,22px);line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow:hidden;
+}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,Consolas,monospace;font-size:.82em}
+.deck{position:relative;height:100%;display:flex;flex-direction:column}
+.stage{position:relative;flex:1;min-height:0}
+
+/* slides */
+.slide{position:absolute;inset:0;display:none;overflow-y:auto;padding:clamp(1.4rem,4vw,3.6rem) clamp(1.2rem,6vw,6rem) 2rem;
+  background:var(--paper);color:var(--ink);--acc:var(--ink);--pc:var(--ink)}
+.slide.active{display:block}
+.slide.c{color:var(--on);--acc:var(--on)}
+.slide[data-p="rel"]{--pc:var(--rel)} .slide[data-p="rel"].c{background:var(--rel-bg)}
+.slide[data-p="sca"]{--pc:var(--sca)} .slide[data-p="sca"].c{background:var(--sca-bg)}
+.slide[data-p="mai"]{--pc:var(--mai)} .slide[data-p="mai"].c{background:var(--mai-bg)}
+.inner{max-width:1180px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:1.4rem}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.03em;line-height:1.02}
+h1{font-size:clamp(2.8rem,7.5vw,6.6rem)}
+h2{font-size:clamp(2rem,4.6vw,4rem)}
+h3{font-size:1.25em;letter-spacing:-.015em;line-height:1.15;margin-bottom:.3em}
+p{margin:0;max-width:60ch}
+.sub{font-size:clamp(1.1rem,1.8vw,1.5rem);opacity:.85;max-width:44ch;line-height:1.4}
+.c .sub,.c .dim{color:var(--on-muted);opacity:1}
+.dim{color:var(--muted)}
+.hl{background:var(--hl);color:#0F1B2D;padding:0 .18em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,24rem),1fr));gap:clamp(1.2rem,3vw,3rem);align-items:center}
+.row3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:clamp(1rem,2vw,1.6rem)}
+.card{background:var(--surface);color:var(--ink);padding:clamp(1rem,2vw,1.6rem);border-radius:18px;--acc:var(--pc)}
+.c .card{box-shadow:0 18px 40px -18px rgba(0,0,0,.45)}
+.card .dim{color:var(--muted)}
+svg{max-width:100%;height:auto;display:block}
+svg text{font-family:"Bricolage Grotesque",Arial,sans-serif}
+
+/* stats */
+.stat .n{font-size:clamp(2.6rem,6vw,5.2rem);font-weight:800;letter-spacing:-.04em;line-height:1}
+.stat .l{font-size:1.02em;margin-top:.4em;max-width:26ch}
+.c .stat .l{color:var(--on-muted)}
+.stat .n.hlc{color:var(--hl)}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{border:2px solid currentColor;border-radius:999px;padding:.25em .9em;font-weight:600;font-size:.95em}
+.c .chip{border-color:rgba(255,255,255,.55)}
+
+/* motion: one orchestrated entrance per slide */
+.slide.active .rise{animation:rise .7s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--i,0) * 110ms)}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.flow{stroke-dasharray:6 9;animation:flow 1.2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-30}}
+
+/* title */
+.title{display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;min-height:100%}
+@media (max-width:760px){.title{grid-template-columns:1fr}}
+.title h1 span{display:block}
+.bands{display:flex;gap:clamp(.5rem,1.2vw,1rem);height:min(62vh,520px);align-items:flex-end}
+.bands div{flex:1;border-radius:16px 16px 4px 4px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:1.1rem;color:#fff;font-weight:800;font-size:clamp(1rem,1.6vw,1.4rem);transform-origin:bottom}
+.bands div span{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+.slide.active .bands div{animation:grow 1s cubic-bezier(.2,.75,.2,1) both}
+.bands div:nth-child(1){background:var(--rel-bg);height:70%;animation-delay:.1s}
+.bands div:nth-child(2){background:var(--sca-bg);height:100%;animation-delay:.25s}
+.bands div:nth-child(3){background:var(--mai-bg);height:84%;animation-delay:.4s}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.kicker{font-weight:600;color:var(--muted);font-size:1.05em}
+
+/* divider */
+.divider .num{font-size:clamp(7rem,22vw,18rem);font-weight:800;line-height:.8;letter-spacing:-.06em;color:rgba(255,255,255,.18)}
+.divider h2{font-size:clamp(3rem,8vw,7rem)}
+
+/* icons */
+.icons{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10rem),1fr));gap:1rem}
+.icon{background:var(--surface);border-radius:18px;padding:1.2rem 1rem;text-align:center}
+.icon svg{width:64px;height:64px;margin:0 auto .6rem;stroke:var(--ink);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.icon b{display:block;font-size:1.1em}
+.icon span{font-size:.85em;color:var(--muted)}
+
+/* pillars */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:1rem}
+.pillars>div{color:#fff;border-radius:22px;padding:clamp(1.2rem,2.4vw,2rem);min-height:clamp(14rem,40vh,22rem);display:flex;flex-direction:column;justify-content:space-between}
+.pillars h3{font-size:clamp(1.6rem,2.6vw,2.4rem)}
+.pillars p{color:var(--on-muted);font-size:1.05em}
+
+/* strike */
+.strike{font-size:clamp(2rem,5.4vw,4.6rem);font-weight:800;letter-spacing:-.03em;position:relative;display:inline-block;opacity:.6}
+.strike::after{content:"";position:absolute;left:-2%;right:-2%;top:52%;height:.12em;background:var(--hl);transform:rotate(-3deg) scaleX(0);transform-origin:left}
+.slide.active .strike::after{animation:strike .5s .5s ease-out forwards}
+@keyframes strike{to{transform:rotate(-3deg) scaleX(1)}}
+
+/* labs */
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr));gap:.6rem 1.6rem;margin-bottom:1rem}
+label.ctl{display:flex;flex-direction:column;gap:.1rem;font-size:.92em}
+label.ctl .row{display:flex;justify-content:space-between;gap:1rem}
+label.ctl output{font-weight:800;color:var(--acc)}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:1rem}
+.readout .v{font-size:clamp(1.8rem,3.4vw,2.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;color:var(--acc)}
+.readout .k{font-size:.88em;color:var(--muted)}
+button{font:inherit;cursor:pointer}
+.btn{background:transparent;color:var(--ink);border:2px solid var(--acc);border-radius:999px;padding:.35em 1.1em;font-weight:700;font-size:.92em}
+.btn:hover,.btn[aria-pressed="true"]{background:var(--acc);color:var(--surface)}
+:focus-visible{outline:3px solid var(--hl);outline-offset:3px}
+.dots{display:grid;grid-template-columns:repeat(20,1fr);gap:5px}
+.dots i{aspect-ratio:1;background:var(--line);display:block;border-radius:50%;transition:background .15s}
+.dots i.hit{background:var(--bad)}
+.disks{display:grid;grid-template-columns:repeat(25,1fr);gap:5px}
+.disks i{aspect-ratio:1;border-radius:4px;background:var(--line);display:block;transition:background .3s,transform .3s}
+.disks i.dead{background:var(--bad);transform:scale(1.35)}
+
+pre{background:#0F1B2D;color:#E7EDF4;border-radius:12px;padding:1em 1.2em;overflow-x:auto;margin:.6em 0 0;line-height:1.55}
+.scroll-x{overflow-x:auto;max-width:100%}
+
+/* quiz */
+.qwrap{max-width:900px}
+.qn{font-weight:700;color:var(--muted)}
+.qtext{font-size:clamp(1.5rem,3vw,2.4rem);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:.3em 0 1em}
+.opts{display:grid;gap:.7rem}
+.opt{background:var(--surface);border:2px solid var(--line);color:var(--ink);border-radius:14px;padding:.8em 1.1em;text-align:left;font-size:1.05em;font-weight:600}
+.opt:hover{border-color:var(--ink)}
+.opt.right{border-color:var(--rel);background:color-mix(in srgb,var(--rel) 16%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
+.fb{min-height:2.6em;margin-top:1rem;color:var(--muted)}
+.qnav{display:flex;gap:.6rem;align-items:center}
+
+/* discussion */
+.disc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:1rem}
+.disc>div{border-radius:18px;padding:1.3rem 1.4rem;color:#fff}
+.disc h3{font-size:1.4em}
+.disc p{color:var(--on-muted)}
+
+/* footer */
+.bar{flex:none;display:flex;align-items:center;gap:1rem;padding:.55rem clamp(1rem,6vw,6rem) .65rem;
+  background:var(--cur-bg,var(--paper));color:var(--cur-fg,var(--ink));font-size:.82em;position:relative;transition:background .3s}
+.progress{position:absolute;top:0;left:0;height:4px;background:var(--hl);transition:width .3s ease}
+.sec{font-weight:800}
+.count{opacity:.75;margin-inline-start:auto}
+.nav{display:flex;gap:.4rem}
+.nav button{background:transparent;border:1.5px solid currentColor;color:inherit;border-radius:999px;width:2.5rem;height:2.1rem;font-size:1rem;opacity:.85}
+.nav button:hover{opacity:1}
+.notes-panel{display:none;position:absolute;left:0;right:0;bottom:100%;background:var(--surface);color:var(--ink);
+  border-top:4px solid var(--hl);padding:1rem clamp(1rem,6vw,6rem);max-height:40vh;overflow:auto;font-size:1.05em;line-height:1.55}
+.notes-panel.open{display:block}
+aside.notes{display:none}
+.hint{color:var(--muted);font-size:.85em}
+@media (max-width:640px){.hint{display:none}.bands{height:28vh}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.strike::after{transform:rotate(-3deg) scaleX(1)}}
+/* session 2 additions */
+.layers{display:grid;gap:.55rem}
+.layer{display:flex;align-items:center;gap:1rem;border-radius:14px;padding:.75rem 1.1rem;background:var(--surface);border:2px solid transparent}
+.layer b{font-size:1.1em;min-width:13ch}
+.layer span{color:var(--muted)}
+.layer.focus{background:var(--ink);color:var(--surface)}
+.layer.focus span{color:var(--surface);opacity:.75}
+.layer .tag{margin-inline-start:auto;background:var(--hl);color:#0F1B2D;border-radius:999px;padding:.1em .8em;font-weight:700;font-size:.85em;opacity:1!important}
+.tl{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:.4rem;padding-top:2.2rem}
+.tl::before{content:"";position:absolute;left:0;right:0;top:.9rem;height:4px;background:rgba(255,255,255,.4);border-radius:4px}
+.tl>div{position:relative}
+.tl>div::before{content:"";position:absolute;top:-1.65rem;left:0;width:18px;height:18px;border-radius:50%;background:var(--hl)}
+.tl b{display:block;font-size:clamp(1.2rem,2.2vw,1.9rem);letter-spacing:-.02em}
+.tl span{display:block;color:var(--on-muted);font-size:.88em;line-height:1.35}
+@media (max-width:820px){.tl{grid-template-columns:1fr 1fr}}
+.seg{display:inline-flex;border:2px solid var(--acc);border-radius:999px;overflow:hidden}
+.seg button{background:transparent;border:0;color:var(--ink);padding:.35em 1.1em;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--acc);color:var(--surface)}
+.tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:.8rem 1.4rem}
+table.mini{border-collapse:collapse;width:100%;font-size:.78em;font-family:"JetBrains Mono",ui-monospace,monospace}
+table.mini caption{text-align:left;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.15em;padding-bottom:.25em;color:var(--acc)}
+table.mini th,table.mini td{border:1px solid var(--line);padding:.25em .45em;text-align:left;white-space:nowrap}
+table.mini th{background:var(--paper)}
+.side{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:1rem;align-items:stretch}
+.side pre{margin:0;height:100%}
+.tag-label{font-weight:800;font-size:.9em;margin-bottom:.35rem;display:block}
+.tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.8rem}
+.tabpane pre{min-height:16rem;margin:0}
+.lc{display:grid;gap:.45rem;margin-top:.4rem}
+.lc div{display:grid;grid-template-columns:7.5rem 1fr 2.5rem;align-items:center;gap:.6rem;font-size:.9em}
+.lc i{display:block;height:14px;border-radius:7px;background:var(--acc);transition:width .5s}
+.navdemo ul{list-style:none;margin:0;padding:0}
+.navdemo li{margin:.2rem 0}
+.navdemo li>p{margin:0;padding:.25em .6em;border-radius:8px;font-weight:700}
+.navdemo li li{padding-left:1.4rem;color:var(--muted);font-size:.9em}
+.decl li.selected>p{background:var(--hl);color:#0F1B2D}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:18px;overflow:hidden}
+.vs>div{padding:.7rem 1.1rem;border-bottom:1px solid rgba(255,255,255,.18)}
+.vs .h{font-weight:800;font-size:1.15em}
+.vs>div:nth-child(odd){background:rgba(0,0,0,.18)}
+.vs>div:nth-child(even){background:rgba(255,255,255,.1)}
+select{font:inherit;padding:.3em .6em;border-radius:10px;border:2px solid var(--acc);background:var(--surface);color:var(--ink);font-weight:700}
+.gctl{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:center;margin-bottom:.6rem}
+.match{font-weight:800;color:var(--acc)}
+.fitq .qtext{font-size:clamp(1.3rem,2.6vw,2rem)}
+.fitq .opts{grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr))}
+.gsplit{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:1rem;align-items:center}
+@media (max-width:820px){.gsplit{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="deck">
+<main class="stage" id="stage">
+
+<!-- 1 Title -->
+<section class="slide" data-p="neu" data-sec="DDIA · Session 2">
+  <div class="title">
+    <div style="display:grid;gap:1.4rem">
+      <div class="kicker rise">Designing Data-Intensive Applications, session 2</div>
+      <h1 class="rise">Data models &amp;<br>query languages</h1>
+      <p class="sub rise">The shape you give your data decides what’s easy, what’s awkward, and how you think about the problem.</p>
+      <p class="hint rise">→ next · ← back · N notes · F full screen</p>
+    </div>
+    <div class="bands" aria-hidden="true"><div><span>Relational</span></div><div><span>Document</span></div><div><span>Graph</span></div></div>
+  </div>
+  <aside class="notes">Chapter 2. Last time: what a good data system must achieve. Today: the first big design decision — the data model. Every model embeds assumptions about how it will be used; some operations become natural, others awkward.</aside>
+</section>
+
+<!-- 2 Layers -->
+<section class="slide" data-p="neu" data-sec="Introduction">
+  <div class="inner">
+    <h2 class="rise">Software is data models stacked on data models.</h2>
+    <div class="layers">
+      <div class="layer rise"><b>The real world</b><span>people, merchants, money flows, events</span></div>
+      <div class="layer rise"><b>Your objects</b><span>classes, entities, APIs</span></div>
+      <div class="layer focus rise"><b>General-purpose model</b><span>tables · JSON documents · graphs</span><span class="tag">today</span></div>
+      <div class="layer rise"><b>Bytes</b><span>memory, disk, network</span><span class="tag" style="background:var(--line);color:var(--ink)">next session</span></div>
+      <div class="layer rise"><b>Physics</b><span>currents, light pulses, magnetic fields</span></div>
+    </div>
+    <p class="sub rise">Each layer hides the complexity below it behind a clean model.</p>
+  </div>
+  <aside class="notes">For each layer the key question is: how is it represented in terms of the layer below? This chapter is about layer 3: the general-purpose model we store our objects in. Chapter 3 (next session) is how databases turn that into bytes. These abstractions let the DB vendor's engineers and application developers work together without knowing each other's details.</aside>
+</section>
+
+<!-- 3 Divider -->
+<section class="slide c divider" data-p="rel" data-sec="Relational vs document">
+  <div class="inner">
+    <div class="num rise">01</div>
+    <h2 class="rise">Relational vs document</h2>
+    <p class="sub rise">A fifty-year-old debate, rerun with new names.</p>
+  </div>
+</section>
+
+<!-- 4 Timeline -->
+<section class="slide c" data-p="rel" data-sec="Relational vs document">
+  <div class="inner">
+    <h2 class="rise">Every challenger got hype. SQL stayed.</h2>
+    <div class="tl rise">
+      <div><b>1970</b><span>Codd proposes the relational model</span></div>
+      <div><b>’70s</b><span>Hierarchical (IMS) and network (CODASYL) models dominate</span></div>
+      <div><b>mid-’80s</b><span>RDBMS + SQL become the default</span></div>
+      <div><b>’90s</b><span>Object databases come and go</span></div>
+      <div><b>2000s</b><span>XML databases: niche</span></div>
+      <div><b>2009</b><span>#NoSQL starts as a meetup hashtag</span></div>
+      <div><b>Today</b><span>Polyglot persistence</span></div>
+    </div>
+    <div class="row3" style="margin-top:1rem">
+      <div class="stat rise"><div class="n hlc" style="font-size:clamp(2rem,4.4vw,3.6rem)">25–30 yrs</div><div class="l">of relational dominance. An eternity in computing.</div></div>
+      <div class="stat rise" style="grid-column:span 2"><div class="l" style="max-width:none;font-size:1.15em"><b style="color:#fff">Why NoSQL?</b> More scale and write throughput, open source, specialised queries, and frustration with rigid schemas.</div></div>
+    </div>
+  </div>
+  <aside class="notes">Relational databases were born in 1960s–70s business data processing: transactions and batch jobs. They generalised remarkably well to almost everything on the web. NoSQL was originally just a catchy hashtag for a 2009 meetup on open-source distributed non-relational databases; later reinterpreted as "Not Only SQL". The likely future: relational alongside a variety of non-relational stores — polyglot persistence.</aside>
+</section>
+
+<!-- 5 Mismatch lab -->
+<section class="slide c" data-p="rel" data-sec="Relational vs document">
+  <div class="inner">
+    <h2 class="rise">Lab: one profile, two shapes</h2>
+    <div class="card rise">
+      <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1rem">
+        <div class="seg" role="group" aria-label="Choose data model"><button id="mRel" aria-pressed="true">Relational</button><button id="mDoc" aria-pressed="false">Document</button></div>
+        <span class="dim">A résumé is a tree: one user, many positions, many schools.</span>
+      </div>
+      <div id="viewRel">
+        <div class="tables">
+          <table class="mini"><caption>users</caption><tr><th>id</th><th>name</th><th>region_id</th></tr><tr><td>42</td><td>Sara A.</td><td>ir:21</td></tr></table>
+          <table class="mini"><caption>positions</caption><tr><th>user_id</th><th>title</th><th>org</th></tr><tr><td>42</td><td>Backend eng.</td><td>Acme Pay</td></tr><tr><td>42</td><td>Intern</td><td>DataCo</td></tr></table>
+          <table class="mini"><caption>education</caption><tr><th>user_id</th><th>school</th><th>from</th></tr><tr><td>42</td><td>Sharif Univ.</td><td>2014</td></tr></table>
+          <table class="mini"><caption>contacts</caption><tr><th>user_id</th><th>type</th><th>value</th></tr><tr><td>42</td><td>blog</td><td>sara.dev</td></tr></table>
+        </div>
+      </div>
+      <div id="viewDoc" hidden>
+<pre><code>{ "user_id": 42, "name": "Sara A.", "region_id": "ir:21",
+  "positions": [ { "title": "Backend eng.", "org": "Acme Pay" },
+                 { "title": "Intern",       "org": "DataCo" } ],
+  "education": [ { "school": "Sharif Univ.", "from": 2014 } ],
+  "contacts":  { "blog": "sara.dev" } }</code></pre>
+      </div>
+      <div class="readouts" style="margin-top:1rem">
+        <div class="readout"><div class="v" id="rq">4</div><div class="k">queries to load the profile (or 1 messy multi-way join)</div></div>
+        <div class="readout"><div class="v" id="rp">4</div><div class="k">places on disk the data lives</div></div>
+        <div class="readout"><div class="v" id="rj">Easy</div><div class="k">turning “org” into a shared entity later</div></div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">The object-relational (impedance) mismatch: objects in code vs rows and columns in tables. ORMs like Hibernate — what we use through JPA — cut the boilerplate but can't fully hide the difference. For self-contained, tree-shaped data like a résumé, a JSON document matches the object shape and has better locality: one query, one place. But watch the third readout when you toggle.</aside>
+</section>
+
+<!-- 6 IDs vs text -->
+<section class="slide c" data-p="rel" data-sec="Relational vs document">
+  <div class="inner">
+    <div class="split">
+      <div style="display:grid;gap:1.2rem">
+        <h2 class="rise">Store <span class="hl">"ir:21"</span>, not <span style="opacity:.7">"Greater Tehran"</span>.</h2>
+        <p class="sub rise">Anything meaningful to humans may need to change someday. An ID never does.</p>
+        <p class="sub rise">Removing duplicated human-meaningful data is the whole idea of <b style="color:#fff">normalisation</b>.</p>
+      </div>
+      <div style="display:grid;gap:.8rem">
+        <div class="chips rise" style="font-size:1.1em;display:grid;gap:.6rem;justify-items:start">
+          <span class="chip">Consistent spelling</span>
+          <span class="chip">No ambiguity between same-named cities</span>
+          <span class="chip">Rename once, updated everywhere</span>
+          <span class="chip">Easy to localise</span>
+          <span class="chip">Smarter search (city → province)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Storing text duplicates the meaningful info in every record: renames mean updating every copy, with write overhead and inconsistency risk. But normalising requires many-to-one relationships (many people in one region), which don't fit the document model well. In relational DBs, referencing by ID is normal because joins are easy. Document DBs often have weak join support, so the join moves into application code.</aside>
+</section>
+
+<!-- 7 Data gets connected -->
+<section class="slide c" data-p="rel" data-sec="Relational vs document">
+  <div class="inner">
+    <div class="split">
+      <div style="display:grid;gap:1.2rem">
+        <h2 class="rise">Data grows more connected with every feature.</h2>
+        <p class="sub rise">Companies become entities with pages and logos. Users recommend each other. Suddenly the tree has <span class="hl">many-to-many</span> links.</p>
+        <p class="sub rise">No joins in the database? Then your application code does them.</p>
+      </div>
+      <div class="rise">
+        <svg viewBox="0 0 420 300" role="img" aria-label="Two résumé documents referencing shared organisation, school and each other">
+          <g fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"><rect x="10" y="20" width="150" height="120" rx="14" stroke-dasharray="6 5"/><rect x="10" y="160" width="150" height="120" rx="14" stroke-dasharray="6 5"/></g>
+          <g font-size="14" fill="#fff" font-weight="700"><text x="24" y="44">résumé: Sara</text><text x="24" y="184">résumé: Omid</text></g>
+          <g fill="rgba(255,255,255,.8)" font-size="12"><text x="24" y="70">position → org</text><text x="24" y="94">education → school</text><text x="24" y="118">recommended by →</text><text x="24" y="210">position → org</text><text x="24" y="234">education → school</text></g>
+          <g stroke="var(--hl)" stroke-width="2.4" fill="none"><path class="flow" d="M150 66 L290 60"/><path class="flow" d="M150 206 L290 72"/><path class="flow" d="M160 90 L290 150"/><path class="flow" d="M160 230 L290 162"/><path class="flow" d="M160 114 C 220 140, 200 190, 160 200"/></g>
+          <rect x="292" y="38" width="120" height="44" rx="22" fill="var(--hl)"/><text x="352" y="65" text-anchor="middle" font-size="14" font-weight="800" fill="#0F1B2D">Acme Pay</text>
+          <rect x="292" y="134" width="120" height="44" rx="22" fill="var(--hl)"/><text x="352" y="161" text-anchor="middle" font-size="14" font-weight="800" fill="#0F1B2D">Sharif Univ.</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Even if version 1 of your app fits a join-free document model, data tends to become more interconnected. The book's examples: organisations and schools as first-class entities (with their own pages), and recommendations that must show the recommender's current photo — both need references, which need joins when queried.</aside>
+</section>
+
+<!-- 8 History -->
+<section class="slide c" data-p="rel" data-sec="Relational vs document">
+  <div class="inner">
+    <h2 class="rise">We’ve had this argument before.</h2>
+    <div class="row3">
+      <div class="card rise"><h3 style="color:var(--rel)">Hierarchical · IMS, 1968</h3>
+        <svg viewBox="0 0 200 90" aria-hidden="true"><g stroke="var(--ink)" stroke-width="2"><path d="M100 18 L50 70 M100 18 L100 70 M100 18 L150 70"/></g><g fill="var(--rel)"><circle cx="100" cy="16" r="10"/><circle cx="50" cy="72" r="9"/><circle cx="100" cy="72" r="9"/><circle cx="150" cy="72" r="9"/></g></svg>
+        <p>A tree of nested records, like JSON. Great for one-to-many. <b>No joins</b>: duplicate data or chase references by hand.</p></div>
+      <div class="card rise"><h3 style="color:var(--rel)">Network · CODASYL</h3>
+        <svg viewBox="0 0 200 90" aria-hidden="true"><g stroke="var(--ink)" stroke-width="2" fill="none"><path d="M30 20 L100 70 L170 20 M30 20 L170 20 M100 70 L100 20"/></g><g fill="var(--rel)"><circle cx="30" cy="20" r="9"/><circle cx="170" cy="20" r="9"/><circle cx="100" cy="70" r="10"/><circle cx="100" cy="20" r="9"/></g></svg>
+        <p>Records with many parents, linked by pointers. Queries walk <b>access paths</b> by hand. Change the paths, rewrite the code.</p></div>
+      <div class="card rise"><h3 style="color:var(--rel)">Relational · SQL</h3>
+        <svg viewBox="0 0 200 90" aria-hidden="true"><g fill="none" stroke="var(--ink)" stroke-width="2"><rect x="20" y="10" width="160" height="70" rx="6"/><path d="M20 33 H180 M20 56 H180 M80 10 V80 M130 10 V80"/></g></svg>
+        <p>Everything laid out in the open. The <b>query optimizer</b> picks the access path. New index? Queries use it automatically.</p></div>
+    </div>
+    <p class="sub rise">Build the optimizer once, and every application benefits. <span class="hl">The general solution wins in the long run.</span></p>
+  </div>
+  <aside class="notes">IMS was built for stock-keeping in the Apollo program and is still maintained. Its problems in the '70s look a lot like document-DB problems today. CODASYL generalised the tree to allow many parents; programmers had to track access paths in their heads — the committee itself compared it to navigating an n-dimensional space. The relational model won because the optimizer makes access-path decisions automatically. Document DBs went back to nesting for one-to-many, but for many-to-one/many-to-many they use IDs (document references) just like foreign keys — they have not followed CODASYL.</aside>
+</section>
+
+<!-- 9 Scorecard -->
+<section class="slide c" data-p="rel" data-sec="Relational vs document">
+  <div class="inner">
+    <h2 class="rise">So which one leads to simpler code?</h2>
+    <div class="split" style="align-items:stretch">
+      <div class="card rise"><h3 style="color:var(--rel)">Document wins when…</h3><ul style="margin:.4em 0 0;padding-left:1.2em;line-height:1.6"><li>data is a tree of one-to-many</li><li>you load the whole tree at once</li><li>records are heterogeneous</li><li>you want schema flexibility</li></ul><p class="dim" style="margin-top:.6em">Shredding a tree into many tables makes schemas and code clumsy.</p></div>
+      <div class="card rise"><h3 style="color:var(--rel)">Relational wins when…</h3><ul style="margin:.4em 0 0;padding-left:1.2em;line-height:1.6"><li>you need joins</li><li>many-to-one references are common</li><li>many-to-many relationships appear</li><li>all records share a structure</li></ul><p class="dim" style="margin-top:.6em">Denormalising or app-side joins push complexity into your code.</p></div>
+    </div>
+    <div class="rise"><svg viewBox="0 0 800 70" role="img" aria-label="As data becomes more interconnected: document is awkward, relational acceptable, graph most natural">
+      <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="var(--hl)"/></linearGradient></defs>
+      <rect x="0" y="10" width="800" height="14" rx="7" fill="url(#g1)"/>
+      <g font-size="17" font-weight="700" fill="#fff"><text x="0" y="52">tree-shaped → document</text><text x="400" y="52" text-anchor="middle">some links → relational</text><text x="800" y="52" text-anchor="end">highly connected → graph</text></g>
+    </svg></div>
+  </div>
+  <aside class="notes">You can't say in general which model gives simpler code; it depends on the relationships between data items. A document limitation: you can't refer directly to a nested item — you say "the second position of user 42", like an access path. Fine if nesting is shallow. Poor join support may not matter at all, e.g. an analytics event log.</aside>
+</section>
+
+<!-- 10 Schema on read -->
+<section class="slide c" data-p="rel" data-sec="Relational vs document">
+  <div class="inner">
+    <h2 class="rise">“Schemaless” is a myth. It’s <span class="hl">schema-on-read</span>.</h2>
+    <p class="sub rise">Your reading code still assumes a structure. The only question is who enforces it: the database at write time, or your code at read time. Like static vs dynamic typing.</p>
+    <div class="side">
+      <div class="rise"><span class="tag-label">Schema-on-read: handle old shapes in code</span>
+<pre><code>if (user.fullName != null &amp;&amp; user.firstName == null) {
+  // written before the split
+  user.firstName = user.fullName.split(" ")[0];
+}</code></pre></div>
+      <div class="rise"><span class="tag-label">Schema-on-write: migrate (PostgreSQL)</span>
+<pre><code>ALTER TABLE users ADD COLUMN first_name text;
+UPDATE users
+   SET first_name = split_part(full_name, ' ', 1);</code></pre></div>
+    </div>
+  </div>
+  <aside class="notes">ALTER TABLE ADD COLUMN takes milliseconds in most databases (MySQL historically copied the whole table). The UPDATE rewriting every row is the slow part on a big table — you can leave the column NULL and fill it in at read time, exactly like the document approach. Schema-on-read shines when data is heterogeneous: many object types, or structure dictated by external systems you don't control. When all records share a structure, an explicit schema documents and enforces it. Chapter 4 goes deeper into schema evolution.</aside>
+</section>
+
+<!-- 11 Which model fits lab -->
+<section class="slide c" data-p="rel" data-sec="Relational vs document">
+  <div class="inner">
+    <h2 class="rise">Lab: which model fits?</h2>
+    <div class="card rise fitq" id="fit"></div>
+  </div>
+  <aside class="notes">Vote as a team before clicking. Several scenarios have defensible second answers — discuss them.</aside>
+</section>
+
+<!-- 12 Locality -->
+<section class="slide c" data-p="rel" data-sec="Relational vs document">
+  <div class="inner">
+    <div class="split">
+      <div style="display:grid;gap:1.2rem">
+        <h2 class="rise">Locality: a win only if you read the whole thing.</h2>
+        <p class="sub rise">A document is stored as one blob. Reading one field still loads it all; growing it usually means rewriting it all.</p>
+        <p class="sub rise"><span class="hl">Keep documents small.</span></p>
+      </div>
+      <div class="card rise">
+        <svg viewBox="0 0 400 210" role="img" aria-label="Normalised tables scattered across disk blocks versus one contiguous document">
+          <text x="0" y="18" font-size="15" font-weight="800" fill="var(--ink)">4 tables: scattered reads</text>
+          <g fill="var(--line)"><rect x="0" y="30" width="40" height="30" rx="4"/><rect x="45" y="30" width="40" height="30" rx="4"/><rect x="90" y="30" width="40" height="30" rx="4"/><rect x="135" y="30" width="40" height="30" rx="4"/><rect x="180" y="30" width="40" height="30" rx="4"/><rect x="225" y="30" width="40" height="30" rx="4"/><rect x="270" y="30" width="40" height="30" rx="4"/><rect x="315" y="30" width="40" height="30" rx="4"/><rect x="360" y="30" width="40" height="30" rx="4"/></g>
+          <g fill="var(--rel)"><rect x="45" y="30" width="40" height="30" rx="4"/><rect x="180" y="30" width="40" height="30" rx="4"/><rect x="270" y="30" width="40" height="30" rx="4"/><rect x="360" y="30" width="40" height="30" rx="4"/></g>
+          <text x="0" y="118" font-size="15" font-weight="800" fill="var(--ink)">1 document: one contiguous read</text>
+          <g fill="var(--line)"><rect x="0" y="130" width="40" height="30" rx="4"/><rect x="45" y="130" width="40" height="30" rx="4"/><rect x="270" y="130" width="40" height="30" rx="4"/><rect x="315" y="130" width="40" height="30" rx="4"/><rect x="360" y="130" width="40" height="30" rx="4"/></g>
+          <rect x="90" y="130" width="175" height="30" rx="4" fill="var(--rel)"/>
+          <text x="0" y="198" font-size="13" fill="var(--muted)">Spanner, Oracle clusters, and Bigtable column families offer the same idea.</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Locality isn't document-only: Google Spanner can interleave child rows inside a parent table; Oracle has multi-table index cluster tables; Bigtable's column families (Cassandra, HBase) manage locality. Only in-place updates that don't change the encoded size are cheap for documents. More on locality in Chapter 3.</aside>
+</section>
+
+<!-- 13 Convergence -->
+<section class="slide c" data-p="rel" data-sec="Relational vs document">
+  <div class="inner">
+    <h2 class="rise">The two models are converging.</h2>
+    <div class="row3">
+      <div class="stat rise"><div class="n hlc" style="font-size:clamp(2rem,4.4vw,3.6rem)">JSON in SQL</div><div class="l">PostgreSQL (since 9.3), MySQL, DB2 can store, index, and query inside documents.</div></div>
+      <div class="stat rise"><div class="n hlc" style="font-size:clamp(2rem,4.4vw,3.6rem)">Joins in NoSQL</div><div class="l">RethinkDB joins; some MongoDB drivers resolve references client-side.</div></div>
+      <div class="stat rise"><div class="n hlc" style="font-size:clamp(2rem,4.4vw,3.6rem)">1970</div><div class="l">Codd’s original paper already allowed nested relations as values.</div></div>
+    </div>
+    <p class="sub rise">A hybrid of relational and document is a good route for databases to take.</p>
+  </div>
+  <aside class="notes">For us: PostgreSQL's jsonb gives document-style storage with indexing (GIN) inside the same transactional database. Codd called nested values "nonsimple domains" — JSON-like trees inside a relation, 30+ years before SQL got JSON support.</aside>
+</section>
+
+<!-- 14 Divider -->
+<section class="slide c divider" data-p="sca" data-sec="Query languages">
+  <div class="inner">
+    <div class="num rise">02</div>
+    <h2 class="rise">Query languages</h2>
+    <p class="sub rise">Say what you want, not how to get it.</p>
+  </div>
+</section>
+
+<!-- 15 Imperative vs declarative -->
+<section class="slide c" data-p="sca" data-sec="Query languages">
+  <div class="inner">
+    <h2 class="rise">Imperative says <i>how</i>. Declarative says <i>what</i>.</h2>
+    <div class="side">
+      <div class="rise"><span class="tag-label">Imperative</span>
+<pre><code>List&lt;Payment&gt; failed = new ArrayList&lt;&gt;();
+for (Payment p : payments) {
+  if (p.status() == FAILED) {
+    failed.add(p);
+  }
+}</code></pre></div>
+      <div class="rise"><span class="tag-label">Declarative</span>
+<pre><code>SELECT * FROM payments
+WHERE status = 'FAILED';</code></pre></div>
+    </div>
+    <div class="row3">
+      <div class="stat rise"><div class="n hlc" style="font-size:clamp(1.6rem,3vw,2.4rem)">Concise</div><div class="l">Easier to write and read.</div></div>
+      <div class="stat rise"><div class="n hlc" style="font-size:clamp(1.6rem,3vw,2.4rem)">Free to optimise</div><div class="l">No promised order, so the DB can reorganise storage and pick indexes.</div></div>
+      <div class="stat rise"><div class="n hlc" style="font-size:clamp(1.6rem,3vw,2.4rem)">Parallel</div><div class="l">A pattern, not an algorithm: easy to spread across cores and machines.</div></div>
+    </div>
+  </div>
+  <aside class="notes">SQL follows relational algebra closely. Key insight: the imperative loop implicitly relies on list order; the database can't know whether your code depends on it, so it can't move records around safely. SQL guarantees no order unless you ask, so the engine can compact, reorder, and add indexes without breaking queries. Being more limited is what gives the optimiser room. CPUs now get faster by adding cores — declarative queries parallelise; ordered instructions don't.</aside>
+</section>
+
+<!-- 16 CSS demo -->
+<section class="slide c" data-p="sca" data-sec="Query languages">
+  <div class="inner">
+    <h2 class="rise">Lab: CSS is declarative too</h2>
+    <div class="card rise">
+      <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:1rem">
+        <span class="dim">User clicks:</span>
+        <button class="btn sel" data-k="0" aria-pressed="true">Payments</button>
+        <button class="btn sel" data-k="1" aria-pressed="false">Settlements</button>
+        <button class="btn sel" data-k="2" aria-pressed="false">Refunds</button>
+      </div>
+      <div class="side">
+        <div><span class="tag-label">Declarative: <code>li.selected &gt; p { background: yellow }</code></span><div class="navdemo decl" id="navA"></div></div>
+        <div><span class="tag-label">Imperative: loop over DOM, set style <button class="btn" id="runImp" style="margin-left:.4rem;font-size:.8em">Run JS once</button></span><div class="navdemo" id="navB"></div></div>
+      </div>
+      <p class="dim" style="margin-top:.8rem" id="impMsg">Click “Run JS once”, then select a different page.</p>
+    </div>
+  </div>
+  <aside class="notes">The CSS rule declares a pattern; the browser keeps it true as the page changes and can optimise how it matches. The imperative version sets a style once and goes stale when the selection moves — and to use a faster API you'd have to rewrite it. Same lesson as SQL vs IMS/CODASYL's imperative COBOL record-at-a-time loops.</aside>
+</section>
+
+<!-- 17 MapReduce tabs -->
+<section class="slide c" data-p="sca" data-sec="Query languages">
+  <div class="inner">
+    <h2 class="rise">MapReduce: somewhere in between.</h2>
+    <p class="sub rise">Refunded amount per month, three ways:</p>
+    <div class="card rise">
+      <div class="tabs" id="mrTabs"></div>
+      <div class="tabpane" id="mrPane"></div>
+      <p class="dim" id="mrNote" style="margin-top:.7rem"></p>
+    </div>
+    <p class="sub rise">Moral: <span class="hl">NoSQL systems tend to reinvent SQL</span>, in disguise.</p>
+  </div>
+  <aside class="notes">MapReduce (Google, more in Chapter 10) was offered by MongoDB and CouchDB for read-only queries. map and reduce must be pure: no extra DB queries, no side effects — so the DB can run them anywhere, in any order, and retry on failure. Writing two coordinated functions is harder than one query and gives the optimiser less room, so MongoDB 2.2 added the declarative aggregation pipeline — roughly a subset of SQL in JSON syntax.</aside>
+</section>
+
+<!-- 18 Divider -->
+<section class="slide c divider" data-p="mai" data-sec="Graph models">
+  <div class="inner">
+    <div class="num rise">03</div>
+    <h2 class="rise">Graph-like models</h2>
+    <p class="sub rise">For when anything can relate to anything.</p>
+  </div>
+</section>
+
+<!-- 19 Graph basics -->
+<section class="slide c" data-p="mai" data-sec="Graph models">
+  <div class="inner">
+    <h2 class="rise">Vertices and edges.</h2>
+    <div class="row3">
+      <div class="stat rise"><div class="n hlc" style="font-size:clamp(1.8rem,3.4vw,2.8rem)">Social</div><div class="l">people → who knows whom</div></div>
+      <div class="stat rise"><div class="n hlc" style="font-size:clamp(1.8rem,3.4vw,2.8rem)">Web</div><div class="l">pages → links, ranked by PageRank</div></div>
+      <div class="stat rise"><div class="n hlc" style="font-size:clamp(1.8rem,3.4vw,2.8rem)">Roads</div><div class="l">junctions → roads, shortest path</div></div>
+    </div>
+    <p class="sub rise">Vertices don’t have to be one kind. Facebook keeps people, places, events, check-ins, and comments in <span class="hl">one graph</span>.</p>
+    <div class="side rise">
+      <div class="card"><span class="tag-label" style="color:var(--mai)">Property graph in two PostgreSQL tables</span>
+<pre style="margin:0"><code>CREATE TABLE vertices (id bigint PRIMARY KEY, props jsonb);
+CREATE TABLE edges (
+  id bigint PRIMARY KEY,
+  tail bigint REFERENCES vertices, -- from
+  head bigint REFERENCES vertices, -- to
+  label text, props jsonb);
+CREATE INDEX ON edges (tail); CREATE INDEX ON edges (head);</code></pre></div>
+      <div class="card"><span class="tag-label" style="color:var(--mai)">Why it’s flexible</span><ul style="margin:0;padding-left:1.2em;line-height:1.6"><li>Any vertex can link to any other</li><li>Traverse forward and backward (two indexes)</li><li>Labels keep many relationship kinds in one clean model</li><li>Easy to extend as features grow</li></ul></div>
+    </div>
+  </div>
+  <aside class="notes">Property graph model (Neo4j, Titan, InfiniteGraph): each vertex has an id, outgoing and incoming edges, and properties. Each edge has an id, tail vertex, head vertex, a label, and properties. Graphs handle things a rigid relational schema struggles with: different regional structures per country, varying granularity (a city for one person, a province for another).</aside>
+</section>
+
+<!-- 20 Graph lab -->
+<section class="slide c" data-p="mai" data-sec="Graph models">
+  <div class="inner">
+    <h2 class="rise">Lab: who was born in X and lives in Y?</h2>
+    <div class="card rise">
+      <div class="gctl">
+        <label>Born within <select id="gBorn"></select></label>
+        <label>Lives within <select id="gLive"></select></label>
+        <span>Matches: <span class="match" id="gOut"></span></span>
+      </div>
+      <div class="gsplit">
+        <svg id="gSvg" viewBox="0 0 760 420" role="img" aria-label="Graph of people and nested locations; matching paths are highlighted"></svg>
+<pre id="gCy" style="margin:0;font-size:.82em"></pre>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">The trick is WITHIN*0.. — follow WITHIN edges zero or more times, like * in a regex. A person's BORN_IN may point at a city, a province, or a country; the query doesn't care how deep. The optimiser decides whether to start from people or from the two location vertices and walk backwards.</aside>
+</section>
+
+<!-- 21 Same query four languages -->
+<section class="slide c" data-p="mai" data-sec="Graph models">
+  <div class="inner">
+    <h2 class="rise">Same question, four languages.</h2>
+    <div class="split" style="align-items:start">
+      <div class="card rise">
+        <div class="tabs" id="qlTabs"></div>
+        <div class="tabpane" id="qlPane" style="max-height:52vh;overflow:auto"></div>
+      </div>
+      <div style="display:grid;gap:1rem">
+        <div class="card rise" style="--pc:var(--mai)"><span class="tag-label">Lines of code</span><div class="lc" id="lc"></div></div>
+        <p class="sub rise">When one model needs <span class="hl">10× more code</span>, you picked the wrong model for that question.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">SQL can do it since SQL:1999 with recursive common table expressions (WITH RECURSIVE; works in PostgreSQL), because the number of joins isn't known in advance. It works but is clumsy. SPARQL (pronounced "sparkle") is a query language for RDF triple-stores; Cypher borrowed its pattern matching from it. Datalog, from 1980s research, builds queries from small reusable rules; used by Datomic and Cascalog.</aside>
+</section>
+
+<!-- 22 Triples -->
+<section class="slide c" data-p="mai" data-sec="Graph models">
+  <div class="inner">
+    <h2 class="rise">Triple-stores: everything is a sentence.</h2>
+    <div class="rise" style="display:flex;flex-wrap:wrap;gap:.6rem;font-size:clamp(1.3rem,2.6vw,2.2rem);font-weight:800">
+      <span class="chip" style="padding:.2em .8em">subject</span><span class="chip" style="padding:.2em .8em">predicate</span><span class="chip" style="padding:.2em .8em;background:var(--hl);color:#0F1B2D;border-color:var(--hl)">object</span>
+    </div>
+    <div class="side">
+      <div class="card rise"><span class="tag-label" style="color:var(--mai)">Object is a value → it’s a property</span><pre style="margin:0"><code>_:sara  :name  "Sara" .</code></pre></div>
+      <div class="card rise"><span class="tag-label" style="color:var(--mai)">Object is a vertex → it’s an edge</span><pre style="margin:0"><code>_:sara  :livesIn  _:berlin .</code></pre></div>
+    </div>
+    <p class="sub rise">Same idea as property graphs, different words. RDF adds URIs so your data can merge with everyone else’s.</p>
+  </div>
+  <aside class="notes">Triple-store (Datomic, AllegroGraph). Turtle/N3 is a readable format; RDF/XML is verbose. Predicates are URIs like urn:example:within so "within" in your data doesn't collide with someone else's "within". Even if the semantic web never happens, SPARQL is a useful internal tool.</aside>
+</section>
+
+<!-- 23 Graph vs CODASYL -->
+<section class="slide c" data-p="mai" data-sec="Graph models">
+  <div class="inner">
+    <h2 class="rise">Isn’t this just CODASYL again? No.</h2>
+    <div class="vs rise">
+      <div class="h">CODASYL (1970s)</div><div class="h">Graph database</div>
+      <div>Schema restricts which record nests in which</div><div>Any vertex can link to any vertex</div>
+      <div>Reach a record only via an access path</div><div>Jump to any vertex by ID or index</div>
+      <div>Children are ordered sets the DB must maintain</div><div>Unordered; sort at query time</div>
+      <div>Imperative queries, broken by schema changes</div><div>Declarative Cypher, SPARQL, Datalog</div>
+    </div>
+  </div>
+</section>
+
+<!-- 24 Summary -->
+<section class="slide" data-p="neu" data-sec="Summary">
+  <div class="inner">
+    <h2 class="rise">The whole chapter in one picture.</h2>
+    <div class="rise">
+      <svg viewBox="0 0 900 300" role="img" aria-label="Hierarchical model led to relational model, which led to two NoSQL branches: document and graph">
+        <g stroke="var(--muted)" stroke-width="3" fill="none"><path class="flow" d="M200 150 H330"/><path class="flow" d="M520 150 C 580 150, 600 70, 660 70"/><path class="flow" d="M520 150 C 580 150, 600 230, 660 230"/></g>
+        <rect x="0" y="110" width="200" height="80" rx="18" fill="var(--line)"/><text x="100" y="146" text-anchor="middle" font-size="20" font-weight="800" fill="var(--ink)">Hierarchical</text><text x="100" y="172" text-anchor="middle" font-size="14" fill="var(--muted)">one big tree</text>
+        <rect x="330" y="110" width="190" height="80" rx="18" fill="var(--ink)"/><text x="425" y="146" text-anchor="middle" font-size="20" font-weight="800" fill="var(--surface)">Relational</text><text x="425" y="172" text-anchor="middle" font-size="14" fill="var(--surface)" opacity=".75">solves many-to-many</text>
+        <rect x="660" y="30" width="240" height="80" rx="18" fill="var(--rel-bg)"/><text x="780" y="66" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">Document</text><text x="780" y="92" text-anchor="middle" font-size="14" fill="#fff" opacity=".85">self-contained, few links</text>
+        <rect x="660" y="190" width="240" height="80" rx="18" fill="var(--mai-bg)"/><text x="780" y="226" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">Graph</text><text x="780" y="252" text-anchor="middle" font-size="14" fill="#fff" opacity=".85">everything relates to everything</text>
+      </svg>
+    </div>
+    <p class="sub rise">Each model can emulate the others, awkwardly. That’s why we have different tools, not one size fits all.</p>
+  </div>
+  <aside class="notes">Document and graph DBs usually don't enforce a schema, but the app still assumes one: explicit (on write) vs implicit (on read). Not covered: genome sequence-similarity search, particle-physics scale analysis, full-text search (touched on in Chapter 3).</aside>
+</section>
+
+<!-- 25 Quiz -->
+<section class="slide" data-p="neu" data-sec="Review">
+  <div class="inner qwrap" id="quiz"></div>
+  <aside class="notes">Let the team answer out loud before anyone clicks.</aside>
+</section>
+
+<!-- 26 Discussion -->
+<section class="slide" data-p="neu" data-sec="Team discussion">
+  <div class="inner">
+    <h2 class="rise">Now, our system.</h2>
+    <div class="disc" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,28rem),1fr))">
+      <div class="rise" style="background:var(--rel-bg)"><h3>Impedance mismatch</h3><p>Where does JPA leak through? N+1 queries, lazy-loading surprises, awkward mappings?</p></div>
+      <div class="rise" style="background:var(--rel-bg)"><h3>IDs or copies?</h3><p>Which settlement fields reference merchants, currencies, banks by ID, and which copy values on purpose as a snapshot of that moment?</p></div>
+      <div class="rise" style="background:var(--sca-bg)"><h3>JSON we can’t query</h3><p>Do we keep JSON in text columns? Should any become jsonb with an index?</p></div>
+      <div class="rise" style="background:var(--mai-bg)"><h3>Hidden graphs</h3><p>Merchant groups, account hierarchies, fraud links: are we walking them in Java loops instead of WITH RECURSIVE?</p></div>
+    </div>
+  </div>
+  <aside class="notes">The snapshot question matters for financial data: a settlement often must record the fee or merchant name as it was at that time, so duplication there is intentional, not a normalisation failure. Also worth discussing: how we migrate big tables (add column fast, backfill lazily).</aside>
+</section>
+
+<!-- 27 Next -->
+<section class="slide" data-p="neu" data-sec="Next session">
+  <div class="title">
+    <div style="display:grid;gap:1.4rem">
+      <div class="kicker rise">Next session</div>
+      <h1 class="rise" style="font-size:clamp(2.4rem,6vw,5.2rem)">How databases store your data</h1>
+      <p class="sub rise">From a two-line bash database to LSM-trees and B-trees: what really happens below layer 3. Chapter 3, part 1.</p>
+    </div>
+    <div class="bands" aria-hidden="true"><div><span>Hash index</span></div><div><span>LSM-tree</span></div><div><span>B-tree</span></div></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="bar">
+  <div class="progress" id="progress"></div>
+  <div class="notes-panel" id="notesPanel" aria-live="polite"></div>
+  <span class="sec" id="secName"></span>
+  <span class="count" id="count"></span>
+  <div class="nav">
+    <button id="prev" aria-label="Previous slide">←</button>
+    <button id="next" aria-label="Next slide">→</button>
+  </div>
+</footer>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const slides = [...document.querySelectorAll('.slide')];
+  slides.forEach(s => s.querySelectorAll('.rise').forEach((el,i)=>el.style.setProperty('--i',i)));
+  const bgs = {rel:'var(--rel-bg)',sca:'var(--sca-bg)',mai:'var(--mai-bg)'};
+  let cur = 0;
+  function show(i){
+    cur = Math.max(0, Math.min(slides.length-1, i));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+    const s = slides[cur], colored = s.classList.contains('c');
+    document.documentElement.style.setProperty('--cur-bg', colored ? bgs[s.dataset.p] : 'var(--paper)');
+    document.documentElement.style.setProperty('--cur-fg', colored ? '#fff' : 'var(--ink)');
+    $('progress').style.width = ((cur+1)/slides.length*100)+'%';
+    $('secName').textContent = s.dataset.sec||'';
+    $('count').textContent = (cur+1)+' / '+slides.length;
+    const n = s.querySelector('aside.notes');
+    $('notesPanel').textContent = n ? n.textContent : 'No notes for this slide.';
+    s.scrollTop = 0;
+    try{ history.replaceState(null,'','#'+(cur+1)); }catch(e){}
+  }
+  const go = d => show(cur+d);
+  $('next').onclick = ()=>go(1); $('prev').onclick = ()=>go(-1);
+  document.addEventListener('keydown', e=>{
+    if (e.target.matches && e.target.matches('input,select')) return;
+    if (['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); go(1); }
+    else if (['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); go(-1); }
+    else if (e.key==='Home') show(0);
+    else if (e.key==='End') show(slides.length-1);
+    else if (e.key==='n'||e.key==='N') $('notesPanel').classList.toggle('open');
+    else if (e.key==='f'||e.key==='F'){ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); }
+  });
+  let tx=null, ty=null; const stage=$('stage');
+  stage.addEventListener('touchstart',e=>{ if(e.target.closest('input,button,select,pre')){tx=null;return;} tx=e.touches[0].clientX; ty=e.touches[0].clientY; },{passive:true});
+  stage.addEventListener('touchend',e=>{ if(tx===null) return; const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty; if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5) go(dx<0?1:-1); tx=null; },{passive:true});
+
+  /* relational vs document toggle */
+  function setModel(doc){
+    $('mRel').setAttribute('aria-pressed',String(!doc)); $('mDoc').setAttribute('aria-pressed',String(doc));
+    $('viewRel').hidden = doc; $('viewDoc').hidden = !doc;
+    $('rq').textContent = doc ? '1' : '4';
+    $('rp').textContent = doc ? '1' : '4';
+    $('rj').textContent = doc ? 'Hard' : 'Easy';
+    $('rj').style.color = doc ? 'var(--bad)' : '';
+  }
+  $('mRel').onclick=()=>setModel(false); $('mDoc').onclick=()=>setModel(true);
+
+  /* generic one-at-a-time quiz */
+  function quiz(el, Q, label){
+    let qi=0;
+    function render(){
+      const it=Q[qi];
+      el.innerHTML=`<div class="qn">${label} ${qi+1} of ${Q.length}</div><div class="qtext">${it.q}</div><div class="opts"></div><div class="fb"></div>
+        <div class="qnav"><button class="btn" data-d="-1" ${qi===0?'disabled':''}>Previous</button><button class="btn" data-d="1" ${qi===Q.length-1?'disabled':''}>Next</button></div>`;
+      const opts=el.querySelector('.opts'), fb=el.querySelector('.fb');
+      it.o.forEach((t,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t;
+        b.onclick=()=>{ [...opts.children].forEach(x=>x.classList.remove('right','wrong')); b.classList.add(oi===it.a?'right':'wrong'); if(oi!==it.a) opts.children[it.a].classList.add('right'); fb.textContent=(oi===it.a?'Yes. ':'Not quite. ')+it.e; };
+        opts.appendChild(b); });
+      el.querySelectorAll('.qnav button').forEach(b=>b.onclick=()=>{qi+=+b.dataset.d;render();});
+    }
+    render();
+  }
+  const M=['Document','Relational','Graph'];
+  quiz($('fit'),[
+    {q:'An analytics log: each event is written once and read in bulk by time.',o:M,a:0,e:'Self-contained records with no relationships between them. Joins are never needed.'},
+    {q:'A product page that always loads a product with its variants and images together.',o:M,a:0,e:'A one-to-many tree loaded as a whole: locality pays off.'},
+    {q:'Settlements that reference merchants, currencies, bank accounts, and fee plans.',o:M,a:1,e:'Lots of many-to-one references and reporting joins. Classic relational territory.'},
+    {q:'Detecting fraud rings: accounts sharing devices, cards, and addresses, several hops apart.',o:M,a:2,e:'Variable-length paths across many entity types. A graph query says this in a few lines.'},
+    {q:'Webhook payloads from 30 partners, each with its own changing format.',o:M,a:0,e:'Heterogeneous structure controlled by external systems: schema-on-read helps. (In PostgreSQL, a jsonb column works too.)'}
+  ],'Scenario');
+
+  /* CSS analogy */
+  const NAV=[['Payments',['Card','Wallet']],['Settlements',['Daily','Manual']],['Refunds',['Full','Partial']]];
+  const navHTML=sel=>'<ul>'+NAV.map((n,k)=>`<li${k===sel?' class="selected"':''}><p>${n[0]}</p><ul>${n[1].map(x=>`<li>${x}</li>`).join('')}</ul></li>`).join('')+'</ul>';
+  let selK=0;
+  $('navA').innerHTML=navHTML(0); $('navB').innerHTML=navHTML(0);
+  document.querySelectorAll('.btn.sel').forEach(b=>b.onclick=()=>{
+    selK=+b.dataset.k;
+    document.querySelectorAll('.btn.sel').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    ['navA','navB'].forEach(id=>[...$(id).querySelectorAll(':scope>ul>li')].forEach((li,k)=>li.classList.toggle('selected',k===selK)));
+    const stale=[...$('navB').querySelectorAll(':scope>ul>li')].some((li,k)=>k!==selK && li.firstChild.style.background);
+    $('impMsg').textContent = stale ? 'The imperative highlight is now stale: it stuck to the old item. The CSS rule followed the selection automatically.' : 'Click “Run JS once”, then select a different page.';
+  });
+  $('runImp').onclick=()=>{
+    $('navB').querySelectorAll(':scope>ul>li').forEach(li=>{ if(li.classList.contains('selected')){ const p=li.firstChild; p.style.background='#FFD66B'; p.style.color='#0F1B2D'; } });
+    $('impMsg').textContent='Highlighted. Now pick a different page above.';
+  };
+
+  /* tabs helper */
+  function tabs(tabEl, paneEl, items, onChange){
+    tabEl.innerHTML='';
+    items.forEach((it,k)=>{ const b=document.createElement('button'); b.className='btn'; b.textContent=it.name; b.setAttribute('aria-pressed',String(k===0));
+      b.onclick=()=>{ [...tabEl.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b))); paneEl.innerHTML='<pre><code>'+esc(it.code)+'</code></pre>'; onChange&&onChange(it); };
+      tabEl.appendChild(b); });
+    paneEl.innerHTML='<pre><code>'+esc(items[0].code)+'</code></pre>'; onChange&&onChange(items[0]);
+  }
+  tabs($('mrTabs'),$('mrPane'),[
+    {name:'SQL',code:`SELECT date_trunc('month', created_at) AS month,
+       sum(amount)                    AS refunded
+FROM   payments
+WHERE  status = 'REFUNDED'
+GROUP  BY month;`,note:'Declarative: one statement, the optimizer decides the rest.'},
+    {name:'MapReduce',code:`db.payments.mapReduce(
+  function map() {                       // called once per document
+    const d = this.createdAt;
+    emit(d.getFullYear() + "-" + (d.getMonth() + 1), this.amount);
+  },
+  function reduce(month, amounts) {      // called once per key
+    return Array.sum(amounts);
+  },
+  { query: { status: "REFUNDED" }, out: "monthlyRefunds" }
+);`,note:'Two pure functions the framework calls for you. map emits ("2026-9", 40), ("2026-9", 25); reduce turns them into ("2026-9", 65).'},
+    {name:'Aggregation pipeline',code:`db.payments.aggregate([
+  { $match: { status: "REFUNDED" } },
+  { $group: {
+      _id: { y: { $year: "$createdAt" }, m: { $month: "$createdAt" } },
+      refunded: { $sum: "$amount" }
+  } }
+]);`,note:'MongoDB’s later declarative answer: a subset of SQL, written as JSON.'}
+  ], it=>$('mrNote').textContent=it.note);
+
+  /* graph lab */
+  const V={
+    asia:{n:'Asia',x:150,y:40,t:'loc'}, iran:{n:'Iran',x:150,y:130,t:'loc'}, fars:{n:'Fars',x:70,y:220,t:'loc'},
+    shiraz:{n:'Shiraz',x:70,y:310,t:'loc'}, tehran:{n:'Tehran',x:230,y:220,t:'loc'},
+    europe:{n:'Europe',x:610,y:40,t:'loc'}, germany:{n:'Germany',x:530,y:130,t:'loc'}, nl:{n:'Netherlands',x:690,y:130,t:'loc'},
+    berlin:{n:'Berlin',x:530,y:220,t:'loc'}, ams:{n:'Amsterdam',x:690,y:220,t:'loc'},
+    sara:{n:'Sara',x:360,y:360,t:'p'}, omid:{n:'Omid',x:220,y:385,t:'p'}, lena:{n:'Lena',x:610,y:370,t:'p'}
+  };
+  const within={iran:'asia',fars:'iran',shiraz:'fars',tehran:'iran',germany:'europe',nl:'europe',berlin:'germany',ams:'nl'};
+  const people={sara:{born:'shiraz',lives:'berlin'},omid:{born:'tehran',lives:'tehran'},lena:{born:'berlin',lives:'ams'}};
+  const chain=(loc,target)=>{ const path=[loc]; let c=loc; while(c!==target){ c=within[c]; if(!c) return null; path.push(c);} return path; };
+  const locs=['asia','iran','fars','tehran','europe','germany','nl','berlin'];
+  ['gBorn','gLive'].forEach((id,k)=>{ $(id).innerHTML=locs.map(l=>`<option value="${l}">${V[l].n}</option>`).join(''); $(id).value=k?'europe':'asia'; $(id).onchange=graph; });
+  function graph(){
+    const B=$('gBorn').value, L=$('gLive').value, hot=new Set(), hotNodes=new Set(), matched=[];
+    for(const [p,r] of Object.entries(people)){
+      const c1=chain(r.born,B), c2=chain(r.lives,L);
+      if(c1&&c2){ matched.push(V[p].n); hotNodes.add(p); hot.add(p+'>'+r.born); hot.add(p+'>'+r.lives);
+        [c1,c2].forEach(c=>{ c.forEach(x=>hotNodes.add(x)); for(let i=0;i<c.length-1;i++) hot.add(c[i]+'>'+c[i+1]); }); }
+    }
+    const E=[]; for(const [a,b] of Object.entries(within)) E.push([a,b,'within']);
+    for(const [p,r] of Object.entries(people)){ E.push([p,r.born,'born']); E.push([p,r.lives,'lives']); }
+    let g='';
+    E.forEach(([a,b,t])=>{ const on=hot.has(a+'>'+b); const col=on?'var(--mai)':'var(--line)';
+      g+=`<line x1="${V[a].x}" y1="${V[a].y}" x2="${V[b].x}" y2="${V[b].y}" stroke="${col}" stroke-width="${on?4:2}" ${t==='born'?'stroke-dasharray="7 6"':''}/>`; });
+    for(const [k,v] of Object.entries(V)){
+      const on=hotNodes.has(k), isP=v.t==='p', w=Math.max(70,v.n.length*10+24);
+      const fill= isP ? (on?'var(--mai)':'var(--ink)') : (on?'var(--hl)':'var(--surface)');
+      const tc = isP ? '#fff' : '#0F1B2D';
+      g+= isP ? `<circle cx="${v.x}" cy="${v.y}" r="30" fill="${fill}"/>` : `<rect x="${v.x-w/2}" y="${v.y-18}" width="${w}" height="36" rx="18" fill="${fill}" stroke="${on?'var(--hl)':'var(--line)'}" stroke-width="2"/>`;
+      g+=`<text x="${v.x}" y="${v.y+5}" text-anchor="middle" font-size="15" font-weight="800" fill="${isP||on?tc:'var(--ink)'}">${v.n}</text>`;
+    }
+    g+=`<g font-size="13" fill="var(--muted)"><line x1="300" y1="30" x2="330" y2="30" stroke="var(--muted)" stroke-width="2" stroke-dasharray="7 6"/><text x="336" y="34">born in</text><line x1="300" y1="54" x2="330" y2="54" stroke="var(--muted)" stroke-width="2"/><text x="336" y="58">lives in / within</text></g>`;
+    $('gSvg').innerHTML=g;
+    $('gOut').textContent = matched.length ? matched.join(', ') : 'nobody';
+    $('gCy').innerHTML = esc(`MATCH
+  (p:Person) -[:BORN_IN]->  () -[:WITHIN*0..]->
+             (:Location {name: '${V[B].n}'}),
+  (p)        -[:LIVES_IN]-> () -[:WITHIN*0..]->
+             (:Location {name: '${V[L].n}'})
+RETURN p.name`);
+  }
+  graph();
+
+  /* same query, four languages */
+  const QL=[
+    {name:'Cypher',code:`MATCH (p) -[:BORN_IN]->  () -[:WITHIN*0..]-> (:Location {name:'Asia'}),
+      (p) -[:LIVES_IN]-> () -[:WITHIN*0..]-> (:Location {name:'Europe'})
+RETURN p.name`},
+    {name:'SPARQL',code:`PREFIX : <urn:example:>
+SELECT ?name WHERE {
+  ?p :name ?name .
+  ?p :bornIn  / :within* / :name "Asia" .
+  ?p :livesIn / :within* / :name "Europe" .
+}`},
+    {name:'Datalog',code:`within_rec(Loc, Name) :- name(Loc, Name).
+within_rec(Loc, Name) :- within(Loc, Via), within_rec(Via, Name).
+moved(Who, From, To)  :- name(P, Who),
+                         born_in(P, B),  within_rec(B, From),
+                         lives_in(P, L), within_rec(L, To).
+?- moved(Who, 'Asia', 'Europe').`},
+    {name:'SQL',code:`WITH RECURSIVE
+  in_asia(id) AS (
+    SELECT id FROM vertices WHERE props->>'name' = 'Asia'
+    UNION
+    SELECT e.tail FROM edges e
+      JOIN in_asia a ON e.head = a.id
+    WHERE e.label = 'within'
+  ),
+  in_europe(id) AS (
+    SELECT id FROM vertices WHERE props->>'name' = 'Europe'
+    UNION
+    SELECT e.tail FROM edges e
+      JOIN in_europe eu ON e.head = eu.id
+    WHERE e.label = 'within'
+  ),
+  born_in_asia(id) AS (
+    SELECT e.tail FROM edges e
+      JOIN in_asia a ON e.head = a.id
+    WHERE e.label = 'born_in'
+  ),
+  lives_in_europe(id) AS (
+    SELECT e.tail FROM edges e
+      JOIN in_europe eu ON e.head = eu.id
+    WHERE e.label = 'lives_in'
+  )
+SELECT v.props->>'name'
+FROM vertices v
+JOIN born_in_asia    b ON v.id = b.id
+JOIN lives_in_europe l ON v.id = l.id;`}
+  ];
+  const maxL=Math.max(...QL.map(q=>q.code.split('\n').length));
+  $('lc').innerHTML=QL.map(q=>{ const n=q.code.split('\n').length; return `<div><span>${q.name}</span><i style="width:${n/maxL*100}%"></i><b>${n}</b></div>`; }).join('');
+  tabs($('qlTabs'),$('qlPane'),QL);
+
+  /* review quiz */
+  quiz($('quiz'),[
+    {q:'Which kind of relationship makes the document model awkward?',o:['One-to-many','Many-to-many','One-to-one'],a:1,e:'Trees of one-to-many fit documents well; many-to-many needs references and joins.'},
+    {q:'A more accurate name for “schemaless” is…',o:['Schema-on-write','Schema-on-read','Schema-free'],a:1,e:'The structure is still assumed by the code that reads the data; it just isn’t enforced on write.'},
+    {q:'Why can a database optimise SQL more freely than an imperative loop?',o:['SQL runs on faster hardware','SQL states the pattern, not the order or algorithm','Loops can’t use indexes'],a:1,e:'With no promised ordering or steps, the engine can reorganise storage, pick indexes, and parallelise.'},
+    {q:'When does a document database’s locality actually help?',o:['When you update one small field often','When you read large parts of the document at once','When documents keep growing'],a:1,e:'The whole document is loaded and usually rewritten, so locality pays only when you need most of it.'},
+    {q:'What does a graph database have that CODASYL lacked?',o:['Pointers between records','Direct access to any vertex by ID or index','Ordered child sets'],a:1,e:'CODASYL only let you reach a record by walking an access path.'}
+  ],'Question');
+
+  const start=parseInt(location.hash.slice(1),10); show(isNaN(start)?0:start-1);
+})();
+
+</script>
+</body>
+</html>
