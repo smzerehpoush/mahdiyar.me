@@ -4,33 +4,34 @@
 <meta charset="utf-8">
 <title>Thumbnail</title>
 <link rel="stylesheet" href="tokens.css">
-<!-- Long-form thumbnail, 1280×720 (rendered by tools/thumbnail.mjs). Edit the TODO texts; keep ≤ 3 big words + 1 line.
-     Worked example: the skill's examples/session-01-long/thumbnail.html. -->
 <style>
   body { width: 1280px; height: 720px; background: var(--bg); }
   .t { position: absolute; inset: 0; overflow: hidden; background:
-    radial-gradient(900px 600px at 18% 30%, rgba(79,209,188,.10), transparent 60%),
-    radial-gradient(700px 500px at 70% 90%, rgba(179,162,255,.10), transparent 60%), var(--bg); }
+    radial-gradient(900px 600px at 18% 30%, rgba(255,162,77,.12), transparent 60%),
+    radial-gradient(700px 500px at 80% 85%, rgba(79,209,188,.10), transparent 60%), var(--bg); }
   .kicker { position: absolute; left: 64px; top: 58px; font-size: 30px; font-weight: 750; letter-spacing: .02em; color: var(--hl); }
-  h1 { position: absolute; left: 60px; top: 112px; margin: 0; font-size: 132px; line-height: .93; font-weight: 800; letter-spacing: -.045em; }
+  h1 { position: absolute; left: 60px; top: 116px; margin: 0; font-size: 150px; line-height: .92; font-weight: 800; letter-spacing: -.045em; }
   h1 span { display: block; }
-  .sub { position: absolute; left: 66px; top: 560px; font-size: 38px; font-weight: 650; color: var(--ink); letter-spacing: -.01em; }
+  .sub { position: absolute; left: 66px; top: 586px; font-size: 38px; font-weight: 650; color: var(--ink); letter-spacing: -.01em; }
   .sub b { color: var(--hl); }
-  .bands { position: absolute; right: 64px; bottom: 0; display: flex; gap: 18px; align-items: flex-end; height: 640px; }
-  .bands div { width: 92px; border-radius: 22px 22px 0 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 22px; }
-  .bands div span { writing-mode: vertical-rl; transform: rotate(180deg); color: #fff; font-weight: 800; font-size: 30px; letter-spacing: .01em; }
+  .grid { position: absolute; right: 70px; top: 120px; display: grid; grid-template-columns: repeat(6, 62px); gap: 10px; }
+  .grid div { height: 38px; border-radius: 8px; background: rgba(255,255,255,.08); }
+  .grid div.on { background: var(--orange); box-shadow: 0 0 22px rgba(255,162,77,.45); }
+  .lbl { position: absolute; right: 70px; top: 616px; width: 422px; text-align: center; font-size: 28px; font-weight: 700; color: var(--orange); }
 </style>
 </head>
 <body>
 <div class="t">
-  <div class="kicker">DDIA · CHAPTER N, EXPLAINED</div>
-  <h1><span style="color:var(--teal)">TODO.</span><span style="color:var(--orange)">TODO.</span><span style="color:var(--purple)">TODO.</span></h1>
-  <div class="sub">TODO the hook question, one <b>highlighted</b> word</div>
-  <div class="bands">
-    <div style="background:var(--teal-bg);height:72%"><span>TODO</span></div>
-    <div style="background:var(--orange-bg);height:100%"><span>TODO</span></div>
-    <div style="background:var(--purple-bg);height:86%"><span>TODO</span></div>
-  </div>
+  <div class="kicker">DDIA · CHAPTER 3, PART 2</div>
+  <h1><span style="color:var(--ink)">Rows</span><span style="color:var(--dim, #8a97ad);font-size:.55em;letter-spacing:-.02em">vs.</span><span style="color:var(--orange)">Columns</span></h1>
+  <div class="sub">Why one report can slow down <b>checkout</b></div>
+  <div class="grid" id="g"></div>
 </div>
+<script>
+  const g = document.getElementById('g');
+  for (let r = 0; r < 10; r++) for (let c = 0; c < 6; c++) {
+    const d = document.createElement('div'); if (c === 3 || c === 5) d.className = 'on'; g.appendChild(d);
+  }
+</script>
 </body>
 </html>
