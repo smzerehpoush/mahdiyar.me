@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Thumbnail</title>
+<link rel="stylesheet" href="tokens.css">
+<!-- Shorts thumbnail / cover, 1080×1920 (rendered by tools/thumbnail.mjs). Edit the TODO texts.
+     Feeds and search often crop a Short's cover towards the centre, so the headline and the visual stay inside
+     y ≈ 300–1500 and x ≈ 80–1000. Keep it to one big claim (≤ 4 words per line, ≤ 3 lines) plus one contrast visual.
+     Worked example: the skill's examples/session-01-short/thumbnail.html. -->
+<style>
+  body { width: 1080px; height: 1920px; background: var(--bg); }
+  .t { position: absolute; inset: 0; overflow: hidden; background:
+    radial-gradient(900px 900px at 20% 22%, rgba(255,159,90,.13), transparent 60%),
+    radial-gradient(800px 800px at 85% 85%, rgba(79,209,188,.10), transparent 60%), var(--bg); }
+  .kicker { position: absolute; left: 84px; top: 300px; font-size: 40px; font-weight: 750; letter-spacing: .03em; color: var(--hl); }
+  h1 { position: absolute; left: 78px; top: 370px; width: 940px; margin: 0; font-size: 150px; line-height: .94; font-weight: 800; letter-spacing: -.045em; }
+  h1 span { display: block; }
+  .vis { position: absolute; left: 84px; right: 84px; top: 860px; height: 580px; display: flex; gap: 40px; align-items: flex-end; }
+  .vis .col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 18px; height: 100%; }
+  .vis .bar { border-radius: 26px 26px 8px 8px; flex: none; } /* heights in px, to scale (max ≈ 410) */
+  .vis .num { font-size: 76px; font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .vis .lbl { font-size: 38px; font-weight: 650; color: var(--muted); }
+  .sub { position: absolute; left: 84px; top: 1480px; width: 912px; font-size: 52px; font-weight: 700; line-height: 1.15; letter-spacing: -.01em; }
+  .sub b { color: var(--hl); }
+</style>
+</head>
+<body>
+<div class="t">
+  <div class="kicker">DDIA · CHAPTER N</div>
+  <h1><span>TODO big</span><span style="color:var(--orange)">claim in</span><span>three lines</span></h1>
+  <div class="vis">
+    <div class="col"><div class="num">TODO</div><div class="lbl">TODO small</div><div class="bar" style="height:12px;background:var(--teal)"></div></div>
+    <div class="col"><div class="num" style="color:var(--orange)">TODO</div><div class="lbl">TODO big</div><div class="bar" style="height:410px;background:var(--orange)"></div></div>
+  </div>
+  <div class="sub">TODO the question the Short answers, one <b>highlighted</b> word</div>
+</div>
+</body>
+</html>

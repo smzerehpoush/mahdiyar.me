@@ -1,0 +1,17 @@
+{
+  "name": "video",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "kokoro-js": "^1.2.1",
+    "onnxruntime-common": "^1.30.0",
+    "puppeteer-core": "^25.15.0"
+  }
+}

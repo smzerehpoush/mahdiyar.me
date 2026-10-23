@@ -1,0 +1,474 @@
+{
+ "session": 1,
+ "chapter": 1,
+ "format": "long",
+ "title": "Designing Data-Intensive Applications, Chapter 1: Reliable, Scalable, Maintainable",
+ "shortTitle": "Reliable, Scalable, Maintainable — DDIA Chapter 1",
+ "deck": {
+  "title": "DDIA Session 1: Reliable, Scalable, Maintainable",
+  "url": "https://mahdiyar.me/blog/ddia-session-1/",
+  "file": "public/blog/ddia-session-1/index.html"
+ },
+ "book": "Martin Kleppmann, Designing Data-Intensive Applications (O'Reilly, 1st edition, 2017)",
+ "voice": "af_heart",
+ "speed": 1,
+ "words": {
+  "min": 1700,
+  "max": 2000
+ },
+ "sections": {
+  "intro": {
+   "label": "",
+   "accent": "hl"
+  },
+  "reliability": {
+   "label": "01 · Reliability",
+   "accent": "teal"
+  },
+  "scalability": {
+   "label": "02 · Scalability",
+   "accent": "orange"
+  },
+  "performance": {
+   "label": "02 · Scalability — performance",
+   "accent": "orange"
+  },
+  "maintainability": {
+   "label": "03 · Maintainability",
+   "accent": "purple"
+  },
+  "ending": {
+   "label": "",
+   "accent": "hl"
+  }
+ },
+ "scenes": [
+  {
+   "id": "hook",
+   "section": "intro",
+   "beats": [
+    "running",
+    "online",
+    "stale",
+    "slow",
+    "days",
+    "question"
+   ],
+   "words": 40
+  },
+  {
+   "id": "title",
+   "section": "intro",
+   "beats": [
+    "title",
+    "q1",
+    "q2",
+    "q3"
+   ],
+   "words": 60
+  },
+  {
+   "id": "blocks",
+   "section": "intro",
+   "beats": [
+    "cpu",
+    "three",
+    "db",
+    "cache",
+    "search",
+    "stream",
+    "batch"
+   ],
+   "words": 50
+  },
+  {
+   "id": "composite",
+   "section": "intro",
+   "beats": [
+    "app",
+    "db",
+    "cache",
+    "index",
+    "workers",
+    "write",
+    "stale",
+    "yourjob"
+   ],
+   "words": 90
+  },
+  {
+   "id": "rel-intro",
+   "section": "reliability",
+   "beats": [
+    "divider"
+   ],
+   "words": 28
+  },
+  {
+   "id": "fault-failure",
+   "section": "reliability",
+   "beats": [
+    "defs",
+    "flowA",
+    "breakA",
+    "rerouteA",
+    "flowB",
+    "breakB",
+    "failB",
+    "goal"
+   ],
+   "words": 90
+  },
+  {
+   "id": "hardware",
+   "section": "reliability",
+   "beats": [
+    "grid",
+    "formula",
+    "perday",
+    "ticker",
+    "redundancy",
+    "software",
+    "rolling"
+   ],
+   "words": 83
+  },
+  {
+   "id": "software",
+   "section": "reliability",
+   "beats": [
+    "nodes",
+    "trigger",
+    "allfail",
+    "correlated",
+    "examples"
+   ],
+   "words": 63
+  },
+  {
+   "id": "humans",
+   "section": "reliability",
+   "beats": [
+    "config",
+    "ripple",
+    "study"
+   ],
+   "words": 50
+  },
+  {
+   "id": "chaos",
+   "section": "reliability",
+   "beats": [
+    "errhandling",
+    "monkey",
+    "kill",
+    "heal",
+    "practices"
+   ],
+   "words": 80
+  },
+  {
+   "id": "sca-intro",
+   "section": "scalability",
+   "beats": [
+    "divider",
+    "strike",
+    "question",
+    "params"
+   ],
+   "words": 63
+  },
+  {
+   "id": "twitter",
+   "section": "scalability",
+   "beats": [
+    "badge",
+    "ops",
+    "onread",
+    "onread-cost",
+    "onwrite",
+    "onwrite-cheap",
+    "ratio"
+   ],
+   "words": 108
+  },
+  {
+   "id": "celebrity",
+   "section": "scalability",
+   "beats": [
+    "multiply",
+    "result",
+    "celebrity",
+    "oneTweet",
+    "bars",
+    "distribution"
+   ],
+   "words": 99
+  },
+  {
+   "id": "hybrid",
+   "section": "scalability",
+   "beats": [
+    "precomputed",
+    "celebs",
+    "merge",
+    "lesson"
+   ],
+   "words": 63
+  },
+  {
+   "id": "response-time",
+   "section": "performance",
+   "beats": [
+    "segments",
+    "response",
+    "latency",
+    "repeat",
+    "causes"
+   ],
+   "words": 63
+  },
+  {
+   "id": "percentiles",
+   "section": "performance",
+   "beats": [
+    "hist",
+    "p50",
+    "p95",
+    "p99",
+    "pauses",
+    "compare"
+   ],
+   "words": 105
+  },
+  {
+   "id": "tails",
+   "section": "performance",
+   "beats": [
+    "amazon",
+    "valuable",
+    "sla"
+   ],
+   "words": 58
+  },
+  {
+   "id": "amplification",
+   "section": "performance",
+   "beats": [
+    "fanout",
+    "onepct",
+    "waitall",
+    "formula",
+    "grid",
+    "assumptions"
+   ],
+   "words": 83
+  },
+  {
+   "id": "client-side",
+   "section": "performance",
+   "beats": [
+    "queue",
+    "blocked",
+    "clientside",
+    "loadtest"
+   ],
+   "words": 50
+  },
+  {
+   "id": "aggregate",
+   "section": "performance",
+   "beats": [
+    "servers",
+    "wrong",
+    "right",
+    "tools"
+   ],
+   "words": 55
+  },
+  {
+   "id": "scaling",
+   "section": "scalability",
+   "beats": [
+    "up",
+    "out",
+    "stateless",
+    "stateful",
+    "workloads",
+    "nosauce"
+   ],
+   "words": 108
+  },
+  {
+   "id": "mai-intro",
+   "section": "maintainability",
+   "beats": [
+    "divider",
+    "lifetime"
+   ],
+   "words": 30
+  },
+  {
+   "id": "operability",
+   "section": "maintainability",
+   "beats": [
+    "card",
+    "drain",
+    "chips"
+   ],
+   "words": 50
+  },
+  {
+   "id": "simplicity",
+   "section": "maintainability",
+   "beats": [
+    "card",
+    "mud",
+    "accidental",
+    "sql",
+    "hidden",
+    "example"
+   ],
+   "words": 75
+  },
+  {
+   "id": "evolvability",
+   "section": "maintainability",
+   "beats": [
+    "card",
+    "changes",
+    "callback"
+   ],
+   "words": 45
+  },
+  {
+   "id": "callback",
+   "section": "ending",
+   "beats": [
+    "symptoms",
+    "map1",
+    "map2",
+    "map3"
+   ],
+   "words": 63
+  },
+  {
+   "id": "questions",
+   "section": "ending",
+   "beats": [
+    "q1",
+    "q2",
+    "q3"
+   ],
+   "words": 50
+  },
+  {
+   "id": "next",
+   "section": "ending",
+   "beats": [
+    "next",
+    "credits"
+   ],
+   "words": 40
+  }
+ ],
+ "spokenRules": [
+  {
+   "pattern": "\\bMTTF\\b",
+   "message": "spoken acronym MTTF — say \"mean time to failure\""
+  }
+ ],
+ "description": {
+  "summary": "What makes a data-intensive application reliable, scalable, and maintainable? This explainer walks through Chapter 1 of Designing Data-Intensive Applications with animated diagrams: faults vs. failures, load parameters, the classic Twitter fan-out example (circa 2012), percentiles and tail latency, scaling up vs. out, and what keeps a system easy to operate and change.",
+  "chapters": [
+   [
+    "hook",
+    "Is your system actually working well?"
+   ],
+   [
+    "blocks",
+    "What makes an application data-intensive"
+   ],
+   [
+    "rel-intro",
+    "Reliability: faults vs. failures"
+   ],
+   [
+    "hardware",
+    "Hardware, software, and human faults"
+   ],
+   [
+    "chaos",
+    "Breaking things on purpose"
+   ],
+   [
+    "sca-intro",
+    "Scalability and load parameters"
+   ],
+   [
+    "twitter",
+    "Case study: Twitter timelines (circa 2012)"
+   ],
+   [
+    "response-time",
+    "Performance: response time is a distribution"
+   ],
+   [
+    "percentiles",
+    "Percentiles: p50, p95, p99"
+   ],
+   [
+    "amplification",
+    "Tail latency amplification"
+   ],
+   [
+    "scaling",
+    "Scaling up vs. scaling out"
+   ],
+   [
+    "mai-intro",
+    "Maintainability: operability, simplicity, evolvability"
+   ],
+   [
+    "callback",
+    "Recap and questions for your system"
+   ],
+   [
+    "next",
+    "Next: data models and query languages"
+   ]
+  ],
+  "blocks": [
+   "Questions to ask about your own system\n• Which faults can we tolerate without users noticing?\n• Which load parameter would force us to rethink our architecture?\n• What makes our system unnecessarily difficult to operate or change?"
+  ],
+  "figureNotes": [
+   "Twitter numbers are historical figures from around 2012, as cited in the book — not current measurements.",
+   "The disk-failure, percentile, and aggregation examples are simplified illustrations with simulated data."
+  ],
+  "hashtags": "#SystemDesign #DistributedSystems #DDIA #SoftwareEngineering"
+ },
+ "youtube": {
+  "videoId": "uCm4lbSYg2Y",
+  "visibility": "public",
+  "category": "Education",
+  "language": "English",
+  "madeForKids": false,
+  "alteredContent": false,
+  "playlist": "Designing Data-Intensive Applications, Chapter by Chapter",
+  "tags": [
+   "designing data-intensive applications",
+   "DDIA",
+   "Martin Kleppmann",
+   "system design",
+   "distributed systems",
+   "reliability",
+   "scalability",
+   "maintainability",
+   "tail latency",
+   "percentiles",
+   "fan-out",
+   "software architecture"
+  ]
+ },
+ "deliverables": "~/Movies/DDIA-Session-1-Video"
+}

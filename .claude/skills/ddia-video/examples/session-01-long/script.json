@@ -1,0 +1,1006 @@
+{
+ "voice": "af_heart",
+ "speed": 1,
+ "scenes": [
+  {
+   "id": "hook",
+   "section": "intro",
+   "lines": [
+    {
+     "cue": "running",
+     "text": "Your database is running.",
+     "pause": 0.5
+    },
+    {
+     "cue": "online",
+     "text": "Your servers are online.",
+     "pause": 0.8
+    },
+    {
+     "cue": "stale",
+     "text": "But users are seeing stale data.",
+     "pause": 0.5
+    },
+    {
+     "cue": "slow",
+     "text": "Requests are slowing down.",
+     "pause": 0.5
+    },
+    {
+     "cue": "days",
+     "text": "And one small change takes days to ship.",
+     "pause": 0.9
+    },
+    {
+     "cue": "question",
+     "text": "Is your system actually working well?",
+     "pause": 1.4
+    }
+   ],
+   "tail": 0.8
+  },
+  {
+   "id": "title",
+   "section": "intro",
+   "lines": [
+    {
+     "cue": "title",
+     "text": "To answer that, we'll follow Chapter 1 of Martin Kleppmann's Designing Data-Intensive Applications, first edition.",
+     "say": "To answer that, we'll follow Chapter one of Martin Klepman's Designing Data Intensive Applications, first edition.",
+     "pause": 0.3
+    },
+    {
+     "text": "The chapter rests on three words, each really a question.",
+     "pause": 0.4
+    },
+    {
+     "cue": "q1",
+     "text": "First: does your system keep working when components go wrong? That's reliability.",
+     "pause": 0.3
+    },
+    {
+     "cue": "q2",
+     "text": "Second: can it handle growth? That's scalability.",
+     "pause": 0.3
+    },
+    {
+     "cue": "q3",
+     "text": "Third: can people understand, operate, and change it over time? That's maintainability.",
+     "pause": 0.5
+    },
+    {
+     "text": "Each symptom points to one of them.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "blocks",
+   "section": "intro",
+   "lines": [
+    {
+     "cue": "cpu",
+     "text": "What makes an application data-intensive? Data, not CPU power, is its main challenge.",
+     "say": "What makes an application data intensive? Data, not C P U power, is its main challenge.",
+     "pause": 0.25
+    },
+    {
+     "cue": "three",
+     "text": "Its volume, its complexity, or how fast it changes.",
+     "pause": 0.4
+    },
+    {
+     "cue": "db",
+     "text": "The building blocks are familiar. Databases store data for later.",
+     "pause": 0.2
+    },
+    {
+     "cue": "cache",
+     "text": "Caches remember expensive results.",
+     "pause": 0.2
+    },
+    {
+     "cue": "search",
+     "text": "Search indexes find records by keyword.",
+     "pause": 0.2
+    },
+    {
+     "cue": "stream",
+     "text": "Streams pass messages asynchronously.",
+     "pause": 0.2
+    },
+    {
+     "cue": "batch",
+     "text": "Batch jobs crunch large piles of data.",
+     "pause": 0.4
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "composite",
+   "section": "intro",
+   "lines": [
+    {
+     "cue": "app",
+     "text": "Real applications combine them: a client calls your code.",
+     "pause": 0.2
+    },
+    {
+     "cue": "db",
+     "text": "It writes to a primary database: the official copy.",
+     "pause": 0.2
+    },
+    {
+     "cue": "cache",
+     "text": "A cache keeps common reads fast.",
+     "pause": 0.2
+    },
+    {
+     "cue": "index",
+     "text": "A search index makes the same data searchable.",
+     "pause": 0.2
+    },
+    {
+     "cue": "workers",
+     "text": "Background workers take changes from a queue and update both.",
+     "pause": 0.7
+    },
+    {
+     "cue": "write",
+     "text": "Now watch a write update the database.",
+     "pause": 0.25
+    },
+    {
+     "cue": "stale",
+     "text": "Until a worker catches up, the cache still holds the old value. The next read returns stale data: our first symptom.",
+     "pause": 1
+    },
+    {
+     "cue": "yourjob",
+     "text": "No product promised these copies would agree; by wiring them together, you made that promise.",
+     "pause": 0.5
+    },
+    {
+     "text": "You're not just using data systems anymore. You're designing one.",
+     "pause": 0.6
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "rel-intro",
+   "section": "reliability",
+   "lines": [
+    {
+     "cue": "divider",
+     "text": "That broken promise brings us to question one: reliability.",
+     "pause": 0.4
+    },
+    {
+     "text": "A reliable system does what users expect, tolerates their mistakes, stays fast enough, and blocks abuse, even when things go wrong.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 1.1
+  },
+  {
+   "id": "fault-failure",
+   "section": "reliability",
+   "lines": [
+    {
+     "cue": "defs",
+     "text": "A fault is when one part of the system misbehaves.",
+     "pause": 0.25
+    },
+    {
+     "text": "A failure is when the whole system stops giving users the service they expect.",
+     "pause": 0.6
+    },
+    {
+     "cue": "flowA",
+     "text": "Requests reach two database replicas, copies of the same data.",
+     "pause": 0.2
+    },
+    {
+     "cue": "breakA",
+     "text": "One replica crashes. That's a fault.",
+     "pause": 0.3
+    },
+    {
+     "cue": "rerouteA",
+     "text": "Traffic shifts to the other replica; users never notice. That's fault tolerance.",
+     "pause": 0.9
+    },
+    {
+     "cue": "flowB",
+     "text": "Now the same app with only one replica.",
+     "pause": 0.2
+    },
+    {
+     "cue": "breakB",
+     "text": "Same fault: the replica crashes.",
+     "pause": 0.25
+    },
+    {
+     "cue": "failB",
+     "text": "Requests have nowhere to go; users see errors. The fault became a failure.",
+     "pause": 1
+    },
+    {
+     "cue": "goal",
+     "text": "You can't prevent every fault. Pick the kinds you'll tolerate, and design so they don't become failures.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "hardware",
+   "section": "reliability",
+   "lines": [
+    {
+     "cue": "grid",
+     "text": "Where do faults come from? First, hardware. Picture 10,000 disks.",
+     "say": "Where do faults come from? First, hardware. Picture ten thousand disks.",
+     "pause": 0.25
+    },
+    {
+     "cue": "formula",
+     "text": "Assume a 30-year mean time to failure per disk: a statistical figure, not a lifespan.",
+     "say": "Assume a thirty-year mean time to failure per disk: a statistical figure, not a lifespan.",
+     "pause": 0.25
+    },
+    {
+     "cue": "perday",
+     "text": "10,000 disks, divided by 30 years times 365 days, is about one failure per day.",
+     "say": "Ten thousand disks, divided by thirty years times three hundred sixty-five days, is about one failure per day.",
+     "pause": 0.9
+    },
+    {
+     "cue": "ticker",
+     "text": "It's a simplified illustration: independent failures, constant rate. But at this scale, failure is routine.",
+     "pause": 0.6
+    },
+    {
+     "cue": "redundancy",
+     "text": "The classic defense is redundancy: RAID arrays, dual power supplies, spare machines.",
+     "say": "The classic defense is redundancy: raid arrays, dual power supplies, spare machines.",
+     "pause": 0.2
+    },
+    {
+     "cue": "software",
+     "text": "Today, software can also tolerate losing a whole machine.",
+     "pause": 0.2
+    },
+    {
+     "cue": "rolling",
+     "text": "That enables rolling upgrades, one node at a time, without downtime.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "software",
+   "section": "reliability",
+   "lines": [
+    {
+     "cue": "nodes",
+     "text": "Second, software. These five nodes all run the same code.",
+     "pause": 0.25
+    },
+    {
+     "cue": "trigger",
+     "text": "On June 30, 2012, a leap second triggered a Linux kernel bug.",
+     "say": "On June thirtieth, twenty twelve, a leap second triggered a Linux kernel bug.",
+     "pause": 0.25
+    },
+    {
+     "cue": "allfail",
+     "text": "Many applications hung at the same moment.",
+     "pause": 0.9
+    },
+    {
+     "cue": "correlated",
+     "text": "Redundancy assumes faults are independent, like those disks. Software faults often aren't.",
+     "pause": 0.25
+    },
+    {
+     "text": "A spare doesn't help if it runs the same bug.",
+     "pause": 0.3
+    },
+    {
+     "cue": "examples",
+     "text": "Runaway processes, slow dependencies, and cascading failures can hit many nodes at once.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "humans",
+   "section": "reliability",
+   "lines": [
+    {
+     "cue": "config",
+     "text": "The third source is people. Say someone edits one timeout, typing milliseconds where they meant seconds.",
+     "pause": 0.3
+    },
+    {
+     "cue": "ripple",
+     "text": "The change rolls out everywhere, and services start failing one after another.",
+     "pause": 0.8
+    },
+    {
+     "cue": "study",
+     "text": "One study of large internet services found operator configuration errors were the leading cause of outages.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "chaos",
+   "section": "reliability",
+   "lines": [
+    {
+     "cue": "errhandling",
+     "text": "Fault tolerance has a weak spot: error-handling code rarely runs, so bugs hide there.",
+     "pause": 0.3
+    },
+    {
+     "cue": "monkey",
+     "text": "So some teams inject faults on purpose, like Netflix's Chaos Monkey.",
+     "pause": 0.2
+    },
+    {
+     "cue": "kill",
+     "text": "It randomly terminates servers, so recovery code runs regularly.",
+     "pause": 0.25
+    },
+    {
+     "cue": "heal",
+     "text": "The system notices and replaces the node automatically.",
+     "pause": 0.4
+    },
+    {
+     "text": "Killing a cache worker on purpose tests whether you'd spot stale data before users do.",
+     "pause": 0.7
+    },
+    {
+     "cue": "practices",
+     "text": "For human mistakes, add safety nets: tests, sandboxes, and gradual rollouts, so a bad timeout hits only a few servers.",
+     "pause": 0.2
+    },
+    {
+     "text": "Plus fast rollback, monitoring, and safe tools to recompute data.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.9
+  },
+  {
+   "id": "sca-intro",
+   "section": "scalability",
+   "lines": [
+    {
+     "cue": "divider",
+     "text": "Question two: scalability. Requests often slow down because load has grown.",
+     "pause": 0.5
+    },
+    {
+     "cue": "strike",
+     "text": "Saying 'our system is scalable' sounds like a yes-or-no answer. It isn't.",
+     "pause": 0.3
+    },
+    {
+     "cue": "question",
+     "text": "Ask instead: if load grows in a particular way, what are our options?",
+     "pause": 0.6
+    },
+    {
+     "cue": "params",
+     "text": "First, describe today's load with a few numbers, called load parameters.",
+     "pause": 0.2
+    },
+    {
+     "text": "Requests per second, reads versus writes, users online at once, cache hit rate, or skew: a few extreme cases.",
+     "pause": 0.6
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "twitter",
+   "section": "scalability",
+   "lines": [
+    {
+     "cue": "badge",
+     "text": "A historical example: Twitter, around 2012.",
+     "say": "A historical example: Twitter, around twenty twelve.",
+     "pause": 0.3
+    },
+    {
+     "cue": "ops",
+     "text": "Posting a tweet averaged about 4,600 requests per second.",
+     "say": "Posting a tweet averaged about forty-six hundred requests per second.",
+     "pause": 0.2
+    },
+    {
+     "text": "Home timeline reads, your feed, ran around 300,000 per second.",
+     "say": "Home timeline reads, your feed, ran around three hundred thousand per second.",
+     "pause": 0.4
+    },
+    {
+     "text": "The hard part was fan-out: one request multiplying into many lookups or writes.",
+     "pause": 0.3
+    },
+    {
+     "cue": "onread",
+     "text": "First came fan-out on read: opening your timeline meant looking up everyone you follow and merging their tweets.",
+     "pause": 0.2
+    },
+    {
+     "cue": "onread-cost",
+     "text": "That's heavy work on every read, and Twitter struggled to keep up.",
+     "pause": 0.4
+    },
+    {
+     "cue": "onwrite",
+     "text": "So Twitter switched to fan-out on write: each user gets a cached timeline, like a mailbox.",
+     "pause": 0.2
+    },
+    {
+     "text": "A new tweet is copied into every follower's mailbox.",
+     "pause": 0.2
+    },
+    {
+     "cue": "onwrite-cheap",
+     "text": "Reading becomes a cheap lookup.",
+     "pause": 0.4
+    },
+    {
+     "cue": "ratio",
+     "text": "That trade paid off because reads dominate: roughly 65 timeline reads for every tweet posted.",
+     "say": "That trade paid off because reads dominate: roughly sixty-five timeline reads for every tweet posted.",
+     "pause": 1
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "celebrity",
+   "section": "scalability",
+   "lines": [
+    {
+     "cue": "multiply",
+     "text": "But writes aren't free: 4,600 tweets a second, times an average of 75 followers each.",
+     "say": "But writes aren't free: forty-six hundred tweets a second, times an average of seventy-five followers each.",
+     "pause": 0.2
+    },
+    {
+     "cue": "result",
+     "text": "That's about 345,000 timeline insertions every second.",
+     "say": "That's about three hundred forty-five thousand timeline insertions every second.",
+     "pause": 0.9
+    },
+    {
+     "cue": "celebrity",
+     "text": "Now add a celebrity. Some accounts had over 30 million followers.",
+     "say": "Now add a celebrity. Some accounts had over thirty million followers.",
+     "pause": 0.25
+    },
+    {
+     "cue": "oneTweet",
+     "text": "One tweet from them meant 30 million insertions, yet Twitter aimed to deliver tweets to followers within about five seconds.",
+     "say": "One tweet from them meant thirty million insertions, yet Twitter aimed to deliver tweets to followers within about five seconds.",
+     "pause": 0.9
+    },
+    {
+     "cue": "bars",
+     "text": "Next to the average of 75, that bar runs off the chart.",
+     "say": "Next to the average of seventy-five, that bar runs off the chart.",
+     "pause": 0.4
+    },
+    {
+     "cue": "distribution",
+     "text": "Most accounts have modest followings; a tiny few have enormous ones. That's skew.",
+     "pause": 0.25
+    },
+    {
+     "text": "The load parameter that matters here isn't just the average. It's the distribution of followers.",
+     "pause": 0.8
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "hybrid",
+   "section": "scalability",
+   "lines": [
+    {
+     "cue": "precomputed",
+     "text": "Twitter then moved toward a hybrid. Most users' tweets still fan out on write, into precomputed timelines.",
+     "pause": 0.25
+    },
+    {
+     "cue": "celebs",
+     "text": "Tweets from the few accounts with huge followings skip that step and are fetched when you read.",
+     "pause": 0.25
+    },
+    {
+     "cue": "merge",
+     "text": "When you open your timeline, the two are merged by time.",
+     "pause": 0.8
+    },
+    {
+     "cue": "lesson",
+     "text": "The lesson: a few outliers can decide the whole design. That's true for speed, too.",
+     "pause": 1
+    }
+   ],
+   "tail": 0.8
+  },
+  {
+   "id": "response-time",
+   "section": "performance",
+   "lines": [
+    {
+     "cue": "segments",
+     "text": "What does 'slow' actually mean? Follow one request: network, a queue, the work itself, network back.",
+     "pause": 0.25
+    },
+    {
+     "cue": "response",
+     "text": "Response time is all of it: what the client waits for.",
+     "pause": 0.25
+    },
+    {
+     "cue": "latency",
+     "text": "Latency is narrower: the time spent waiting to be handled.",
+     "pause": 0.6
+    },
+    {
+     "cue": "repeat",
+     "text": "Repeat the same request, and the times still vary.",
+     "pause": 0.2
+    },
+    {
+     "cue": "causes",
+     "text": "Random delays creep in: a garbage-collection pause, a context switch, a lost packet, a page fault, even a vibrating server rack.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "percentiles",
+   "section": "performance",
+   "lines": [
+    {
+     "cue": "hist",
+     "text": "So response time is a distribution. This histogram groups 1,000 simulated requests by duration.",
+     "say": "So response time is a distribution. This histogram groups one thousand simulated requests by duration.",
+     "pause": 0.3
+    },
+    {
+     "text": "A percentile is the response time that a given share of requests stays under.",
+     "pause": 0.25
+    },
+    {
+     "cue": "p50",
+     "text": "The median, or p50, is the middle: half are faster. That's 111 milliseconds.",
+     "say": "The median, or p fifty, is the middle: half are faster. That's one hundred eleven milliseconds.",
+     "pause": 0.25
+    },
+    {
+     "cue": "p95",
+     "text": "At p95, 95 out of 100 are faster.",
+     "say": "At p ninety-five, ninety-five out of one hundred are faster.",
+     "pause": 0.25
+    },
+    {
+     "cue": "p99",
+     "text": "At p99, 99 out of 100 are faster: 234 milliseconds.",
+     "say": "At p ninety-nine, ninety-nine out of one hundred are faster: two hundred thirty-four milliseconds.",
+     "pause": 0.4
+    },
+    {
+     "text": "These high percentiles describe the tail: the slowest requests.",
+     "pause": 0.6
+    },
+    {
+     "cue": "pauses",
+     "text": "Now add a few long pauses: 20 requests, just 2%, take 0.8 to 2 seconds.",
+     "say": "Now add a few long pauses: twenty requests, just two percent, take zero point eight to two seconds.",
+     "pause": 0.45
+    },
+    {
+     "cue": "compare",
+     "text": "The median barely moves, 111 to 112, and the mean rises only a little.",
+     "say": "The median barely moves, one hundred eleven to one hundred twelve, and the mean rises only a little.",
+     "pause": 0.25
+    },
+    {
+     "text": "But p99 jumps from 234 to 1,473 milliseconds.",
+     "say": "But p ninety-nine jumps from two hundred thirty-four to fourteen hundred seventy-three milliseconds.",
+     "pause": 1.2
+    },
+    {
+     "text": "Averages hide this. High percentiles reveal it.",
+     "pause": 0.4
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "tails",
+   "section": "performance",
+   "lines": [
+    {
+     "cue": "amazon",
+     "text": "Why care about the tail? Amazon, for example, has historically described internal service targets in terms of p99.9.",
+     "say": "Why care about the tail? Amazon, for example, has historically described internal service targets in terms of p ninety-nine point nine.",
+     "pause": 0.3
+    },
+    {
+     "cue": "valuable",
+     "text": "Slow requests often come from customers with the most data, frequently the most valuable ones.",
+     "pause": 0.5
+    },
+    {
+     "cue": "sla",
+     "text": "Percentile targets often go into service level agreements. For example: median under 200 milliseconds, p99 under 1 second.",
+     "say": "Percentile targets often go into service level agreements. For example: median under two hundred milliseconds, p ninety-nine under one second.",
+     "pause": 0.3
+    },
+    {
+     "text": "Why not go higher? At p99.99, Amazon judged the cost outweighed the benefit.",
+     "say": "Why not go higher? At p ninety-nine point nine nine, Amazon judged the cost outweighed the benefit.",
+     "pause": 0.4
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "amplification",
+   "section": "performance",
+   "lines": [
+    {
+     "cue": "fanout",
+     "text": "Tails get worse with fan-out. Say one user request makes 100 backend calls.",
+     "say": "Tails get worse with fan-out. Say one user request makes one hundred backend calls.",
+     "pause": 0.25
+    },
+    {
+     "cue": "onepct",
+     "text": "Each call, independently, has a 1% chance of being slow.",
+     "say": "Each call, independently, has a one percent chance of being slow.",
+     "pause": 0.25
+    },
+    {
+     "cue": "waitall",
+     "text": "The request can't finish until every call returns, so one slow call makes it slow.",
+     "pause": 0.4
+    },
+    {
+     "cue": "formula",
+     "text": "The chance that at least one call is slow is 1 − 0.99¹⁰⁰.",
+     "say": "The chance that at least one call is slow is one minus zero point nine nine to the power of one hundred.",
+     "pause": 0.3
+    },
+    {
+     "cue": "grid",
+     "text": "That's about 63%: a 1% problem now slows down most user requests.",
+     "say": "That's about sixty-three percent: a one percent problem now slows down most user requests.",
+     "pause": 1.1
+    },
+    {
+     "cue": "assumptions",
+     "text": "This assumes calls are independent and the request waits for all of them. It's called tail latency amplification.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "client-side",
+   "section": "performance",
+   "lines": [
+    {
+     "cue": "queue",
+     "text": "Where you measure matters. A server works on only a few requests at once.",
+     "pause": 0.25
+    },
+    {
+     "cue": "blocked",
+     "text": "One slow request at the front makes the fast ones wait: head-of-line blocking.",
+     "pause": 0.45
+    },
+    {
+     "cue": "clientside",
+     "text": "The server logs them as fast, but the client waited. Measure on the client side.",
+     "pause": 0.8
+    },
+    {
+     "cue": "loadtest",
+     "text": "Load tests should keep sending without waiting for replies, or queues look unrealistically short.",
+     "pause": 0.45
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "aggregate",
+   "section": "performance",
+   "lines": [
+    {
+     "cue": "servers",
+     "text": "One last trap: combining measurements. In this illustration, three servers each report a p99.",
+     "say": "One last trap: combining measurements. In this illustration, three servers each report a p ninety-nine.",
+     "pause": 0.3
+    },
+    {
+     "cue": "wrong",
+     "text": "Averaging them gives 571 milliseconds, but averaging percentiles is meaningless.",
+     "say": "Averaging them gives five hundred seventy-one milliseconds, but averaging percentiles is meaningless.",
+     "pause": 0.6
+    },
+    {
+     "cue": "right",
+     "text": "Instead, merge the histograms first, then read the p99 from the result: 208 milliseconds.",
+     "say": "Instead, merge the histograms first, then read the p ninety-nine from the result: two hundred eight milliseconds.",
+     "pause": 0.9
+    },
+    {
+     "cue": "tools",
+     "text": "Tools like HdrHistogram and t-digest make merging cheap, across servers and time windows alike.",
+     "say": "Tools like H D R Histogram and tee digest make merging cheap, across servers and time windows alike.",
+     "pause": 0.4
+    }
+   ],
+   "tail": 0.7
+  },
+  {
+   "id": "scaling",
+   "section": "scalability",
+   "lines": [
+    {
+     "cue": "up",
+     "text": "Back to growth. Scaling up means moving to one bigger machine.",
+     "pause": 0.25
+    },
+    {
+     "cue": "out",
+     "text": "Scaling out spreads work across many smaller machines that share nothing. Real systems often mix both.",
+     "pause": 0.2
+    },
+    {
+     "cue": "stateless",
+     "text": "Stateless services keep no data between requests, so adding copies behind a load balancer is fairly easy.",
+     "pause": 0.25
+    },
+    {
+     "cue": "stateful",
+     "text": "A stateful database is harder: its data must be split and copied across machines.",
+     "pause": 0.5
+    },
+    {
+     "cue": "workloads",
+     "text": "Workloads differ too: 100,000 one-kilobyte requests per second, versus 3 two-gigabyte requests per minute.",
+     "say": "Workloads differ too: one hundred thousand, one-kilobyte requests per second, versus three, two-gigabyte requests per minute.",
+     "pause": 0.25
+    },
+    {
+     "text": "Both move about 100 megabytes per second, but need very different designs.",
+     "say": "Both move about one hundred megabytes per second, but need very different designs.",
+     "pause": 0.5
+    },
+    {
+     "cue": "nosauce",
+     "text": "There's no universal recipe.",
+     "pause": 0.25
+    },
+    {
+     "text": "A long-standing rule of thumb was to keep the database on one node until cost or availability forced distribution.",
+     "pause": 0.3
+    },
+    {
+     "text": "Going distributed isn't the automatic next step.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.9
+  },
+  {
+   "id": "mai-intro",
+   "section": "maintainability",
+   "lines": [
+    {
+     "cue": "divider",
+     "text": "Question three: maintainability, and our last symptom, a small change that takes days to ship.",
+     "pause": 0.4
+    },
+    {
+     "cue": "lifetime",
+     "text": "Most of the cost of software comes after launch: fixing bugs, keeping it running, adapting it, adding features.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "operability",
+   "section": "maintainability",
+   "lines": [
+    {
+     "cue": "card",
+     "text": "Three ideas help. First, operability: make life easy for the people who keep the system running.",
+     "pause": 0.3
+    },
+    {
+     "cue": "drain",
+     "text": "Say a node needs a patch: move its traffic away, update it, and bring it back. No machine is special.",
+     "pause": 0.45
+    },
+    {
+     "cue": "chips",
+     "text": "That takes visibility into what's happening, good automation, sensible defaults you can override, and predictable behavior.",
+     "pause": 0.45
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "simplicity",
+   "section": "maintainability",
+   "lines": [
+    {
+     "cue": "card",
+     "text": "Second, simplicity: make the system easy to understand.",
+     "pause": 0.25
+    },
+    {
+     "cue": "mud",
+     "text": "Without it, you get a big ball of mud: tangles and special cases everywhere.",
+     "pause": 0.4
+    },
+    {
+     "cue": "accidental",
+     "text": "Much of that is accidental complexity: it comes from how we built the system, not from the problem it solves.",
+     "pause": 0.8
+    },
+    {
+     "cue": "sql",
+     "text": "Good abstractions remove it. With SQL, you just say which data you want.",
+     "say": "Good abstractions remove it. With S Q L, you just say which data you want.",
+     "pause": 0.2
+    },
+    {
+     "cue": "hidden",
+     "text": "Storage on disk, concurrent clients, and crash recovery stay hidden underneath.",
+     "pause": 0.45
+    },
+    {
+     "cue": "example",
+     "text": "In our example, that might mean moving scattered cache-invalidation code into one module.",
+     "pause": 0.45,
+     "say": "In our example, that might mean moving scattered cache invalidation code into one module."
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "evolvability",
+   "section": "maintainability",
+   "lines": [
+    {
+     "cue": "card",
+     "text": "Third, evolvability: make future change easy.",
+     "pause": 0.3
+    },
+    {
+     "cue": "changes",
+     "text": "Requirements keep moving: new use cases, shifting business priorities, new regulations, growth.",
+     "pause": 0.3
+    },
+    {
+     "cue": "callback",
+     "text": "Remember Twitter switching from fan-out on read to fan-out on write? That was an architecture-level change.",
+     "pause": 0.25
+    },
+    {
+     "text": "An evolvable system lets you make changes like that in small, safe, backward-compatible steps.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.7
+  },
+  {
+   "id": "callback",
+   "section": "ending",
+   "lines": [
+    {
+     "cue": "symptoms",
+     "text": "Back to our three symptoms.",
+     "pause": 0.4
+    },
+    {
+     "cue": "map1",
+     "text": "Stale data is reliability: your team promised the cache and index would match the database, and that promise broke.",
+     "pause": 0.45
+    },
+    {
+     "cue": "map2",
+     "text": "Slowing requests are scalability and performance: growing load, and a tail hidden by averages.",
+     "pause": 0.45
+    },
+    {
+     "cue": "map3",
+     "text": "And days to ship a small change is maintainability: accidental complexity makes the system hard to operate and change.",
+     "pause": 0.5
+    },
+    {
+     "text": "Running and online was never the same as working well.",
+     "pause": 1
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "questions",
+   "section": "ending",
+   "lines": [
+    {
+     "cue": "q1",
+     "text": "So take three questions back to your team. Which faults can we tolerate without users noticing?",
+     "pause": 0.7
+    },
+    {
+     "cue": "q2",
+     "text": "Which load parameter would force us to rethink our architecture?",
+     "pause": 0.7
+    },
+    {
+     "cue": "q3",
+     "text": "And what makes our system unnecessarily difficult to operate or change?",
+     "pause": 1
+    },
+    {
+     "text": "Answer those honestly, and you'll know what 'working well' means for you.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.6
+  },
+  {
+   "id": "next",
+   "section": "ending",
+   "lines": [
+    {
+     "cue": "next",
+     "text": "Next, Chapter 2: data models and query languages, from relational to document to graph.",
+     "say": "Next, Chapter two: data models and query languages, from relational to document to graph.",
+     "pause": 0.5
+    },
+    {
+     "cue": "credits",
+     "text": "This video is based on the DDIA Session 1 presentation and on Martin Kleppmann's book.",
+     "say": "This video is based on the D D I A, Session one presentation and on Martin Klepman's book.",
+     "pause": 0.25
+    },
+    {
+     "text": "It's not affiliated with or endorsed by the author or publisher.",
+     "pause": 0.3
+    },
+    {
+     "text": "Thanks for watching.",
+     "pause": 1
+    }
+   ],
+   "tail": 1.2
+  }
+ ]
+}

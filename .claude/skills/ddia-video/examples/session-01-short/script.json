@@ -1,0 +1,124 @@
+{
+ "voice": "af_heart",
+ "speed": 1.08,
+ "scenes": [
+  {
+   "id": "hook",
+   "section": "short",
+   "lines": [
+    {
+     "cue": "hook",
+     "text": "Around 2012, reading Twitter was much harder than posting to it.",
+     "say": "Around twenty twelve, reading Twitter was much harder than posting to it.",
+     "pause": 0.25
+    },
+    {
+     "cue": "rates",
+     "text": "About 4,600 tweets a second went out, but timelines were loaded 300,000 times a second.",
+     "say": "About forty-six hundred tweets a second went out, but timelines were loaded three hundred thousand times a second.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.4
+  },
+  {
+   "id": "onread",
+   "section": "short",
+   "lines": [
+    {
+     "cue": "onread",
+     "text": "The simple way: when you open your timeline, look up everyone you follow and merge their tweets.",
+     "pause": 0.3
+    },
+    {
+     "cue": "slow",
+     "text": "One read fans out into many lookups, and Twitter's first version struggled to keep up.",
+     "pause": 0.4
+    }
+   ],
+   "tail": 0.4
+  },
+  {
+   "id": "onwrite",
+   "section": "short",
+   "lines": [
+    {
+     "cue": "onwrite",
+     "text": "So they flipped it: each new tweet is copied into every follower's cached timeline.",
+     "pause": 0.3
+    },
+    {
+     "cue": "cheap",
+     "text": "Reading becomes one cheap lookup.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.4
+  },
+  {
+   "id": "celebrity",
+   "section": "short",
+   "lines": [
+    {
+     "cue": "avg",
+     "text": "Each tweet reaches 75 followers on average: 345,000 writes a second.",
+     "say": "Each tweet reaches seventy-five followers on average: three hundred forty-five thousand writes a second.",
+     "pause": 0.4
+    },
+    {
+     "cue": "celeb",
+     "text": "But some accounts have over 30 million followers.",
+     "say": "But some accounts have over thirty million followers.",
+     "pause": 0.25
+    },
+    {
+     "cue": "flood",
+     "text": "One tweet, 30 million writes.",
+     "say": "One tweet, thirty million writes.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.4
+  },
+  {
+   "id": "hybrid",
+   "section": "short",
+   "lines": [
+    {
+     "cue": "hybrid",
+     "text": "So Twitter moved to a hybrid.",
+     "pause": 0.2
+    },
+    {
+     "cue": "most",
+     "text": "Most tweets are still copied when they're posted.",
+     "pause": 0.2
+    },
+    {
+     "cue": "celebs",
+     "text": "Celebrity tweets are fetched when you read, and merged in.",
+     "pause": 0.5
+    }
+   ],
+   "tail": 0.4
+  },
+  {
+   "id": "lesson",
+   "section": "short",
+   "lines": [
+    {
+     "cue": "lesson",
+     "text": "The lesson: a few outliers can decide your whole design.",
+     "pause": 0.5
+    },
+    {
+     "cue": "source",
+     "text": "From Chapter 1 of Designing Data-Intensive Applications. Full explainer linked below.",
+     "say": "From Chapter one of Designing Data-Intensive Applications. Full explainer linked below.",
+     "pause": 0.2
+    }
+   ],
+   "tail": 0.4
+  }
+ ]
+}

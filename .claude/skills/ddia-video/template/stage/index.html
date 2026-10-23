@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DDIA video — stage</title>
+<link rel="stylesheet" href="tokens.css">
+</head>
+<body>
+<div id="stage">
+  <div id="chrome"><span class="sw"></span><span class="t"></span></div>
+  <div id="fade"></div>
+  <div id="safe"></div>
+  <div id="debug"></div>
+</div>
+<script src="video.js"></script>
+<script src="datasets.js"></script>
+<script src="timeline.js"></script>
+<script src="words.js"></script>
+<script src="runtime.js"></script>
+<script>
+  // Load every scene module named in the timeline, then initialise. Missing modules are reported, not fatal.
+  window.__missing = [];
+  (function () {
+    const params = new URLSearchParams(location.search);
+    if (params.get("qa")) document.body.classList.add("qa");
+    // Canvas size, title and the hatched "unsafe" bands come from video.json (written to video.js by build/tts.mjs).
+    const V = window.VIDEO || { W: 1920, H: 1080, safe: { x0: 0, y0: 0, x1: 1920, y1: 950 }, title: "DDIA video" };
+    document.title = V.title + " — stage";
+    const stage = document.getElementById("stage");
+    stage.style.setProperty("--W", V.W + "px"); stage.style.setProperty("--H", V.H + "px");
+    const S = V.safe, safe = document.getElementById("safe");
+    // Section tag sits at the top-left of the safe area (long-form keeps the tokens.css default, 72/52).
+    if (S.y0 > 0) Object.assign(document.getElementById("chrome").style, { left: S.x0 + "px", top: S.y0 + "px" });
+    for (const [l, t, w, h] of [[0, 0, V.W, S.y0], [0, S.y1, V.W, V.H - S.y1], [0, S.y0, S.x0, S.y1 - S.y0], [S.x1, S.y0, V.W - S.x1, S.y1 - S.y0]]) {
+      if (w <= 0 || h <= 0) continue;
+      const d = document.createElement("div");
+      Object.assign(d.style, { left: l + "px", top: t + "px", width: w + "px", height: h + "px" });
+      safe.appendChild(d);
+    }
+    const ids = window.TIMELINE.scenes.map((s) => s.id);
+    let left = ids.length;
+    const done = () => {
+      if (--left > 0) return;
+      R.init(window.TIMELINE);
+      document.fonts.ready.then(() => Promise.all([...document.fonts].map((f) => f.load().catch(() => null)))).then(() => {
+        R.seek(0);
+        window.__ready = true;
+      });
+    };
+    for (const id of ids) {
+      const s = document.createElement("script");
+      s.src = "scenes/" + id + ".js";
+      s.onload = done;
+      s.onerror = () => { window.__missing.push(id); done(); };
+      document.body.appendChild(s);
+    }
+  })();
+</script>
+</body>
+</html>

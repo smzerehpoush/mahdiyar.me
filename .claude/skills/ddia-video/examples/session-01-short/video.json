@@ -1,0 +1,114 @@
+{
+ "session": 1,
+ "chapter": 1,
+ "format": "short",
+ "title": "How Twitter Built Your Timeline: Fan-Out Explained #Shorts",
+ "shortTitle": "How Twitter Built Your Timeline — DDIA Chapter 1 Short",
+ "deck": {
+  "title": "DDIA Session 1: Reliable, Scalable, Maintainable",
+  "url": "https://mahdiyar.me/blog/ddia-session-1/",
+  "file": "public/blog/ddia-session-1/index.html"
+ },
+ "book": "Martin Kleppmann, Designing Data-Intensive Applications (O'Reilly, 1st edition, 2017)",
+ "voice": "af_heart",
+ "speed": 1.08,
+ "words": {
+  "min": 120,
+  "max": 155
+ },
+ "sections": {
+  "short": {
+   "label": "",
+   "accent": "orange"
+  }
+ },
+ "scenes": [
+  {
+   "id": "hook",
+   "section": "short",
+   "beats": [
+    "hook",
+    "rates"
+   ],
+   "words": 26
+  },
+  {
+   "id": "onread",
+   "section": "short",
+   "beats": [
+    "onread",
+    "slow"
+   ],
+   "words": 31
+  },
+  {
+   "id": "onwrite",
+   "section": "short",
+   "beats": [
+    "onwrite",
+    "cheap"
+   ],
+   "words": 19
+  },
+  {
+   "id": "celebrity",
+   "section": "short",
+   "beats": [
+    "avg",
+    "celeb",
+    "flood"
+   ],
+   "words": 24
+  },
+  {
+   "id": "hybrid",
+   "section": "short",
+   "beats": [
+    "hybrid",
+    "most",
+    "celebs"
+   ],
+   "words": 21
+  },
+  {
+   "id": "lesson",
+   "section": "short",
+   "beats": [
+    "lesson",
+    "source"
+   ],
+   "words": 21
+  }
+ ],
+ "spokenRules": [],
+ "description": {
+  "summary": "Around 2012, Twitter served about 300,000 timeline reads a second but only about 4,600 new tweets a second. Here is how that pushed them from fan-out on read to fan-out on write, why accounts with over 30 million followers broke the simple version, and the hybrid that fixed it. From Chapter 1 of Designing Data-Intensive Applications.",
+  "chapters": [],
+  "blocks": [],
+  "figureNotes": [
+   "Twitter numbers are historical figures from around 2012, as cited in the book (4,600 tweets/s on average, over 12,000 at peak; 300,000 timeline reads/s; 75 followers per tweet on average; some accounts with over 30 million followers)."
+  ],
+  "hashtags": "#SystemDesign #DDIA #SoftwareEngineering #Shorts"
+ },
+ "youtube": {
+  "visibility": "public",
+  "category": "Education",
+  "language": "English",
+  "madeForKids": false,
+  "alteredContent": false,
+  "playlist": null,
+  "tags": [
+   "designing data-intensive applications",
+   "DDIA",
+   "Martin Kleppmann",
+   "system design",
+   "fan-out",
+   "twitter timeline",
+   "scalability",
+   "distributed systems"
+  ],
+  "videoId": "unP7OnG847Y"
+ },
+ "relatedVideo": "https://youtu.be/uCm4lbSYg2Y",
+ "deliverables": "~/Movies/DDIA-Session-1-Video/Short"
+}
