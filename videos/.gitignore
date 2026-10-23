@@ -1,0 +1,9 @@
+# Cloud-session DDIA video work (.claude/skills/ddia-video/reference/cloud.md).
+# Committed: deliverables (with the final .mp4) and each work dir's sources. Ignored: regenerable media.
+node_modules
+**/work/*/audio/
+**/work/*/out/*.mp4
+**/work/*/out/*.wav
+**/work/*/out/segments-*/
+**/work/*/out/qa/
+*.bak

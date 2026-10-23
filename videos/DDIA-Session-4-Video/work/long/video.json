@@ -1,0 +1,433 @@
+{
+ "session": 4,
+ "chapter": 3,
+ "format": "long",
+ "title": "Designing Data-Intensive Applications, Chapter 3, Part 2: Why Analytics Uses Columns",
+ "shortTitle": "Why Analytics Uses Columns — DDIA Chapter 3, Part 2",
+ "deck": {
+  "title": "DDIA Session 4: Analytics and column storage",
+  "url": "https://mahdiyar.me/blog/ddia-session-4/",
+  "file": "public/blog/ddia-session-4/index.html"
+ },
+ "book": "Martin Kleppmann, Designing Data-Intensive Applications (O'Reilly, 1st edition, 2017)",
+ "voice": "af_heart",
+ "speed": 1,
+ "words": {
+  "min": 1700,
+  "max": 2000
+ },
+ "sections": {
+  "intro": {
+   "label": "",
+   "accent": "hl"
+  },
+  "warehousing": {
+   "label": "01 · Data warehousing",
+   "accent": "teal"
+  },
+  "columns": {
+   "label": "02 · Column storage",
+   "accent": "orange"
+  },
+  "aggregates": {
+   "label": "03 · Precomputed aggregates",
+   "accent": "purple"
+  },
+  "ending": {
+   "label": "",
+   "accent": "hl"
+  }
+ },
+ "scenes": [
+  {
+   "id": "hook",
+   "section": "intro",
+   "beats": [
+    "report",
+    "scan",
+    "slow",
+    "same",
+    "payoff"
+   ],
+   "words": 60
+  },
+  {
+   "id": "title",
+   "section": "intro",
+   "beats": [
+    "title",
+    "part1",
+    "q1",
+    "q2",
+    "q3"
+   ],
+   "words": 70
+  },
+  {
+   "id": "oltp-olap",
+   "section": "intro",
+   "beats": [
+    "two",
+    "reads",
+    "writes",
+    "users",
+    "history",
+    "size"
+   ],
+   "words": 100
+  },
+  {
+   "id": "contention",
+   "section": "intro",
+   "beats": [
+    "scan",
+    "contend",
+    "reluctant",
+    "separate"
+   ],
+   "words": 65
+  },
+  {
+   "id": "wh-intro",
+   "section": "warehousing",
+   "beats": [
+    "divider"
+   ],
+   "words": 25
+  },
+  {
+   "id": "etl",
+   "section": "warehousing",
+   "beats": [
+    "sources",
+    "extract",
+    "transform",
+    "load",
+    "freely"
+   ],
+   "words": 95
+  },
+  {
+   "id": "same-sql",
+   "section": "warehousing",
+   "beats": [
+    "surface",
+    "below",
+    "vendors",
+    "opensource"
+   ],
+   "words": 80
+  },
+  {
+   "id": "star",
+   "section": "warehousing",
+   "beats": [
+    "fact",
+    "keys",
+    "dims",
+    "date",
+    "star"
+   ],
+   "words": 105
+  },
+  {
+   "id": "star-scale",
+   "section": "warehousing",
+   "beats": [
+    "wide",
+    "huge",
+    "snowflake",
+    "simpler"
+   ],
+   "words": 80
+  },
+  {
+   "id": "col-intro",
+   "section": "columns",
+   "beats": [
+    "divider"
+   ],
+   "words": 25
+  },
+  {
+   "id": "row-problem",
+   "section": "columns",
+   "beats": [
+    "query",
+    "touched",
+    "rowstore",
+    "load",
+    "waste"
+   ],
+   "words": 85
+  },
+  {
+   "id": "columnar",
+   "section": "columns",
+   "beats": [
+    "files",
+    "kth",
+    "scan",
+    "lookup",
+    "tradeoff",
+    "families"
+   ],
+   "words": 120
+  },
+  {
+   "id": "compress",
+   "section": "columns",
+   "beats": [
+    "column",
+    "distinct",
+    "bitmaps",
+    "runs",
+    "smaller"
+   ],
+   "words": 105
+  },
+  {
+   "id": "bitmap-query",
+   "section": "columns",
+   "beats": [
+    "in",
+    "or",
+    "and",
+    "order"
+   ],
+   "words": 75
+  },
+  {
+   "id": "vectorized",
+   "section": "columns",
+   "beats": [
+    "bottleneck",
+    "cache",
+    "loop",
+    "vectorized"
+   ],
+   "words": 85
+  },
+  {
+   "id": "sort-order",
+   "section": "columns",
+   "beats": [
+    "insertion",
+    "wholerows",
+    "key",
+    "skip",
+    "runs"
+   ],
+   "words": 110
+  },
+  {
+   "id": "multi-sort",
+   "section": "columns",
+   "beats": [
+    "replicas",
+    "orders",
+    "route",
+    "values"
+   ],
+   "words": 65
+  },
+  {
+   "id": "writes",
+   "section": "columns",
+   "beats": [
+    "problem",
+    "rewrite",
+    "memstore",
+    "merge",
+    "both"
+   ],
+   "words": 95
+  },
+  {
+   "id": "agg-intro",
+   "section": "aggregates",
+   "beats": [
+    "divider"
+   ],
+   "words": 25
+  },
+  {
+   "id": "matview",
+   "section": "aggregates",
+   "beats": [
+    "repeat",
+    "virtual",
+    "materialized",
+    "update",
+    "warehouses"
+   ],
+   "words": 90
+  },
+  {
+   "id": "cube",
+   "section": "aggregates",
+   "beats": [
+    "grid",
+    "totals",
+    "more",
+    "fast",
+    "rigid",
+    "raw"
+   ],
+   "words": 115
+  },
+  {
+   "id": "callback",
+   "section": "ending",
+   "beats": [
+    "report",
+    "map1",
+    "map2",
+    "map3"
+   ],
+   "words": 75
+  },
+  {
+   "id": "questions",
+   "section": "ending",
+   "beats": [
+    "q1",
+    "q2",
+    "q3"
+   ],
+   "words": 55
+  },
+  {
+   "id": "next",
+   "section": "ending",
+   "beats": [
+    "next",
+    "credits"
+   ],
+   "words": 40
+  }
+ ],
+ "spokenRules": [
+  {
+   "pattern": "\\bOLTP\\b",
+   "message": "say \"O L T P\""
+  },
+  {
+   "pattern": "\\bOLAP\\b",
+   "message": "say \"O L A P\""
+  },
+  {
+   "pattern": "\\bETL\\b",
+   "message": "say \"E T L\""
+  },
+  {
+   "pattern": "\\bSQL\\b",
+   "message": "say \"S Q L\""
+  },
+  {
+   "pattern": "\\bSIMD\\b",
+   "message": "say \"sim dee\""
+  },
+  {
+   "pattern": "\\bL1\\b",
+   "message": "say \"L one\""
+  },
+  {
+   "pattern": "\\bHBase\\b",
+   "message": "say \"H Base\""
+  }
+ ],
+ "description": {
+  "summary": "Why does a monthly report slow down checkout, and why do analytics databases store data sideways? This explainer walks through the second half of Chapter 3 of Designing Data-Intensive Applications with animated diagrams: OLTP vs. OLAP, data warehouses and ETL, star and snowflake schemas, column-oriented storage, bitmap compression and vectorized processing, sort orders, LSM-style writes, and materialized views and data cubes.",
+  "chapters": [
+   [
+    "hook",
+    "A report that slows down checkout"
+   ],
+   [
+    "oltp-olap",
+    "Transactions vs. analytics (OLTP vs. OLAP)"
+   ],
+   [
+    "wh-intro",
+    "Data warehouses and ETL"
+   ],
+   [
+    "star",
+    "Star and snowflake schemas"
+   ],
+   [
+    "col-intro",
+    "Column-oriented storage"
+   ],
+   [
+    "compress",
+    "Compression and bitmap indexes"
+   ],
+   [
+    "vectorized",
+    "Memory bandwidth and vectorized processing"
+   ],
+   [
+    "sort-order",
+    "Sort order in column stores"
+   ],
+   [
+    "writes",
+    "Writing to a column store"
+   ],
+   [
+    "agg-intro",
+    "Materialized views"
+   ],
+   [
+    "cube",
+    "Data cubes"
+   ],
+   [
+    "callback",
+    "Recap and questions for your system"
+   ],
+   [
+    "next",
+    "Next: encoding and evolution"
+   ]
+  ],
+  "blocks": [
+   "Questions to ask about your own system\n• Where do your heavy reports run: on the database serving your users, or on a copy built for analysis?\n• Which queries scan millions of rows but use only a few columns?\n• Which totals do you recompute on every dashboard load that could be computed once?",
+   "Part 1 of Chapter 3 (storage engines: logs, LSM-trees, B-trees): https://youtu.be/Pontu125KTo"
+  ],
+  "figureNotes": [
+   "The monthly report scenario, the payments table, the bitmaps and the data cube are simplified illustrations with invented data.",
+   "Product names are as listed in the book (2017)."
+  ],
+  "hashtags": "#SystemDesign #DataEngineering #DDIA #SoftwareEngineering"
+ },
+ "youtube": {
+  "visibility": "public",
+  "category": "Education",
+  "language": "English",
+  "madeForKids": false,
+  "alteredContent": false,
+  "playlist": "Designing Data-Intensive Applications, Chapter by Chapter",
+  "videoId": null,
+  "tags": [
+   "designing data-intensive applications",
+   "DDIA",
+   "Martin Kleppmann",
+   "system design",
+   "distributed systems",
+   "data warehouse",
+   "column store",
+   "columnar database",
+   "OLAP",
+   "OLTP",
+   "star schema",
+   "ETL",
+   "materialized view",
+   "data cube",
+   "database internals"
+  ]
+ },
+ "deliverables": "/home/user/mahdiyar.me/videos/DDIA-Session-4-Video"
+}
