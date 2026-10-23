@@ -64,7 +64,8 @@
     update(t, k, s) {
       const cC = k.cue("credits");
       // Title block: centred while the chapter is introduced, then moves up to make room for the credits.
-      const up = A.prog(t, cC - 0.05, 0.9, A.E.inOutCubic);
+      // Finish the lift before the credits card appears, so the title never passes over it.
+      const up = A.prog(t, k.lines[1].end - 0.6, 0.75, A.E.inOutCubic);
       s.kicker.style.top = U.lerp(s.centered.kicker, s.top.kicker, up).toFixed(1) + "px";
       s.title.style.top = U.lerp(s.centered.title, s.top.title, up).toFixed(1) + "px";
       A.show(s.kicker, t, k.word("next", "next") - 0.05, { dy: 14 });
