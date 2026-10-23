@@ -279,7 +279,7 @@
     },
     {
      "cue": "rowstore",
-     "text": "But most databases you know, including the engines from the previous video, store data row by row, with all of a row's values together."
+     "text": "But most databases you know, including the engines from the previous video, store data row by row, with each row's values stored together."
     },
     {
      "cue": "load",
@@ -351,8 +351,8 @@
     },
     {
      "cue": "runs",
-     "text": "Each bitmap is just runs of zeros and ones, so store the run lengths instead, counting zeros first: Germany becomes 0, 3, 6, 2, 1.",
-     "say": "Each bitmap is just runs of zeros and ones, so store the run lengths instead, counting zeros first: Germany becomes zero, three, six, two, one.",
+     "text": "Each bitmap is just runs of zeros and ones, so store how long each run is instead, counting zeros first: Germany becomes 0, 3, 6, 2, 1.",
+     "say": "Each bitmap is just runs of zeros and ones, so store how long each run is instead, counting zeros first: Germany becomes zero, three, six, two, one.",
      "pause": 1.0
     },
     {
@@ -513,7 +513,7 @@
    "lines": [
     {
      "cue": "divider",
-     "text": "Third stop: precomputed aggregates. Our report adds up the same kind of totals every month — can we do that work once and reuse it?"
+     "text": "Third stop: precomputed aggregates. The monthly report adds up the same kind of totals every month — can we do that work once and reuse it?"
     }
    ],
    "tail": 1.2
@@ -596,8 +596,8 @@
     },
     {
      "cue": "map1",
-     "text": "Checkout slowed because analytics and transactions shared one database; ETL into a warehouse separates them.",
-     "say": "Checkout slowed because analytics and transactions shared one database; E T L into a warehouse separates them."
+     "text": "Checkout got slow because analytics and transactions shared one database; ETL into a warehouse separates them.",
+     "say": "Checkout got slow because analytics and transactions shared one database; E T L into a warehouse separates them."
     },
     {
      "cue": "map2",

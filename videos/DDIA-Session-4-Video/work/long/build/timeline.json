@@ -1,0 +1,1191 @@
+{
+ "fps": 30,
+ "voice": "af_heart",
+ "speed": 1,
+ "sampleRate": 24000,
+ "scenes": [
+  {
+   "id": "hook",
+   "section": "intro",
+   "start": 0,
+   "dur": 27.775,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "report",
+     "text": "An illustration: on the first of each month, someone runs a quarterly revenue report on the production database.",
+     "say": "An illustration: on the first of each month, someone runs a quarterly revenue report on the production database.",
+     "file": "audio/lines/9550bb7bc1906a7b.wav",
+     "start": 1,
+     "end": 7.715
+    },
+    {
+     "i": 1,
+     "cue": "scan",
+     "text": "It crawls through rows for many minutes.",
+     "say": "It crawls through rows for many minutes.",
+     "file": "audio/lines/f81e08a35e79563b.wav",
+     "start": 8.065,
+     "end": 10.035
+    },
+    {
+     "i": 2,
+     "cue": "slow",
+     "text": "Meanwhile, checkout gets slow for every customer.",
+     "say": "Meanwhile, checkout gets slow for every customer.",
+     "file": "audio/lines/32106a1b1dbacba1.wav",
+     "start": 10.385,
+     "end": 13.24
+    },
+    {
+     "i": 3,
+     "cue": "same",
+     "text": "Same data, same SQL — so why does this one query hurt?",
+     "say": "Same data, same S Q L, so why does this one query hurt?",
+     "file": "audio/lines/a40fd5dfe357f3d7.wav",
+     "start": 14.14,
+     "end": 17.69
+    },
+    {
+     "i": 4,
+     "cue": "payoff",
+     "text": "By the end, you'll know where that report belongs, why its database stores data in columns, and how answers computed once come back in seconds.",
+     "say": "By the end, you'll know where that report belongs, why its database stores data in columns, and how answers computed once come back in seconds.",
+     "file": "audio/lines/1419631d7de175bb.wav",
+     "start": 18.29,
+     "end": 26.875
+    }
+   ]
+  },
+  {
+   "id": "title",
+   "section": "intro",
+   "start": 27.775,
+   "dur": 30.815,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "title",
+     "text": "This video covers the second half of Chapter 3 of Martin Kleppmann's book, Designing Data-Intensive Applications.",
+     "say": "This video covers the second half of Chapter three of Martin Klepman's book, Designing Data-Intensive Applications.",
+     "file": "audio/lines/f9d881c2510fb9da.wav",
+     "start": 0.6,
+     "end": 7.585
+    },
+    {
+     "i": 1,
+     "cue": "part1",
+     "text": "The previous video, Part 1, was about storage engines built for looking things up by key — logs, LSM-trees, and B-trees.",
+     "say": "The previous video, Part one, was about storage engines built for looking things up by key, logs, L S M trees, and B trees.",
+     "file": "audio/lines/3d4aa129a3abc31a.wav",
+     "start": 7.935,
+     "end": 16.03
+    },
+    {
+     "i": 2,
+     "cue": "q1",
+     "text": "Our monthly report raises three questions. First: why do analytic queries need their own database?",
+     "say": "Our monthly report raises three questions. First: why do analytic queries need their own database?",
+     "file": "audio/lines/2554b9e6f20cce98.wav",
+     "start": 16.38,
+     "end": 22.615
+    },
+    {
+     "i": 3,
+     "cue": "q2",
+     "text": "Second: how should that database lay its data out on disk?",
+     "say": "Second: how should that database lay its data out on disk?",
+     "file": "audio/lines/dd5a0d2111a76bdc.wav",
+     "start": 22.965,
+     "end": 26.085
+    },
+    {
+     "i": 4,
+     "cue": "q3",
+     "text": "And third: can we avoid computing the same answer over and over?",
+     "say": "And third: can we avoid computing the same answer over and over?",
+     "file": "audio/lines/4818f5eee57c7963.wav",
+     "start": 26.435,
+     "end": 30.015
+    }
+   ]
+  },
+  {
+   "id": "oltp-olap",
+   "section": "intro",
+   "start": 58.59,
+   "dur": 48.565,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "two",
+     "text": "In our story, checkout is online transaction processing, or OLTP.",
+     "say": "In our story, checkout is online transaction processing, or O L T P.",
+     "file": "audio/lines/956231d12484e0ff.wav",
+     "start": 0.6,
+     "end": 5.36
+    },
+    {
+     "i": 1,
+     "cue": null,
+     "text": "The report is online analytic processing, or OLAP.",
+     "say": "The report is online analytic processing, or O L A P.",
+     "file": "audio/lines/b132616d83a5156d.wav",
+     "start": 5.71,
+     "end": 9.33
+    },
+    {
+     "i": 2,
+     "cue": null,
+     "text": "A transaction here just means a quick group of reads and writes — not necessarily full ACID guarantees.",
+     "say": "A transaction here just means a quick group of reads and writes, not necessarily full acid guarantees.",
+     "file": "audio/lines/ee3a6a4914b0f7b2.wav",
+     "start": 9.68,
+     "end": 15.865
+    },
+    {
+     "i": 3,
+     "cue": "reads",
+     "text": "Typically, a transaction reads a few rows by key, while the report aggregates over a huge number of rows.",
+     "say": "Typically, a transaction reads a few rows by key, while the report aggregates over a huge number of rows.",
+     "file": "audio/lines/aca0b50d5afdf649.wav",
+     "start": 16.215,
+     "end": 22.62
+    },
+    {
+     "i": 4,
+     "cue": "writes",
+     "text": "Transactions write small, random updates as users click; analytics gets its data through bulk imports or event streams.",
+     "say": "Transactions write small, random updates as users click; analytics gets its data through bulk imports or event streams.",
+     "file": "audio/lines/6115c265e98acb67.wav",
+     "start": 22.97,
+     "end": 30.585
+    },
+    {
+     "i": 5,
+     "cue": "users",
+     "text": "Transactions serve customers through the app; analytics serves analysts making decisions.",
+     "say": "Transactions serve customers through the app; analytics serves analysts making decisions.",
+     "file": "audio/lines/ff08222d1bebdd6f.wav",
+     "start": 30.935,
+     "end": 36.06
+    },
+    {
+     "i": 6,
+     "cue": "history",
+     "text": "Transactions work on the latest state of things; analytics on the history of everything that happened.",
+     "say": "Transactions work on the latest state of things; analytics on the history of everything that happened.",
+     "file": "audio/lines/ae6cdf20dd3c43cb.wav",
+     "start": 36.41,
+     "end": 41.81
+    },
+    {
+     "i": 7,
+     "cue": "size",
+     "text": "And the sizes typically differ: gigabytes to terabytes, versus terabytes to petabytes.",
+     "say": "And the sizes typically differ: gigabytes to terabytes, versus terabytes to petabytes.",
+     "file": "audio/lines/132924a64e13c1cf.wav",
+     "start": 42.16,
+     "end": 47.565
+    }
+   ]
+  },
+  {
+   "id": "contention",
+   "section": "intro",
+   "start": 107.155,
+   "dur": 26.565,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "scan",
+     "text": "Put both on one database, and the report starts a huge scan through the tables.",
+     "say": "Put both on one database, and the report starts a huge scan through the tables.",
+     "file": "audio/lines/7c90930389654eec.wav",
+     "start": 0.6,
+     "end": 5.205
+    },
+    {
+     "i": 1,
+     "cue": "contend",
+     "text": "It competes for disk, memory, and CPU with the small transactions customers are waiting on, so those queue up and slow down.",
+     "say": "It competes for disk, memory, and C P U with the small transactions customers are waiting on, so those queue up and slow down.",
+     "file": "audio/lines/30cd21d8512f2df5.wav",
+     "start": 5.555,
+     "end": 13.335
+    },
+    {
+     "i": 2,
+     "cue": "reluctant",
+     "text": "That's why the people running OLTP databases are reluctant to let analysts run ad hoc, one-off queries on them.",
+     "say": "That's why the people running O L T P databases are reluctant to let analysts run ad hoc, one-off queries on them.",
+     "file": "audio/lines/8d3b853938fd348d.wav",
+     "start": 13.685,
+     "end": 21.52
+    },
+    {
+     "i": 3,
+     "cue": "separate",
+     "text": "The usual answer is to give analytics a database of its own.",
+     "say": "The usual answer is to give analytics a database of its own.",
+     "file": "audio/lines/537fc6817fbbebaf.wav",
+     "start": 21.87,
+     "end": 25.565
+    }
+   ]
+  },
+  {
+   "id": "wh-intro",
+   "section": "warehousing",
+   "start": 133.72,
+   "dur": 11.02,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "divider",
+     "text": "First stop: data warehousing — a separate database, built for answering questions instead of serving customers. So how does our report's data get there?",
+     "say": "First stop: data warehousing, a separate database, built for answering questions instead of serving customers. So how does our report's data get there?",
+     "file": "audio/lines/c49e54a33ef5f6cc.wav",
+     "start": 0.6,
+     "end": 9.82
+    }
+   ]
+  },
+  {
+   "id": "etl",
+   "section": "warehousing",
+   "start": 144.74,
+   "dur": 35.575,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "sources",
+     "text": "In a real company, the data behind our report lives in several OLTP systems: orders, payments, a support tool.",
+     "say": "In a real company, the data behind our report lives in several O L T P systems: orders, payments, a support tool.",
+     "file": "audio/lines/d2f54ddb07ad4051.wav",
+     "start": 0.6,
+     "end": 8.5
+    },
+    {
+     "i": 1,
+     "cue": "extract",
+     "text": "First, you extract it, with a periodic dump or a continuous stream of changes.",
+     "say": "First, you extract it, with a periodic dump or a continuous stream of changes.",
+     "file": "audio/lines/7ba955adc1e6e10a.wav",
+     "start": 8.85,
+     "end": 13.525
+    },
+    {
+     "i": 2,
+     "cue": "transform",
+     "text": "Then you transform it into a schema that's friendly to analysis, and clean it up along the way.",
+     "say": "Then you transform it into a schema that's friendly to analysis, and clean it up along the way.",
+     "file": "audio/lines/b58e2f0fce44c90d.wav",
+     "start": 13.875,
+     "end": 18.965
+    },
+    {
+     "i": 3,
+     "cue": "load",
+     "text": "Finally, you load it into the data warehouse — a separate copy that analysts can read but not write.",
+     "say": "Finally, you load it into the data warehouse, a separate copy that analysts can read but not write.",
+     "file": "audio/lines/2cdc562ca6a5683e.wav",
+     "start": 19.315,
+     "end": 25.335
+    },
+    {
+     "i": 4,
+     "cue": null,
+     "text": "Extract, transform, load — together, that's called ETL.",
+     "say": "Extract, transform, load, together, that's called E T L.",
+     "file": "audio/lines/ac1bf826ab1699f9.wav",
+     "start": 25.685,
+     "end": 29.17
+    },
+    {
+     "i": 5,
+     "cue": "freely",
+     "text": "Now the monthly report can scan as much as it likes without slowing checkout down.",
+     "say": "Now the monthly report can scan as much as it likes without slowing checkout down.",
+     "file": "audio/lines/96f42fd945887c18.wav",
+     "start": 29.67,
+     "end": 34.575
+    }
+   ]
+  },
+  {
+   "id": "same-sql",
+   "section": "warehousing",
+   "start": 180.315,
+   "dur": 34.225,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "surface",
+     "text": "From the outside, a warehouse looks familiar: you still talk to it in SQL, often with the same tools.",
+     "say": "From the outside, a warehouse looks familiar: you still talk to it in S Q L, often with the same tools.",
+     "file": "audio/lines/47a8d61e45a16ed8.wav",
+     "start": 0.6,
+     "end": 7.055
+    },
+    {
+     "i": 1,
+     "cue": "below",
+     "text": "But under the lid, the internals are tuned for a different job — big scans, not quick lookups by key.",
+     "say": "But under the lid, the internals are tuned for a different job, big scans, not quick lookups by key.",
+     "file": "audio/lines/00d13ef779cfdf81.wav",
+     "start": 7.405,
+     "end": 13.31
+    },
+    {
+     "i": 2,
+     "cue": "vendors",
+     "text": "As of the book in 2017, commercial warehouses included Teradata, Vertica, SAP HANA, and ParAccel — Amazon Redshift is a hosted version of it.",
+     "say": "As of the book in twenty seventeen, commercial warehouses included Teradata, Vertica, S A P Hana, and Par Accel, Amazon Redshift is a hosted version of it.",
+     "file": "audio/lines/58cf924ee59416d7.wav",
+     "start": 14.11,
+     "end": 24.59
+    },
+    {
+     "i": 3,
+     "cue": "opensource",
+     "text": "And there were open-source SQL-on-Hadoop engines, like Apache Hive, Spark SQL, Cloudera Impala, and Facebook's Presto.",
+     "say": "And there were open-source S Q L on Hadoop engines, like Apache Hive, Spark S Q L, Cloud-era Impala, and Facebook's Presto.",
+     "file": "audio/lines/6e68680fddf0c64e.wav",
+     "start": 24.94,
+     "end": 33.425
+    }
+   ]
+  },
+  {
+   "id": "star",
+   "section": "warehousing",
+   "start": 214.54,
+   "dur": 35.31,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "fact",
+     "text": "Inside the warehouse, the data usually sits in a star schema, built around one big table in the middle: the fact table.",
+     "say": "Inside the warehouse, the data usually sits in a star schema, built around one big table in the middle: the fact table.",
+     "file": "audio/lines/65e6c179a16425a8.wav",
+     "start": 0.6,
+     "end": 7.695
+    },
+    {
+     "i": 1,
+     "cue": null,
+     "text": "Each row is one event — here, one payment.",
+     "say": "Each row is one event, here, one payment.",
+     "file": "audio/lines/362d84ae8c2fa407.wav",
+     "start": 8.045,
+     "end": 10.39
+    },
+    {
+     "i": 2,
+     "cue": "keys",
+     "text": "Some columns describe the payment itself, like amount and fee; others are keys pointing into smaller tables.",
+     "say": "Some columns describe the payment itself, like amount and fee; others are keys pointing into smaller tables.",
+     "file": "audio/lines/83c11e3ad021716b.wav",
+     "start": 10.74,
+     "end": 17.515
+    },
+    {
+     "i": 3,
+     "cue": "dims",
+     "text": "Those are dimension tables: which merchant, who paid, how they paid, where, and when.",
+     "say": "Those are dimension tables: which merchant, who paid, how they paid, where, and when.",
+     "file": "audio/lines/c12cb8334324639c.wav",
+     "start": 17.865,
+     "end": 22.62
+    },
+    {
+     "i": 4,
+     "cue": "date",
+     "text": "Even the date gets its own dimension, so you can record things like public holidays and filter on them.",
+     "say": "Even the date gets its own dimension, so you can record things like public holidays and filter on them.",
+     "file": "audio/lines/250938ae8ad062b6.wav",
+     "start": 23.22,
+     "end": 29
+    },
+    {
+     "i": 5,
+     "cue": "star",
+     "text": "Draw the dimensions around the fact table like rays, and you get a star — hence the name.",
+     "say": "Draw the dimensions around the fact table like rays, and you get a star, hence the name.",
+     "file": "audio/lines/012c1bd40f834316.wav",
+     "start": 29.35,
+     "end": 34.31
+    }
+   ]
+  },
+  {
+   "id": "star-scale",
+   "section": "warehousing",
+   "start": 249.85,
+   "dur": 33.78,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "wide",
+     "text": "Real fact tables are wide: often over a hundred columns, sometimes several hundred.",
+     "say": "Real fact tables are wide: often over a hundred columns, sometimes several hundred.",
+     "file": "audio/lines/ce1a4fe53e28ab92.wav",
+     "start": 0.6,
+     "end": 5.915
+    },
+    {
+     "i": 1,
+     "cue": "huge",
+     "text": "And they get huge: the book describes how a big enterprise may hold tens of petabytes of transaction history, most of it in fact tables.",
+     "say": "And they get huge: the book describes how a big enterprise may hold tens of petabytes of transaction history, most of it in fact tables.",
+     "file": "audio/lines/fd96657db54335ec.wav",
+     "start": 6.265,
+     "end": 14.53
+    },
+    {
+     "i": 2,
+     "cue": "snowflake",
+     "text": "A variation, the snowflake schema, breaks dimensions into sub-dimensions — a merchant points to its category and its country.",
+     "say": "A variation, the snowflake schema, breaks dimensions into sub-dimensions, a merchant points to its category and its country.",
+     "file": "audio/lines/7922d905759fc756.wav",
+     "start": 15.33,
+     "end": 23.2
+    },
+    {
+     "i": 3,
+     "cue": "simpler",
+     "text": "That's more normalized, but stars are often preferred, because they're simpler for analysts to work with.",
+     "say": "That's more normalized, but stars are often preferred, because they're simpler for analysts to work with.",
+     "file": "audio/lines/25a12df781b1d828.wav",
+     "start": 23.55,
+     "end": 29.365
+    },
+    {
+     "i": 4,
+     "cue": null,
+     "text": "Keep that width in mind — it's the root of our next problem.",
+     "say": "Keep that width in mind, it's the root of our next problem.",
+     "file": "audio/lines/b969923a59b9e7a5.wav",
+     "start": 29.715,
+     "end": 32.98
+    }
+   ]
+  },
+  {
+   "id": "col-intro",
+   "section": "columns",
+   "start": 283.63,
+   "dur": 9.63,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "divider",
+     "text": "Second stop: column storage. Our report touches a few columns of a very wide table — so how should that table sit on disk?",
+     "say": "Second stop: column storage. Our report touches a few columns of a very wide table, so how should that table sit on disk?",
+     "file": "audio/lines/8d3256ff84cdbd01.wav",
+     "start": 0.6,
+     "end": 8.43
+    }
+   ]
+  },
+  {
+   "id": "row-problem",
+   "section": "columns",
+   "start": 293.26,
+   "dur": 35.65,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "query",
+     "text": "Here's our report as a query: sum the amount, grouped by country, for last quarter's dates.",
+     "say": "Here's our report as a query: sum the amount, grouped by country, for last quarter's dates.",
+     "file": "audio/lines/f98f5de6a2520c65.wav",
+     "start": 0.6,
+     "end": 6.095
+    },
+    {
+     "i": 1,
+     "cue": "touched",
+     "text": "Out of a hundred-plus columns, a typical warehouse query like this needs just four or five.",
+     "say": "Out of a hundred-plus columns, a typical warehouse query like this needs just four or five.",
+     "file": "audio/lines/370d2a5a8e7cd99b.wav",
+     "start": 6.445,
+     "end": 11.7
+    },
+    {
+     "i": 2,
+     "cue": "rowstore",
+     "text": "But most databases you know, including the engines from the previous video, store data row by row, with each row's values stored together.",
+     "say": "But most databases you know, including the engines from the previous video, store data row by row, with each row's values stored together.",
+     "file": "audio/lines/f5ac0798ea31a671.wav",
+     "start": 12.3,
+     "end": 20.88
+    },
+    {
+     "i": 3,
+     "cue": "load",
+     "text": "So even with an index on the date, the database loads every matching row from disk, every column of it, and parses it.",
+     "say": "So even with an index on the date, the database loads every matching row from disk, every column of it, and parses it.",
+     "file": "audio/lines/59f708f2106aca09.wav",
+     "start": 21.23,
+     "end": 28.51
+    },
+    {
+     "i": 4,
+     "cue": "waste",
+     "text": "Then it throws away almost everything it just read, keeping only the few values the report asked for.",
+     "say": "Then it throws away almost everything it just read, keeping only the few values the report asked for.",
+     "file": "audio/lines/4be1b8655844730e.wav",
+     "start": 28.86,
+     "end": 34.65
+    }
+   ]
+  },
+  {
+   "id": "columnar",
+   "section": "columns",
+   "start": 328.91,
+   "dur": 51.595,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "files",
+     "text": "Column storage flips this: each column goes into its own file — here, six files for twelve payments, a simplified illustration.",
+     "say": "Column storage flips this: each column goes into its own file, here, six files for twelve payments, a simplified illustration.",
+     "file": "audio/lines/f406c1712087b47e.wav",
+     "start": 0.6,
+     "end": 8.905
+    },
+    {
+     "i": 1,
+     "cue": "kth",
+     "text": "The trick is that every file keeps the same order, so the fourth entry in each file belongs to payment four.",
+     "say": "The trick is that every file keeps the same order, so the fourth entry in each file belongs to payment four.",
+     "file": "audio/lines/a944bd28bbd8732f.wav",
+     "start": 9.255,
+     "end": 15.285
+    },
+    {
+     "i": 2,
+     "cue": "scan",
+     "text": "A mini version of our report — total amount for Germany, DE: the row store reads all 72 cells, the column store only the country and amount files — 24.",
+     "say": "A mini version of our report, total amount for Germany, D E: the row store reads all seventy-two cells, the column store only the country and amount files, twenty-four.",
+     "file": "audio/lines/3e17544b8f9d46f6.wav",
+     "start": 15.985,
+     "end": 27.04
+    },
+    {
+     "i": 3,
+     "cue": "lookup",
+     "text": "Flip it around and fetch all of payment four: six cells either way, but rows keep them in one place, while columns need six files.",
+     "say": "Flip it around and fetch all of payment four: six cells either way, but rows keep them in one place, while columns need six files.",
+     "file": "audio/lines/a807606584bc854d.wav",
+     "start": 27.94,
+     "end": 36.035
+    },
+    {
+     "i": 4,
+     "cue": "tradeoff",
+     "text": "So it's a trade-off: columns win when you scan many rows but few columns; rows win when you need whole records.",
+     "say": "So it's a trade-off: columns win when you scan many rows but few columns; rows win when you need whole records.",
+     "file": "audio/lines/b28246eeb06e3136.wav",
+     "start": 36.385,
+     "end": 43.08
+    },
+    {
+     "i": 5,
+     "cue": "families",
+     "text": "Careful: column families in Cassandra and HBase keep a row's values together, so they're mostly row-oriented.",
+     "say": "Careful: column families in Cassandra and H Base keep a row's values together, so they're mostly row-oriented.",
+     "file": "audio/lines/aedfae9e04d0a441.wav",
+     "start": 43.88,
+     "end": 50.795
+    }
+   ]
+  },
+  {
+   "id": "compress",
+   "section": "columns",
+   "start": 380.505,
+   "dur": 47.34,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "column",
+     "text": "Storing by column has a second benefit: values repeat. Here's the country column from our twelve payments.",
+     "say": "Storing by column has a second benefit: values repeat. Here's the country column from our twelve payments.",
+     "file": "audio/lines/7b23de50e58d7e14.wav",
+     "start": 0.6,
+     "end": 7.005
+    },
+    {
+     "i": 1,
+     "cue": "distinct",
+     "text": "Only three distinct values across twelve rows.",
+     "say": "Only three distinct values across twelve rows.",
+     "file": "audio/lines/510a714dc684e2a1.wav",
+     "start": 7.355,
+     "end": 10.21
+    },
+    {
+     "i": 2,
+     "cue": null,
+     "text": "The book's example is a retailer with billions of sales but only 100,000 distinct products.",
+     "say": "The book's example is a retailer with billions of sales but only one hundred thousand distinct products.",
+     "file": "audio/lines/5d8b9eb3be35f0d5.wav",
+     "start": 10.56,
+     "end": 16.665
+    },
+    {
+     "i": 3,
+     "cue": "bitmaps",
+     "text": "So for each value, keep a bitmap: one bit per row, set to one wherever that row has the value.",
+     "say": "So for each value, keep a bitmap: one bit per row, set to one wherever that row has the value.",
+     "file": "audio/lines/3076d4ac6c5ab796.wav",
+     "start": 17.265,
+     "end": 23.02
+    },
+    {
+     "i": 4,
+     "cue": "runs",
+     "text": "Each bitmap is just runs of zeros and ones, so store how long each run is instead, counting zeros first: Germany becomes 0, 3, 6, 2, 1.",
+     "say": "Each bitmap is just runs of zeros and ones, so store how long each run is instead, counting zeros first: Germany becomes zero, three, six, two, one.",
+     "file": "audio/lines/faa92c87cfb9e529.wav",
+     "start": 23.92,
+     "end": 34.095
+    },
+    {
+     "i": 5,
+     "cue": null,
+     "text": "That's called run-length encoding.",
+     "say": "That's called run-length encoding.",
+     "file": "audio/lines/594efcaa9e21835b.wav",
+     "start": 35.095,
+     "end": 36.825
+    },
+    {
+     "i": 6,
+     "cue": "smaller",
+     "text": "With many distinct values, like those 100,000 products, each bitmap is mostly zeros, and run-length encoding makes it very compact.",
+     "say": "With many distinct values, like those one hundred thousand products, each bitmap is mostly zeros, and run-length encoding makes it very compact.",
+     "file": "audio/lines/f9dc31013fc0476a.wav",
+     "start": 37.175,
+     "end": 46.34
+    }
+   ]
+  },
+  {
+   "id": "bitmap-query",
+   "section": "columns",
+   "start": 427.845,
+   "dur": 28.265,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "in",
+     "text": "Bitmaps can also answer questions directly. Say the report wants Germany or the Netherlands.",
+     "say": "Bitmaps can also answer questions directly. Say the report wants Germany or the Netherlands.",
+     "file": "audio/lines/611ba10fce47be26.wav",
+     "start": 0.6,
+     "end": 6.245
+    },
+    {
+     "i": 1,
+     "cue": "or",
+     "text": "Combine those two bitmaps with a bitwise OR, and you have every matching row.",
+     "say": "Combine those two bitmaps with a bitwise or, and you have every matching row.",
+     "file": "audio/lines/0c12d0271a2745ca.wav",
+     "start": 6.595,
+     "end": 10.955
+    },
+    {
+     "i": 2,
+     "cue": "and",
+     "text": "Conditions on different columns work too: German payments made by card are the Germany bitmap AND the card bitmap — just payment ten.",
+     "say": "Conditions on different columns work too: German payments made by card are the Germany bitmap and the card bitmap, just payment ten.",
+     "file": "audio/lines/5a6badeac58b4bd4.wav",
+     "start": 11.655,
+     "end": 19.795
+    },
+    {
+     "i": 3,
+     "cue": "order",
+     "text": "That only works because every column file keeps the rows in the same order — the same rule that lined up payment four.",
+     "say": "That only works because every column file keeps the rows in the same order, the same rule that lined up payment four.",
+     "file": "audio/lines/e4200145a8fd4737.wav",
+     "start": 20.595,
+     "end": 27.265
+    }
+   ]
+  },
+  {
+   "id": "vectorized",
+   "section": "columns",
+   "start": 456.11,
+   "dur": 33.29,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "bottleneck",
+     "text": "Compression pays off twice. When a warehouse scans millions of rows, a big bottleneck is moving data from disk into memory, and from memory into the CPU.",
+     "say": "Compression pays off twice. When a warehouse scans millions of rows, a big bottleneck is moving data from disk into memory, and from memory into the C P U.",
+     "file": "audio/lines/b05e52df21f0c2b1.wav",
+     "start": 0.6,
+     "end": 10.605
+    },
+    {
+     "i": 1,
+     "cue": "cache",
+     "text": "A chunk of compressed column holds many rows and fits in the processor's small, fast L1 cache.",
+     "say": "A chunk of compressed column holds many rows and fits in the processor's small, fast L one cache.",
+     "file": "audio/lines/a288cf43d402785e.wav",
+     "start": 10.955,
+     "end": 16.825
+    },
+    {
+     "i": 2,
+     "cue": "loop",
+     "text": "The CPU can then run that bitwise AND straight over the compressed chunk, in a tight loop, without calling a function for every value.",
+     "say": "The C P U can then run that bitwise and straight over the compressed chunk, in a tight loop, without calling a function for every value.",
+     "file": "audio/lines/f9b4517d4d0bba85.wav",
+     "start": 17.175,
+     "end": 24.92
+    },
+    {
+     "i": 3,
+     "cue": "vectorized",
+     "text": "The book calls this vectorized processing, and SIMD instructions let one instruction handle many values at once.",
+     "say": "The book calls this vectorized processing, and sim dee instructions let one instruction handle many values at once.",
+     "file": "audio/lines/6db31eb46d01b472.wav",
+     "start": 25.27,
+     "end": 32.29
+    }
+   ]
+  },
+  {
+   "id": "sort-order",
+   "section": "columns",
+   "start": 489.4,
+   "dur": 45.785,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "insertion",
+     "text": "So far, our rows sit in the order they arrived, so the date column jumps around: twelve runs for twelve rows.",
+     "say": "So far, our rows sit in the order they arrived, so the date column jumps around: twelve runs for twelve rows.",
+     "file": "audio/lines/6feb811939486d62.wav",
+     "start": 0.6,
+     "end": 7.535
+    },
+    {
+     "i": 1,
+     "cue": "wholerows",
+     "text": "You can choose a sort order, but not one column on its own — you'd lose track of which amount belongs to which payment.",
+     "say": "You can choose a sort order, but not one column on its own, you'd lose track of which amount belongs to which payment.",
+     "file": "audio/lines/09a1bc995d7b565e.wav",
+     "start": 7.885,
+     "end": 14.45
+    },
+    {
+     "i": 2,
+     "cue": "key",
+     "text": "Instead, you sort whole rows, even though each column is stored separately — here by date first, then by merchant.",
+     "say": "Instead, you sort whole rows, even though each column is stored separately, here by date first, then by merchant.",
+     "file": "audio/lines/cf4311ae218f6277.wav",
+     "start": 14.8,
+     "end": 21.7
+    },
+    {
+     "i": 3,
+     "cue": "skip",
+     "text": "A query for June 2 now reads only that block and skips the rest — just what a last-quarter report wants.",
+     "say": "A query for June second now reads only that block and skips the rest, just what a last-quarter report wants.",
+     "file": "audio/lines/635c2b505b839dfd.wav",
+     "start": 22.4,
+     "end": 29.135
+    },
+    {
+     "i": 4,
+     "cue": "runs",
+     "text": "Sorting helps compression too: the date column drops from twelve runs to three; merchant, sorted only within each day, has eight; amount stays at twelve.",
+     "say": "Sorting helps compression too: the date column drops from twelve runs to three; merchant, sorted only within each day, has eight; amount stays at twelve.",
+     "file": "audio/lines/bfbf29c5b902615a.wav",
+     "start": 29.935,
+     "end": 39.45
+    },
+    {
+     "i": 5,
+     "cue": null,
+     "text": "On billions of rows, the book notes, that first column could shrink to a few kilobytes.",
+     "say": "On billions of rows, the book notes, that first column could shrink to a few kilobytes.",
+     "file": "audio/lines/4b01f38d92d5d927.wav",
+     "start": 40.35,
+     "end": 44.985
+    }
+   ]
+  },
+  {
+   "id": "multi-sort",
+   "section": "columns",
+   "start": 535.185,
+   "dur": 28.57,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "replicas",
+     "text": "Warehouses keep several copies of the data anyway, so that losing a machine doesn't lose data.",
+     "say": "Warehouses keep several copies of the data anyway, so that losing a machine doesn't lose data.",
+     "file": "audio/lines/88a05e9cf4bbd50c.wav",
+     "start": 0.6,
+     "end": 6.04
+    },
+    {
+     "i": 1,
+     "cue": "orders",
+     "text": "That means each copy can be sorted differently: one by date, one by merchant, one by country.",
+     "say": "That means each copy can be sorted differently: one by date, one by merchant, one by country.",
+     "file": "audio/lines/5a5a16cbddefcae4.wav",
+     "start": 6.39,
+     "end": 12.335
+    },
+    {
+     "i": 2,
+     "cue": "route",
+     "text": "Each query then uses the copy that fits it best — an idea from a research system called C-Store, adopted by Vertica.",
+     "say": "Each query then uses the copy that fits it best, an idea from a research system called C Store, adopted by Vertica.",
+     "file": "audio/lines/f14f9c93ca4db907.wav",
+     "start": 12.685,
+     "end": 20.1
+    },
+    {
+     "i": 3,
+     "cue": "values",
+     "text": "Unlike secondary indexes, which only point to rows stored elsewhere, each sort order holds the actual column values.",
+     "say": "Unlike secondary indexes, which only point to rows stored elsewhere, each sort order holds the actual column values.",
+     "file": "audio/lines/616ad563a3d66ee6.wav",
+     "start": 20.45,
+     "end": 27.67
+    }
+   ]
+  },
+  {
+   "id": "writes",
+   "section": "columns",
+   "start": 563.755,
+   "dur": 35.28,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "problem",
+     "text": "All this tidiness has a cost, though, when new payments arrive.",
+     "say": "All this tidiness has a cost, though, when new payments arrive.",
+     "file": "audio/lines/170339ef22133d63.wav",
+     "start": 0.6,
+     "end": 3.925
+    },
+    {
+     "i": 1,
+     "cue": "rewrite",
+     "text": "Compressed columns can't be updated in place like a B-tree, and a new row that sorts into the middle would most likely mean rewriting every column file.",
+     "say": "Compressed columns can't be updated in place like a B tree, and a new row that sorts into the middle would most likely mean rewriting every column file.",
+     "file": "audio/lines/9c2b2c294f03f782.wav",
+     "start": 4.275,
+     "end": 13.205
+    },
+    {
+     "i": 2,
+     "cue": "memstore",
+     "text": "The fix comes from the LSM-trees in the previous video: new writes go into a sorted buffer in memory first.",
+     "say": "The fix comes from the L S M trees in the previous video: new writes go into a sorted buffer in memory first.",
+     "file": "audio/lines/482259027ce29804.wav",
+     "start": 14.005,
+     "end": 20.905
+    },
+    {
+     "i": 3,
+     "cue": "merge",
+     "text": "When enough have piled up, they're merged with the column files on disk and written out as new files, in bulk.",
+     "say": "When enough have piled up, they're merged with the column files on disk and written out as new files, in bulk.",
+     "file": "audio/lines/0da1a943f9606b85.wav",
+     "start": 21.255,
+     "end": 27.215
+    },
+    {
+     "i": 4,
+     "cue": "both",
+     "text": "Queries read both the files and the buffer and combine them, so new data shows up right away — Vertica works this way.",
+     "say": "Queries read both the files and the buffer and combine them, so new data shows up right away, Vertica works this way.",
+     "file": "audio/lines/cbcffb0103d8774c.wav",
+     "start": 27.565,
+     "end": 34.38
+    }
+   ]
+  },
+  {
+   "id": "agg-intro",
+   "section": "aggregates",
+   "start": 599.035,
+   "dur": 10.205,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "divider",
+     "text": "Third stop: precomputed aggregates. The monthly report adds up the same kind of totals every month — can we do that work once and reuse it?",
+     "say": "Third stop: precomputed aggregates. The monthly report adds up the same kind of totals every month, can we do that work once and reuse it?",
+     "file": "audio/lines/a672bbcfe1a7d38d.wav",
+     "start": 0.6,
+     "end": 9.005
+    }
+   ]
+  },
+  {
+   "id": "matview",
+   "section": "aggregates",
+   "start": 609.24,
+   "dur": 39.12,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "repeat",
+     "text": "Warehouse queries keep asking for the same aggregates — counts, sums, averages, minimums, maximums — over and over.",
+     "say": "Warehouse queries keep asking for the same aggregates, counts, sums, averages, minimums, maximums, over and over.",
+     "file": "audio/lines/4dc4ee290b88256c.wav",
+     "start": 0.6,
+     "end": 8.07
+    },
+    {
+     "i": 1,
+     "cue": "virtual",
+     "text": "A regular, virtual view doesn't help: it's just a saved query that gets expanded and rerun every time you read it.",
+     "say": "A regular, virtual view doesn't help: it's just a saved query that gets expanded and rerun every time you read it.",
+     "file": "audio/lines/6b03416f464e0575.wav",
+     "start": 8.42,
+     "end": 15.605
+    },
+    {
+     "i": 2,
+     "cue": "materialized",
+     "text": "A materialized view is different: it stores an actual copy of the result on disk, so reading it is cheap.",
+     "say": "A materialized view is different: it stores an actual copy of the result on disk, so reading it is cheap.",
+     "file": "audio/lines/86c966bd2a848e99.wav",
+     "start": 15.955,
+     "end": 22.655
+    },
+    {
+     "i": 3,
+     "cue": "update",
+     "text": "The catch: whenever the underlying data changes, the view has to be updated too, which makes every write more expensive.",
+     "say": "The catch: whenever the underlying data changes, the view has to be updated too, which makes every write more expensive.",
+     "file": "audio/lines/cbb7c1cba616d9f4.wav",
+     "start": 23.455,
+     "end": 30.905
+    },
+    {
+     "i": 4,
+     "cue": "warehouses",
+     "text": "That's why they're not often used in OLTP databases, but in a read-heavy warehouse the trade is often worth it.",
+     "say": "That's why they're not often used in O L T P databases, but in a read-heavy warehouse the trade is often worth it.",
+     "file": "audio/lines/6f9721b8d6150bf2.wav",
+     "start": 31.255,
+     "end": 38.32
+    }
+   ]
+  },
+  {
+   "id": "cube",
+   "section": "aggregates",
+   "start": 648.36,
+   "dur": 51.17,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "grid",
+     "text": "A common special case is the data cube: a grid of totals, here revenue by date and merchant, in thousands of dollars, from a larger set of payments.",
+     "say": "A common special case is the data cube: a grid of totals, here revenue by date and merchant, in thousands of dollars, from a larger set of payments.",
+     "file": "audio/lines/7ee4343a355510a3.wav",
+     "start": 0.6,
+     "end": 10.01
+    },
+    {
+     "i": 1,
+     "cue": null,
+     "text": "It's a simplified illustration.",
+     "say": "It's a simplified illustration.",
+     "file": "audio/lines/81002ab95719b9fa.wav",
+     "start": 10.36,
+     "end": 12.08
+    },
+    {
+     "i": 2,
+     "cue": "totals",
+     "text": "Add up a row and you get one day's total; add up a column and you get one merchant's total — 700 thousand overall.",
+     "say": "Add up a row and you get one day's total; add up a column and you get one merchant's total, seven hundred thousand overall.",
+     "file": "audio/lines/85cc882efc392604.wav",
+     "start": 12.58,
+     "end": 19.995
+    },
+    {
+     "i": 3,
+     "cue": "more",
+     "text": "Real fact tables have more dimensions, so the grid grows into a cube, and with five dimensions, a five-dimensional hypercube.",
+     "say": "Real fact tables have more dimensions, so the grid grows into a cube, and with five dimensions, a five-dimensional hypercube.",
+     "file": "audio/lines/5d15082c268c774b.wav",
+     "start": 20.795,
+     "end": 28.575
+    },
+    {
+     "i": 4,
+     "cue": "fast",
+     "text": "Back in our grid, Bolt's revenue across all days is a single lookup: 255 thousand, already computed.",
+     "say": "Back in our grid, Bolt's revenue across all days is a single lookup: two hundred fifty-five thousand, already computed.",
+     "file": "audio/lines/6d4cdd85c4d8c9ad.wav",
+     "start": 28.925,
+     "end": 36.12
+    },
+    {
+     "i": 5,
+     "cue": "rigid",
+     "text": "But ask about payments over 100 dollars, and the cube can't help, because amount isn't one of its dimensions.",
+     "say": "But ask about payments over one hundred dollars, and the cube can't help, because amount isn't one of its dimensions.",
+     "file": "audio/lines/e7c72f3f6712d4d9.wav",
+     "start": 36.92,
+     "end": 43.35
+    },
+    {
+     "i": 6,
+     "cue": "raw",
+     "text": "That's why most warehouses keep as much raw data as they can, and treat cubes as a speed-up for common queries.",
+     "say": "That's why most warehouses keep as much raw data as they can, and treat cubes as a speed-up for common queries.",
+     "file": "audio/lines/5baabd88f45aeaa2.wav",
+     "start": 43.7,
+     "end": 50.17
+    }
+   ]
+  },
+  {
+   "id": "callback",
+   "section": "ending",
+   "start": 699.53,
+   "dur": 29.24,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "report",
+     "text": "Let's go back to the first of the month, and that report slowing down checkout.",
+     "say": "Let's go back to the first of the month, and that report slowing down checkout.",
+     "file": "audio/lines/7d3293841d0aa600.wav",
+     "start": 0.6,
+     "end": 4.645
+    },
+    {
+     "i": 1,
+     "cue": "map1",
+     "text": "Checkout got slow because analytics and transactions shared one database; ETL into a warehouse separates them.",
+     "say": "Checkout got slow because analytics and transactions shared one database; E T L into a warehouse separates them.",
+     "file": "audio/lines/9f97933c1f1124f2.wav",
+     "start": 4.995,
+     "end": 12.375
+    },
+    {
+     "i": 2,
+     "cue": "map2",
+     "text": "The report read whole rows; a column store reads only the columns it needs, compressed and sorted by date.",
+     "say": "The report read whole rows; a column store reads only the columns it needs, compressed and sorted by date.",
+     "file": "audio/lines/209c8b7e7e581365.wav",
+     "start": 12.725,
+     "end": 19.37
+    },
+    {
+     "i": 3,
+     "cue": "map3",
+     "text": "And the same totals, recomputed every month, can come from a materialized view or a cube — an answer in seconds, not many minutes.",
+     "say": "And the same totals, recomputed every month, can come from a materialized view or a cube, an answer in seconds, not many minutes.",
+     "file": "audio/lines/8afb2877643df085.wav",
+     "start": 19.97,
+     "end": 28.04
+    }
+   ]
+  },
+  {
+   "id": "questions",
+   "section": "ending",
+   "start": 728.77,
+   "dur": 20.175,
+   "lines": [
+    {
+     "i": 0,
+     "cue": null,
+     "text": "Now, some questions for your own system.",
+     "say": "Now, some questions for your own system.",
+     "file": "audio/lines/4ffde4947f0e6274.wav",
+     "start": 0.6,
+     "end": 2.735
+    },
+    {
+     "i": 1,
+     "cue": "q1",
+     "text": "Where do your heavy reports run — on the database serving your users, or on a copy built for analysis?",
+     "say": "Where do your heavy reports run, on the database serving your users, or on a copy built for analysis?",
+     "file": "audio/lines/59f0b1ccb566ee4f.wav",
+     "start": 3.135,
+     "end": 9.19
+    },
+    {
+     "i": 2,
+     "cue": "q2",
+     "text": "Which of your queries scan millions of rows but use only a few columns?",
+     "say": "Which of your queries scan millions of rows but use only a few columns?",
+     "file": "audio/lines/1426b672cbb91b8a.wav",
+     "start": 9.79,
+     "end": 13.99
+    },
+    {
+     "i": 3,
+     "cue": "q3",
+     "text": "And which totals do you recompute on every dashboard load that could be computed once?",
+     "say": "And which totals do you recompute on every dashboard load that could be computed once?",
+     "file": "audio/lines/63a18d5c8a041896.wav",
+     "start": 14.59,
+     "end": 19.175
+    }
+   ]
+  },
+  {
+   "id": "next",
+   "section": "ending",
+   "start": 748.945,
+   "dur": 21.27,
+   "lines": [
+    {
+     "i": 0,
+     "cue": "next",
+     "text": "Next is Chapter 4, Encoding and Evolution: how data written by one version of your code gets read by another.",
+     "say": "Next is Chapter four, Encoding and Evolution: how data written by one version of your code gets read by another.",
+     "file": "audio/lines/216801902bc709ae.wav",
+     "start": 0.6,
+     "end": 7.695
+    },
+    {
+     "i": 1,
+     "cue": null,
+     "text": "We'll look at formats like JSON, Protocol Buffers, and Avro.",
+     "say": "We'll look at formats like Jason, Protocol Buffers, and Avro.",
+     "file": "audio/lines/fa3c13ac8faa99f6.wav",
+     "start": 8.045,
+     "end": 11.575
+    },
+    {
+     "i": 2,
+     "cue": "credits",
+     "text": "Martin Kleppmann's book and the blog presentation are credited on screen. Thanks for watching.",
+     "say": "Martin Klepman's book and the blog presentation are credited on screen. Thanks for watching.",
+     "file": "audio/lines/acb596ee0adcf12a.wav",
+     "start": 11.925,
+     "end": 17.27
+    }
+   ]
+  }
+ ],
+ "total": 770.2333333333333
+}
