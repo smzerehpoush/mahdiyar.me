@@ -15,7 +15,7 @@ Total target ≈ 800 s.
 Visual: badge "Illustration" top-right. Left: a calendar chip "1st of the month" and a report card "Revenue per country · last quarter".
 An arrow from it into a single "Production database" box; the box fills with a progress bar that crawls (rows being scanned).
 Right of the database: Users → Checkout flow with request dots; when `slow` lands the dots slow down and a latency pill turns red
-"Checkout: slow". Then `payoff`: three small chips appear under a line "By the end:" — "a separate database" · "data stored in columns"
+"Checkout: slow". `same`: chip "Same data · same SQL". Then `payoff`: three small chips appear under a line "By the end:" — "a separate database" · "data stored in columns"
 · "answers computed once".
 Beats: `report`, `scan`, `slow`, `same`, `payoff`.
 
@@ -102,9 +102,10 @@ Beats: `files`, `kth`, `scan`, `lookup`, `tradeoff`, `families`.
 
 ### S13 `compress` (≈ 50 s)
 Visual: the country column (DE DE DE FR FR NL NL NL NL DE DE FR) laid out horizontally as chips. `distinct`: chip "3 distinct values,
-12 rows" → "a few hundred countries, billions of rows". `bitmaps`: three bit rows appear under it (DE 111000000110, FR …, NL …), each bit
+12 rows", then "Book: billions of sales · 100,000 products". `bitmaps`: three bit rows appear under it (DE 111000000110, FR …, NL …), each bit
 aligned under its chip. `runs`: each bitmap collapses into its run list (DE → 0, 3, 6, 2, 1 …), with a note "count zeros first".
-`smaller`: big many-row column → tiny run list; chip "Few distinct values → long runs → tiny".
+`smaller`: a long, mostly-zero bitmap (many distinct values) collapses into a short run list; chip "Many distinct values →
+sparse bitmaps → run-length encoding → compact".
 Beats: `column`, `distinct`, `bitmaps`, `runs`, `smaller`.
 
 ### S14 `bitmap-query` (≈ 38 s)
