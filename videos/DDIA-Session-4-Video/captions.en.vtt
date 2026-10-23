@@ -1,0 +1,786 @@
+WEBVTT
+
+00:00:01.000 --> 00:00:03.660
+An illustration: on the
+first of each month,
+
+00:00:03.700 --> 00:00:08.025
+someone runs a quarterly revenue
+report on the production database.
+
+00:00:08.065 --> 00:00:10.345
+It crawls through rows for many minutes.
+
+00:00:10.385 --> 00:00:13.740
+Meanwhile, checkout gets
+slow for every customer.
+
+00:00:14.140 --> 00:00:18.190
+Same data, same SQL — so why
+does this one query hurt?
+
+00:00:18.290 --> 00:00:21.010
+By the end, you'll know
+where that report belongs,
+
+00:00:21.050 --> 00:00:23.870
+why its database stores data in columns,
+
+00:00:23.910 --> 00:00:27.375
+and how answers computed
+once come back in seconds.
+
+00:00:28.375 --> 00:00:32.840
+This video covers the second half of
+Chapter 3 of Martin Kleppmann's book,
+
+00:00:32.880 --> 00:00:35.670
+Designing Data-Intensive Applications.
+
+00:00:35.710 --> 00:00:40.090
+The previous video, Part 1,
+was about storage engines built
+
+00:00:40.130 --> 00:00:44.115
+for looking things up by key —
+logs, LSM-trees, and B-trees.
+
+00:00:44.155 --> 00:00:47.590
+Our monthly report raises
+three questions. First:
+
+00:00:47.630 --> 00:00:50.700
+why do analytic queries
+need their own database?
+
+00:00:50.740 --> 00:00:54.170
+Second: how should that database
+lay its data out on disk?
+
+00:00:54.210 --> 00:00:58.290
+And third: can we avoid computing
+the same answer over and over?
+
+00:00:59.190 --> 00:01:04.260
+In our story, checkout is online
+transaction processing, or OLTP.
+
+00:01:04.300 --> 00:01:08.230
+The report is online analytic
+processing, or OLAP.
+
+00:01:08.270 --> 00:01:11.410
+A transaction here just
+means a quick group of reads
+
+00:01:11.450 --> 00:01:14.765
+and writes — not necessarily
+full ACID guarantees.
+
+00:01:14.805 --> 00:01:18.005
+Typically, a transaction
+reads a few rows by key,
+
+00:01:18.045 --> 00:01:21.520
+while the report aggregates
+over a huge number of rows.
+
+00:01:21.560 --> 00:01:25.080
+Transactions write small,
+random updates as users click;
+
+00:01:25.120 --> 00:01:29.485
+analytics gets its data through
+bulk imports or event streams.
+
+00:01:29.525 --> 00:01:31.935
+Transactions serve
+customers through the app;
+
+00:01:31.975 --> 00:01:34.960
+analytics serves analysts
+making decisions.
+
+00:01:35.000 --> 00:01:37.680
+Transactions work on the
+latest state of things;
+
+00:01:37.720 --> 00:01:40.710
+analytics on the history of
+everything that happened.
+
+00:01:40.750 --> 00:01:42.550
+And the sizes typically differ:
+
+00:01:42.590 --> 00:01:46.655
+gigabytes to terabytes,
+versus terabytes to petabytes.
+
+00:01:47.755 --> 00:01:52.670
+Put both on one database, and the report
+starts a huge scan through the tables.
+
+00:01:52.710 --> 00:01:56.778
+It competes for disk, memory,
+and CPU with the small transactions
+
+00:01:56.818 --> 00:02:00.800
+customers are waiting on,
+so those queue up and slow down.
+
+00:02:00.840 --> 00:02:04.680
+That's why the people running
+OLTP databases are reluctant
+
+00:02:04.720 --> 00:02:08.985
+to let analysts run ad hoc,
+one-off queries on them.
+
+00:02:09.025 --> 00:02:13.220
+The usual answer is to give
+analytics a database of its own.
+
+00:02:14.320 --> 00:02:17.414
+First stop: data warehousing —
+a separate database,
+
+00:02:17.454 --> 00:02:21.375
+built for answering questions
+instead of serving customers.
+
+00:02:21.415 --> 00:02:24.040
+So how does our report's data get there?
+
+00:02:25.340 --> 00:02:29.214
+In a real company, the data
+behind our report lives in
+
+00:02:29.254 --> 00:02:33.550
+several OLTP systems: orders,
+payments, a support tool.
+
+00:02:33.590 --> 00:02:38.575
+First, you extract it, with a periodic
+dump or a continuous stream of changes.
+
+00:02:38.615 --> 00:02:42.120
+Then you transform it into a schema
+that's friendly to analysis,
+
+00:02:42.160 --> 00:02:44.015
+and clean it up along the way.
+
+00:02:44.055 --> 00:02:46.645
+Finally, you load it into
+the data warehouse —
+
+00:02:46.685 --> 00:02:50.385
+a separate copy that analysts
+can read but not write.
+
+00:02:50.425 --> 00:02:54.370
+Extract, transform, load —
+together, that's called ETL.
+
+00:02:54.410 --> 00:02:59.815
+Now the monthly report can scan as much as
+it likes without slowing checkout down.
+
+00:03:00.915 --> 00:03:03.440
+From the outside,
+a warehouse looks familiar:
+
+00:03:03.480 --> 00:03:07.680
+you still talk to it in SQL,
+often with the same tools.
+
+00:03:07.720 --> 00:03:11.010
+But under the lid, the internals
+are tuned for a different job —
+
+00:03:11.050 --> 00:03:14.125
+big scans, not quick lookups by key.
+
+00:03:14.425 --> 00:03:20.150
+As of the book in 2017, commercial
+warehouses included Teradata, Vertica,
+
+00:03:20.190 --> 00:03:25.215
+SAP HANA, and ParAccel — Amazon
+Redshift is a hosted version of it.
+
+00:03:25.255 --> 00:03:29.600
+And there were open-source SQL-on-Hadoop
+engines, like Apache Hive,
+
+00:03:29.640 --> 00:03:34.240
+Spark SQL, Cloudera Impala,
+and Facebook's Presto.
+
+00:03:35.140 --> 00:03:38.760
+Inside the warehouse, the data
+usually sits in a star schema,
+
+00:03:38.800 --> 00:03:42.545
+built around one big table in
+the middle: the fact table.
+
+00:03:42.585 --> 00:03:45.240
+Each row is one event — here, one payment.
+
+00:03:45.280 --> 00:03:49.190
+Some columns describe the payment
+itself, like amount and fee;
+
+00:03:49.230 --> 00:03:52.365
+others are keys pointing
+into smaller tables.
+
+00:03:52.405 --> 00:03:54.830
+Those are dimension
+tables: which merchant,
+
+00:03:54.870 --> 00:03:57.660
+who paid, how they paid, where, and when.
+
+00:03:57.760 --> 00:03:59.835
+Even the date gets its own dimension,
+
+00:03:59.875 --> 00:04:03.850
+so you can record things like
+public holidays and filter on them.
+
+00:04:03.890 --> 00:04:06.740
+Draw the dimensions around
+the fact table like rays,
+
+00:04:06.780 --> 00:04:09.350
+and you get a star — hence the name.
+
+00:04:10.450 --> 00:04:12.250
+Real fact tables are wide:
+
+00:04:12.290 --> 00:04:16.075
+often over a hundred columns,
+sometimes several hundred.
+
+00:04:16.115 --> 00:04:20.525
+And they get huge: the book describes
+how a big enterprise may hold
+
+00:04:20.565 --> 00:04:24.880
+tens of petabytes of transaction
+history, most of it in fact tables.
+
+00:04:25.180 --> 00:04:30.035
+A variation, the snowflake schema,
+breaks dimensions into sub-dimensions —
+
+00:04:30.075 --> 00:04:33.360
+a merchant points to its
+category and its country.
+
+00:04:33.400 --> 00:04:36.710
+That's more normalized, but
+stars are often preferred,
+
+00:04:36.750 --> 00:04:39.525
+because they're simpler
+for analysts to work with.
+
+00:04:39.565 --> 00:04:43.330
+Keep that width in mind — it's
+the root of our next problem.
+
+00:04:44.230 --> 00:04:48.137
+Second stop: column storage.
+Our report touches a few columns
+
+00:04:48.177 --> 00:04:52.560
+of a very wide table — so how
+should that table sit on disk?
+
+00:04:53.860 --> 00:04:56.770
+Here's our report as a
+query: sum the amount,
+
+00:04:56.810 --> 00:04:59.665
+grouped by country,
+for last quarter's dates.
+
+00:04:59.705 --> 00:05:01.380
+Out of a hundred-plus columns,
+
+00:05:01.420 --> 00:05:05.460
+a typical warehouse query like
+this needs just four or five.
+
+00:05:05.560 --> 00:05:09.870
+But most databases you know, including
+the engines from the previous video,
+
+00:05:09.910 --> 00:05:14.450
+store data row by row, with each
+row's values stored together.
+
+00:05:14.490 --> 00:05:17.705
+So even with an index on the
+date, the database loads every
+
+00:05:17.745 --> 00:05:22.080
+matching row from disk, every
+column of it, and parses it.
+
+00:05:22.120 --> 00:05:25.010
+Then it throws away almost
+everything it just read,
+
+00:05:25.050 --> 00:05:28.410
+keeping only the few values
+the report asked for.
+
+00:05:29.510 --> 00:05:33.595
+Column storage flips this: each
+column goes into its own file —
+
+00:05:33.635 --> 00:05:38.125
+here, six files for twelve payments,
+a simplified illustration.
+
+00:05:38.165 --> 00:05:40.955
+The trick is that every
+file keeps the same order,
+
+00:05:40.995 --> 00:05:44.695
+so the fourth entry in each
+file belongs to payment four.
+
+00:05:44.895 --> 00:05:48.920
+A mini version of our report —
+total amount for Germany, DE:
+
+00:05:48.960 --> 00:05:51.945
+the row store reads all 72 cells,
+
+00:05:51.985 --> 00:05:56.450
+the column store only the
+country and amount files — 24.
+
+00:05:56.850 --> 00:06:01.025
+Flip it around and fetch all of
+payment four: six cells either way,
+
+00:06:01.065 --> 00:06:05.255
+but rows keep them in one place,
+while columns need six files.
+
+00:06:05.295 --> 00:06:08.850
+So it's a trade-off: columns
+win when you scan many rows
+
+00:06:08.890 --> 00:06:12.490
+but few columns; rows win
+when you need whole records.
+
+00:06:12.790 --> 00:06:16.105
+Careful: column families in
+Cassandra and HBase keep a
+
+00:06:16.145 --> 00:06:20.205
+row's values together,
+so they're mostly row-oriented.
+
+00:06:21.105 --> 00:06:24.590
+Storing by column has a second
+benefit: values repeat.
+
+00:06:24.630 --> 00:06:27.820
+Here's the country column
+from our twelve payments.
+
+00:06:27.860 --> 00:06:31.025
+Only three distinct values
+across twelve rows.
+
+00:06:31.065 --> 00:06:33.230
+The book's example is a
+retailer with billions
+
+00:06:33.270 --> 00:06:37.670
+of sales but only 100,000
+distinct products.
+
+00:06:37.770 --> 00:06:41.065
+So for each value, keep a
+bitmap: one bit per row,
+
+00:06:41.105 --> 00:06:44.025
+set to one wherever
+that row has the value.
+
+00:06:44.425 --> 00:06:46.985
+Each bitmap is just
+runs of zeros and ones,
+
+00:06:47.025 --> 00:06:49.415
+so store how long each run is instead,
+
+00:06:49.455 --> 00:06:55.100
+counting zeros first:
+Germany becomes 0, 3, 6, 2, 1.
+
+00:06:55.600 --> 00:06:57.640
+That's called run-length encoding.
+
+00:06:57.680 --> 00:07:02.397
+With many distinct values,
+like those 100,000 products,
+
+00:07:02.437 --> 00:07:07.345
+each bitmap is mostly zeros, and
+run-length encoding makes it very compact.
+
+00:07:08.445 --> 00:07:11.095
+Bitmaps can also answer
+questions directly.
+
+00:07:11.135 --> 00:07:14.400
+Say the report wants
+Germany or the Netherlands.
+
+00:07:14.440 --> 00:07:19.300
+Combine those two bitmaps with a bitwise
+OR, and you have every matching row.
+
+00:07:19.500 --> 00:07:23.910
+Conditions on different columns
+work too: German payments made by
+
+00:07:23.950 --> 00:07:28.140
+card are the Germany bitmap AND the
+card bitmap — just payment ten.
+
+00:07:28.440 --> 00:07:32.740
+That only works because every column
+file keeps the rows in the same order —
+
+00:07:32.780 --> 00:07:35.610
+the same rule that lined up payment four.
+
+00:07:36.710 --> 00:07:41.085
+Compression pays off twice. When a
+warehouse scans millions of rows,
+
+00:07:41.125 --> 00:07:47.025
+a big bottleneck is moving data from disk
+into memory, and from memory into the CPU.
+
+00:07:47.065 --> 00:07:49.700
+A chunk of compressed
+column holds many rows
+
+00:07:49.740 --> 00:07:53.245
+and fits in the processor's
+small, fast L1 cache.
+
+00:07:53.285 --> 00:07:57.520
+The CPU can then run that bitwise AND
+straight over the compressed chunk,
+
+00:07:57.560 --> 00:08:01.340
+in a tight loop, without calling
+a function for every value.
+
+00:08:01.380 --> 00:08:03.755
+The book calls this vectorized processing,
+
+00:08:03.795 --> 00:08:08.900
+and SIMD instructions let one
+instruction handle many values at once.
+
+00:08:10.000 --> 00:08:12.770
+So far, our rows sit in
+the order they arrived,
+
+00:08:12.810 --> 00:08:17.245
+so the date column jumps around:
+twelve runs for twelve rows.
+
+00:08:17.285 --> 00:08:20.780
+You can choose a sort order,
+but not one column on its own —
+
+00:08:20.820 --> 00:08:24.160
+you'd lose track of which amount
+belongs to which payment.
+
+00:08:24.200 --> 00:08:28.550
+Instead, you sort whole rows, even though
+each column is stored separately —
+
+00:08:28.590 --> 00:08:31.600
+here by date first, then by merchant.
+
+00:08:31.800 --> 00:08:36.210
+A query for June 2 now reads only
+that block and skips the rest —
+
+00:08:36.250 --> 00:08:39.035
+just what a last-quarter report wants.
+
+00:08:39.335 --> 00:08:43.920
+Sorting helps compression too: the date
+column drops from twelve runs to three;
+
+00:08:43.960 --> 00:08:49.350
+merchant, sorted only within each day,
+has eight; amount stays at twelve.
+
+00:08:49.750 --> 00:08:51.810
+On billions of rows, the book notes,
+
+00:08:51.850 --> 00:08:54.885
+that first column could
+shrink to a few kilobytes.
+
+00:08:55.785 --> 00:08:58.700
+Warehouses keep several
+copies of the data anyway,
+
+00:08:58.740 --> 00:09:01.535
+so that losing a machine
+doesn't lose data.
+
+00:09:01.575 --> 00:09:04.135
+That means each copy can
+be sorted differently:
+
+00:09:04.175 --> 00:09:07.830
+one by date, one by
+merchant, one by country.
+
+00:09:07.870 --> 00:09:10.845
+Each query then uses the
+copy that fits it best —
+
+00:09:10.885 --> 00:09:15.595
+an idea from a research system
+called C-Store, adopted by Vertica.
+
+00:09:15.635 --> 00:09:19.870
+Unlike secondary indexes, which only
+point to rows stored elsewhere,
+
+00:09:19.910 --> 00:09:23.355
+each sort order holds the
+actual column values.
+
+00:09:24.355 --> 00:09:27.990
+All this tidiness has a cost,
+though, when new payments arrive.
+
+00:09:28.030 --> 00:09:31.685
+Compressed columns can't be
+updated in place like a B-tree,
+
+00:09:31.725 --> 00:09:34.020
+and a new row that sorts
+into the middle would
+
+00:09:34.060 --> 00:09:37.460
+most likely mean rewriting
+every column file.
+
+00:09:37.760 --> 00:09:41.540
+The fix comes from the LSM-trees
+in the previous video:
+
+00:09:41.580 --> 00:09:44.970
+new writes go into a sorted
+buffer in memory first.
+
+00:09:45.010 --> 00:09:48.084
+When enough have piled up,
+they're merged with the column
+
+00:09:48.124 --> 00:09:51.280
+files on disk and written
+out as new files, in bulk.
+
+00:09:51.320 --> 00:09:54.560
+Queries read both the files and
+the buffer and combine them,
+
+00:09:54.600 --> 00:09:58.635
+so new data shows up right away —
+Vertica works this way.
+
+00:09:59.635 --> 00:10:03.910
+Third stop: precomputed aggregates.
+The monthly report adds up the same
+
+00:10:03.950 --> 00:10:08.540
+kind of totals every month — can
+we do that work once and reuse it?
+
+00:10:09.840 --> 00:10:13.510
+Warehouse queries keep asking
+for the same aggregates —
+
+00:10:13.550 --> 00:10:17.620
+counts, sums, averages, minimums,
+maximums — over and over.
+
+00:10:17.660 --> 00:10:21.820
+A regular, virtual view doesn't
+help: it's just a saved query
+
+00:10:21.860 --> 00:10:25.155
+that gets expanded and rerun
+every time you read it.
+
+00:10:25.195 --> 00:10:27.310
+A materialized view is different:
+
+00:10:27.350 --> 00:10:32.395
+it stores an actual copy of the result
+on disk, so reading it is cheap.
+
+00:10:32.695 --> 00:10:35.770
+The catch: whenever the
+underlying data changes,
+
+00:10:35.810 --> 00:10:40.455
+the view has to be updated too,
+which makes every write more expensive.
+
+00:10:40.495 --> 00:10:44.230
+That's why they're not often
+used in OLTP databases,
+
+00:10:44.270 --> 00:10:48.060
+but in a read-heavy warehouse
+the trade is often worth it.
+
+00:10:48.960 --> 00:10:52.905
+A common special case is the
+data cube: a grid of totals,
+
+00:10:52.945 --> 00:10:55.125
+here revenue by date and merchant,
+
+00:10:55.165 --> 00:10:58.680
+in thousands of dollars,
+from a larger set of payments.
+
+00:10:58.720 --> 00:11:00.900
+It's a simplified illustration.
+
+00:11:00.940 --> 00:11:04.640
+Add up a row and you get one
+day's total; add up a column
+
+00:11:04.680 --> 00:11:08.855
+and you get one merchant's
+total — 700 thousand overall.
+
+00:11:09.155 --> 00:11:13.590
+Real fact tables have more dimensions,
+so the grid grows into a cube,
+
+00:11:13.630 --> 00:11:17.245
+and with five dimensions,
+a five-dimensional hypercube.
+
+00:11:17.285 --> 00:11:21.400
+Back in our grid, Bolt's revenue
+across all days is a single lookup:
+
+00:11:21.440 --> 00:11:24.980
+255 thousand, already computed.
+
+00:11:25.280 --> 00:11:29.330
+But ask about payments over 100
+dollars, and the cube can't help,
+
+00:11:29.370 --> 00:11:32.020
+because amount isn't
+one of its dimensions.
+
+00:11:32.060 --> 00:11:35.590
+That's why most warehouses keep
+as much raw data as they can,
+
+00:11:35.630 --> 00:11:39.030
+and treat cubes as a
+speed-up for common queries.
+
+00:11:40.130 --> 00:11:44.485
+Let's go back to the first of the month,
+and that report slowing down checkout.
+
+00:11:44.525 --> 00:11:49.155
+Checkout got slow because analytics
+and transactions shared one database;
+
+00:11:49.195 --> 00:11:52.215
+ETL into a warehouse separates them.
+
+00:11:52.255 --> 00:11:55.569
+The report read whole rows;
+a column store reads only
+
+00:11:55.609 --> 00:11:59.400
+the columns it needs,
+compressed and sorted by date.
+
+00:11:59.500 --> 00:12:02.000
+And the same totals,
+recomputed every month,
+
+00:12:02.040 --> 00:12:05.105
+can come from a materialized
+view or a cube —
+
+00:12:05.145 --> 00:12:08.070
+an answer in seconds, not many minutes.
+
+00:12:09.370 --> 00:12:11.865
+Now, some questions for your own system.
+
+00:12:11.905 --> 00:12:13.580
+Where do your heavy reports run —
+
+00:12:13.620 --> 00:12:18.460
+on the database serving your users,
+or on a copy built for analysis?
+
+00:12:18.560 --> 00:12:23.260
+Which of your queries scan millions
+of rows but use only a few columns?
+
+00:12:23.360 --> 00:12:25.175
+And which totals do you recompute on every
+
+00:12:25.215 --> 00:12:28.445
+dashboard load that
+could be computed once?
+
+00:12:29.545 --> 00:12:32.785
+Next is Chapter 4, Encoding and Evolution:
+
+00:12:32.825 --> 00:12:36.950
+how data written by one version of
+your code gets read by another.
+
+00:12:36.990 --> 00:12:40.830
+We'll look at formats like JSON,
+Protocol Buffers, and Avro.
+
+00:12:40.870 --> 00:12:43.643
+Martin Kleppmann's book
+and the blog presentation
+
+00:12:43.683 --> 00:12:46.715
+are credited on screen.
+Thanks for watching.

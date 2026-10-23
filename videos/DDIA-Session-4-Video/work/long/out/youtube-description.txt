@@ -1,0 +1,35 @@
+Why does a monthly report slow down checkout, and why do analytics databases store data sideways? This explainer walks through the second half of Chapter 3 of Designing Data-Intensive Applications with animated diagrams: OLTP vs. OLAP, data warehouses and ETL, star and snowflake schemas, column-oriented storage, bitmap compression and vectorized processing, sort orders, LSM-style writes, and materialized views and data cubes.
+
+Chapters
+0:00 A report that slows down checkout
+0:59 Transactions vs. analytics (OLTP vs. OLAP)
+2:14 Data warehouses and ETL
+3:35 Star and snowflake schemas
+4:44 Column-oriented storage
+6:21 Compression and bitmap indexes
+7:36 Memory bandwidth and vectorized processing
+8:09 Sort order in column stores
+9:24 Writing to a column store
+9:59 Materialized views
+10:48 Data cubes
+11:40 Recap and questions for your system
+12:29 Next: encoding and evolution
+
+Questions to ask about your own system
+• Where do your heavy reports run: on the database serving your users, or on a copy built for analysis?
+• Which queries scan millions of rows but use only a few columns?
+• Which totals do you recompute on every dashboard load that could be computed once?
+
+Part 1 of Chapter 3 (storage engines: logs, LSM-trees, B-trees): https://youtu.be/Pontu125KTo
+
+Sources
+• Presentation: "DDIA Session 4: Analytics and column storage" — https://mahdiyar.me/blog/ddia-session-4/
+• Book: Martin Kleppmann, Designing Data-Intensive Applications (O'Reilly, 1st edition, 2017), Chapter 3.
+This video is an independent study summary. It is not affiliated with or endorsed by the author or publisher.
+
+Notes on figures
+• The monthly report scenario, the payments table, the bitmaps and the data cube are simplified illustrations with invented data.
+• Product names are as listed in the book (2017).
+• Narration uses a synthetic voice (Kokoro TTS). Background music is original and generated for this video.
+
+#SystemDesign #DataEngineering #DDIA #SoftwareEngineering

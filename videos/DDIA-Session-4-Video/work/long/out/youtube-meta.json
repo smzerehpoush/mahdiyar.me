@@ -1,0 +1,32 @@
+{
+ "title": "Designing Data-Intensive Applications, Chapter 3, Part 2: Why Analytics Uses Columns",
+ "format": "long",
+ "description": "out/youtube-description.txt",
+ "thumbnail": "out/thumbnail.jpg",
+ "captions": "out/captions.en.srt",
+ "video": "out/final.mp4",
+ "visibility": "public",
+ "category": "Education",
+ "language": "English",
+ "madeForKids": false,
+ "alteredContent": false,
+ "playlist": "Designing Data-Intensive Applications, Chapter by Chapter",
+ "videoId": null,
+ "tags": [
+  "designing data-intensive applications",
+  "DDIA",
+  "Martin Kleppmann",
+  "system design",
+  "distributed systems",
+  "data warehouse",
+  "column store",
+  "columnar database",
+  "OLAP",
+  "OLTP",
+  "star schema",
+  "ETL",
+  "materialized view",
+  "data cube",
+  "database internals"
+ ]
+}
