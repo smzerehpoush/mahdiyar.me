@@ -1,0 +1,265 @@
+{
+  "voice": "af_heart",
+  "speed": 1.0,
+  "scenes": [
+    {
+      "id": "hook",
+      "section": "intro",
+      "lines": [
+        { "cue": "report", "text": "An illustration: on the first of every month, someone runs a revenue report on the production database." },
+        { "cue": "scan", "text": "Revenue per country, last quarter — it crawls through rows for many minutes." },
+        { "cue": "slow", "text": "Meanwhile, checkout slows down for every customer.", "pause": 0.8 },
+        { "cue": "same", "text": "Same data, same SQL. So why is this query so painful?", "say": "Same data, same S Q L. So why is this query so painful?", "pause": 0.6 },
+        { "cue": "payoff", "text": "By the end, you'll know where that report should run, why columns help, and how it can answer in seconds.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "title",
+      "section": "intro",
+      "lines": [
+        { "cue": "title", "text": "This video covers the second half of Chapter 3 of Martin Kleppmann's book, Designing Data-Intensive Applications.", "say": "This video covers the second half of Chapter three of Martin Klepman's book, Designing Data-Intensive Applications." },
+        { "cue": "part1", "text": "Part 1 covered storage engines built to find a record by its key.", "say": "Part one covered storage engines built to find a record by its key.", "pause": 0.6 },
+        { "cue": "q1", "text": "This time, three questions. First: why do analytic queries need their own database?" },
+        { "cue": "q2", "text": "Second: how should that database lay its data out on disk?" },
+        { "cue": "q3", "text": "And third: can we avoid computing the same answer over and over again?", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "oltp-olap",
+      "section": "intro",
+      "lines": [
+        { "cue": "two", "text": "There are two broad kinds of database work: online transaction processing, OLTP, and online analytic processing, OLAP.", "say": "There are two broad kinds of database work: online transaction processing, O L T P, and online analytic processing, O L A P." },
+        { "text": "A transaction here just means a small group of reads and writes that must finish quickly.", "pause": 0.6 },
+        { "cue": "reads", "text": "Typically, OLTP reads a few rows by key; analytics aggregates over a huge number of rows.", "say": "Typically, O L T P reads a few rows by key; analytics aggregates over a huge number of rows." },
+        { "cue": "writes", "text": "OLTP writes are small and random, from user input; analytics gets bulk imports or event streams.", "say": "O L T P writes are small and random, from user input; analytics gets bulk imports or event streams." },
+        { "cue": "users", "text": "Customers drive OLTP through the app; analysts use OLAP to make decisions.", "say": "Customers drive O L T P through the app; analysts use O L A P to make decisions." },
+        { "cue": "history", "text": "OLTP holds the latest state; analytics holds the history of what happened.", "say": "O L T P holds the latest state; analytics holds the history of what happened." },
+        { "cue": "size", "text": "OLTP data is typically gigabytes to terabytes; analytic data, terabytes to petabytes.", "say": "O L T P data is typically gigabytes to terabytes; analytic data, terabytes to petabytes.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "contention",
+      "section": "intro",
+      "lines": [
+        { "cue": "scan", "text": "Now run both on one database. The analyst's query scans a huge part of the table." },
+        { "cue": "contend", "text": "It competes for disk, memory, and CPU with the transactions customers are waiting on, so checkout slows down.", "say": "It competes for disk, memory, and C P U with the transactions customers are waiting on, so checkout slows down.", "pause": 0.6 },
+        { "cue": "reluctant", "text": "That's why people who operate OLTP databases are reluctant to let analysts run arbitrary queries on them.", "say": "That's why people who operate O L T P databases are reluctant to let analysts run arbitrary queries on them." },
+        { "cue": "separate", "text": "The fix is to give analytics its own database.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "wh-intro",
+      "section": "warehousing",
+      "lines": [
+        { "cue": "divider", "text": "Part one, data warehousing. A data warehouse is a separate copy of your data, whose only job is answering analysts' questions about the business." }
+      ],
+      "tail": 1.2
+    },
+    {
+      "id": "etl",
+      "section": "warehousing",
+      "lines": [
+        { "cue": "sources", "text": "Picture a company with several OLTP systems: an orders database, a payments database, a support tool.", "say": "Picture a company with several O L T P systems: an orders database, a payments database, a support tool." },
+        { "cue": "extract", "text": "First, extract: pull data out of each one, either as a periodic dump or as a continuous stream of changes." },
+        { "cue": "transform", "text": "Then transform: clean it up and reshape it into a schema that's easy to analyze." },
+        { "cue": "load", "text": "Finally, load it into the warehouse, which analysts can read but not write." },
+        { "text": "Extract, transform, load — together, that's called ETL.", "say": "Extract, transform, load — together, that's called E T L.", "pause": 0.6 },
+        { "cue": "freely", "text": "Now analysts can query as much as they like, and the systems serving customers don't feel a thing.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "same-sql",
+      "section": "warehousing",
+      "lines": [
+        { "cue": "surface", "text": "On the surface, a warehouse looks familiar: you talk to it with SQL, just like your OLTP database.", "say": "On the surface, a warehouse looks familiar: you talk to it with S Q L, just like your O L T P database." },
+        { "cue": "below", "text": "Underneath, though, the internals are tuned for a completely different pattern: big scans instead of quick lookups by key.", "pause": 0.6 },
+        { "cue": "vendors", "text": "As of the book in 2017, commercial warehouses included Teradata, Vertica, SAP HANA, and ParAccel — Amazon Redshift is a hosted ParAccel.", "say": "As of the book in twenty seventeen, commercial warehouses included Teradata, Vertica, S A P Hana, and Par Accel — Amazon Redshift is a hosted Par Accel." },
+        { "cue": "opensource", "text": "There were also open-source SQL-on-Hadoop engines, such as Apache Hive, Spark SQL, Cloudera Impala, and Presto.", "say": "There were also open-source S Q L on Hadoop engines, such as Apache Hive, Spark S Q L, Cloudera Impala, and Presto." },
+        { "text": "Same language on top, very different machinery below.", "pause": 0.8 }
+      ]
+    },
+    {
+      "id": "star",
+      "section": "warehousing",
+      "lines": [
+        { "cue": "fact", "text": "So what does the data look like inside a warehouse? Usually there's one big table in the middle, called the fact table." },
+        { "text": "Each row is one event — here, one payment — with values like the amount and the fee." },
+        { "cue": "keys", "text": "The other columns are keys pointing into smaller tables, called dimension tables." },
+        { "cue": "dims", "text": "Dimensions describe the who, what, where, when, and how of each event: the merchant, the payment method, the customer, the region." },
+        { "cue": "date", "text": "Even the date is a dimension, so you can store facts like public holidays and filter on them." },
+        { "cue": "star", "text": "Draw the dimensions around the fact table and you get a star, which is why it's called a star schema.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "star-scale",
+      "section": "warehousing",
+      "lines": [
+        { "cue": "wide", "text": "In real warehouses, fact tables are wide: often over 100 columns, sometimes several hundred.", "say": "In real warehouses, fact tables are wide: often over one hundred columns, sometimes several hundred." },
+        { "cue": "huge", "text": "And they get huge: the book describes big enterprises keeping tens of petabytes of transaction history, most of it in fact tables.", "pause": 0.8 },
+        { "cue": "snowflake", "text": "A variation, the snowflake schema, splits dimensions further into sub-dimensions — a merchant points to a category table and a country table." },
+        { "cue": "simpler", "text": "That's more normalized, but stars are usually preferred because they're simpler for analysts to work with.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "col-intro",
+      "section": "columns",
+      "lines": [
+        { "cue": "divider", "text": "Part two, column storage. That wide fact table creates a problem, and the fix is to store data sideways, one column at a time." }
+      ],
+      "tail": 1.2
+    },
+    {
+      "id": "row-problem",
+      "section": "columns",
+      "lines": [
+        { "cue": "query", "text": "Go back to our monthly report: total revenue per country, which needs only a handful of columns." },
+        { "cue": "touched", "text": "A typical warehouse query like this uses just 4 or 5 columns out of more than 100.", "say": "A typical warehouse query like this uses just four or five columns out of more than one hundred.", "pause": 0.6 },
+        { "cue": "rowstore", "text": "But most databases store data row by row: all the values of one row sit next to each other on disk." },
+        { "cue": "load", "text": "So even with an index on the date, the database must load entire rows into memory and parse every column." },
+        { "cue": "waste", "text": "Then it throws away almost everything it just read.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "columnar",
+      "section": "columns",
+      "lines": [
+        { "cue": "files", "text": "A column store flips this: each column lives in its own file, and a query reads only the files it needs." },
+        { "cue": "kth", "text": "This only works if every file keeps the same order: the fourth entry in each file belongs to row four.", "pause": 0.6 },
+        { "text": "In this simplified illustration, we have 12 payments with 6 columns.", "say": "In this simplified illustration, we have twelve payments with six columns." },
+        { "cue": "scan", "text": "To add up the amounts for Germany, a row store reads all 72 cells, while a column store reads just two columns: 24 cells.", "say": "To add up the amounts for Germany, a row store reads all seventy-two cells, while a column store reads just two columns: twenty-four cells.", "pause": 1.0 },
+        { "cue": "lookup", "text": "Now fetch one whole payment by its ID: both read 6 cells, but the column store has to visit 6 separate files.", "say": "Now fetch one whole payment by its I D: both read six cells, but the column store has to visit six separate files." },
+        { "cue": "tradeoff", "text": "So columns win for scanning a few columns, and rows win for fetching whole records.", "pause": 1.0 },
+        { "cue": "families", "text": "Careful with the name: column families in Cassandra and HBase still keep a row's values together, so they're mostly row-oriented.", "say": "Careful with the name: column families in Cassandra and H Base still keep a row's values together, so they're mostly row-oriented." }
+      ]
+    },
+    {
+      "id": "compress",
+      "section": "columns",
+      "lines": [
+        { "cue": "column", "text": "Storing columns separately has another bonus: they compress well, because a column's values tend to repeat." },
+        { "text": "Take the country column: DE, DE, DE, FR, FR, and so on.", "say": "Take the country column: D E, D E, D E, F R, F R, and so on." },
+        { "cue": "distinct", "text": "It has only three distinct values across twelve rows." },
+        { "text": "The book gives a retailer with billions of sales but only 100,000 distinct products.", "say": "The book gives a retailer with billions of sales but only one hundred thousand distinct products.", "pause": 0.6 },
+        { "cue": "bitmaps", "text": "So make one bitmap per value: a row of bits with a one wherever that row holds the value." },
+        { "cue": "runs", "text": "Each bitmap is mostly long runs, so we store only the run lengths, counting zeros first." },
+        { "text": "For DE, the list is 0, 3, 6, 2, 1.", "say": "For D E, the list is zero, three, six, two, one." },
+        { "text": "That's called run-length encoding." },
+        { "cue": "smaller", "text": "With few distinct values and many rows, a whole column shrinks to a tiny list of numbers.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "bitmap-query",
+      "section": "columns",
+      "lines": [
+        { "cue": "in", "text": "Bitmaps also make filters cheap. Say you want payments from Germany or the Netherlands." },
+        { "cue": "or", "text": "Combine the DE and NL bitmaps with a bitwise OR: every row with a one in either bitmap matches.", "say": "Combine the D E and N L bitmaps with a bitwise or: every row with a one in either bitmap matches.", "pause": 0.6 },
+        { "cue": "and", "text": "For a condition on two columns, like Germany and paid by card, you AND the country bitmap with the method bitmap — leaving exactly one row.", "say": "For a condition on two columns, like Germany and paid by card, you and the country bitmap with the method bitmap — leaving exactly one row." },
+        { "cue": "order", "text": "That only works because every column stores its rows in the same order, so bit k always means row k.", "say": "That only works because every column stores its rows in the same order, so bit kay always means row kay.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "vectorized",
+      "section": "columns",
+      "lines": [
+        { "cue": "bottleneck", "text": "When a query scans millions of rows, moving data becomes the bottleneck: first from disk into memory, then from memory into the CPU.", "say": "When a query scans millions of rows, moving data becomes the bottleneck: first from disk into memory, then from memory into the C P U." },
+        { "cue": "cache", "text": "Compressed columns help: one chunk of a column fits many rows' worth of values into the CPU's small, fast L1 cache.", "say": "Compressed columns help: one chunk of a column fits many rows' worth of values into the C P U's small, fast L one cache." },
+        { "cue": "loop", "text": "The CPU can then run a tight loop directly over that compressed chunk, like a bitwise AND, with no function call per row.", "say": "The C P U can then run a tight loop directly over that compressed chunk, like a bitwise and, with no function call per row." },
+        { "cue": "vectorized", "text": "This is called vectorized processing, and with SIMD instructions, one instruction can work on many values at once.", "say": "This is called vectorized processing, and with sim dee instructions, one instruction can work on many values at once.", "pause": 0.6 },
+        { "text": "Smaller data is faster to process, not just cheaper to store.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "sort-order",
+      "section": "columns",
+      "lines": [
+        { "cue": "insertion", "text": "By default, rows are stored in the order they arrive, so the date column jumps around: 12 short runs.", "say": "By default, rows are stored in the order they arrive, so the date column jumps around: twelve short runs." },
+        { "cue": "wholerows", "text": "You can choose a sort order instead, but you can't sort each column on its own — you'd lose which amount belongs to which date." },
+        { "text": "So you sort whole rows, even though each column is stored separately.", "pause": 0.6 },
+        { "cue": "key", "text": "Here, the sort key is date first, then merchant." },
+        { "cue": "skip", "text": "Now a query for June 2 reads only that block of rows and skips the rest.", "say": "Now a query for June second reads only that block of rows and skips the rest.", "pause": 0.6 },
+        { "cue": "runs", "text": "Sorting also helps compression: the date column collapses from 12 runs to 3, merchant has 8, and amount still has 12.", "say": "Sorting also helps compression: the date column collapses from twelve runs to three, merchant has eight, and amount still has twelve." },
+        { "text": "The first sort key compresses best; the further down the key, the more jumbled a column looks.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "multi-sort",
+      "section": "columns",
+      "lines": [
+        { "cue": "replicas", "text": "Warehouses keep several copies of the data anyway, so one machine failing doesn't lose anything." },
+        { "cue": "orders", "text": "So why not sort each copy differently: one by date, one by merchant, one by country?" },
+        { "cue": "route", "text": "Each query then uses the copy that fits it best — an idea from a research system called C-Store, adopted by Vertica.", "say": "Each query then uses the copy that fits it best — an idea from a research system called C Store, adopted by Vertica." },
+        { "cue": "values", "text": "Unlike secondary indexes, which point to rows stored elsewhere, each sort order holds the actual column values.", "pause": 0.8 }
+      ]
+    },
+    {
+      "id": "writes",
+      "section": "columns",
+      "lines": [
+        { "cue": "problem", "text": "There's a catch: all this sorting and compression makes writes hard." },
+        { "cue": "rewrite", "text": "You can't update in place like a B-tree, and inserting a row into the middle could mean rewriting every column file.", "say": "You can't update in place like a B tree, and inserting a row into the middle could mean rewriting every column file.", "pause": 0.6 },
+        { "cue": "memstore", "text": "The fix comes from Part 1's LSM-trees: new writes go into a sorted buffer in memory first.", "say": "The fix comes from Part one's L S M trees: new writes go into a sorted buffer in memory first." },
+        { "cue": "merge", "text": "When enough have piled up, they're merged with the column files and written out as new files, in bulk — Vertica does this." },
+        { "cue": "both", "text": "Queries read both the files on disk and the buffer in memory and combine them, so a new write shows up right away.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "agg-intro",
+      "section": "aggregates",
+      "lines": [
+        { "cue": "divider", "text": "Part three, precomputed aggregates — our last question: if the same totals get computed again and again, why not compute them once and keep them?" }
+      ],
+      "tail": 1.2
+    },
+    {
+      "id": "matview",
+      "section": "aggregates",
+      "lines": [
+        { "cue": "repeat", "text": "Warehouse queries keep asking for the same aggregates: counts, sums, averages, minimums, and maximums, often over the same grouping." },
+        { "cue": "virtual", "text": "A normal, or virtual, view doesn't help here: it's just a saved query that runs again every time you read it." },
+        { "cue": "materialized", "text": "A materialized view is different: it stores an actual copy of the query's result on disk, so reading it is cheap.", "pause": 0.8 },
+        { "cue": "update", "text": "The cost is on writes: whenever the underlying data changes, the stored result has to be updated too." },
+        { "cue": "warehouses", "text": "That's why they're rare in OLTP databases, but in a warehouse, where reads dominate, they often make sense.", "say": "That's why they're rare in O L T P databases, but in a warehouse, where reads dominate, they often make sense.", "pause": 0.8 }
+      ]
+    },
+    {
+      "id": "cube",
+      "section": "aggregates",
+      "lines": [
+        { "cue": "grid", "text": "A data cube is a special materialized view: a grid of totals grouped by dimensions — here, date by merchant." },
+        { "text": "In this simplified illustration, each cell sums one day's payments to one merchant, in thousands of dollars." },
+        { "cue": "totals", "text": "Summing a row gives that day's total, summing a column gives the merchant's total, and the grand total is 700 thousand.", "say": "Summing a row gives that day's total, summing a column gives the merchant's total, and the grand total is seven hundred thousand.", "pause": 0.6 },
+        { "cue": "more", "text": "Add more dimensions and the grid becomes a cube; with five dimensions, it's a five-dimensional hypercube." },
+        { "cue": "fast", "text": "The upside: a question like Bolt's total across all days becomes a single lookup." },
+        { "cue": "rigid", "text": "The downside: you can't ask about anything that isn't a dimension, like payments over $100, because amount isn't one.", "say": "The downside: you can't ask about anything that isn't a dimension, like payments over one hundred dollars, because amount isn't one.", "pause": 0.6 },
+        { "cue": "raw", "text": "So warehouses keep as much raw data as they can, and use cubes only to speed up common queries.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "callback",
+      "section": "ending",
+      "lines": [
+        { "cue": "report", "text": "Back to the monthly report that slowed down checkout." },
+        { "cue": "map1", "text": "First, it shouldn't run on the production database at all: ETL copies the data into a warehouse, and checkout stays fast.", "say": "First, it shouldn't run on the production database at all: E T L copies the data into a warehouse, and checkout stays fast." },
+        { "cue": "map2", "text": "Second, it only needs a few columns, so a column store reads just those, compressed and sorted by date." },
+        { "cue": "map3", "text": "And third, totals that get asked for every month can be precomputed in a materialized view or a cube, so the report answers in seconds.", "pause": 1.2 }
+      ]
+    },
+    {
+      "id": "questions",
+      "section": "ending",
+      "lines": [
+        { "cue": "q1", "text": "A few questions for your own system. Where do your heavy reports run: on the database serving your users, or on a copy built for analysis?", "pause": 0.8 },
+        { "cue": "q2", "text": "Which of your queries scan millions of rows but use only a few columns?", "pause": 0.8 },
+        { "cue": "q3", "text": "And which totals do you recompute on every dashboard load that could be computed once?", "pause": 1.2 }
+      ]
+    },
+    {
+      "id": "next",
+      "section": "ending",
+      "lines": [
+        { "cue": "next", "text": "Next, Chapter 4, Encoding and Evolution: how data written by one version of your code stays readable by another, with formats like JSON, Protocol Buffers, and Avro.", "say": "Next, Chapter four, Encoding and Evolution: how data written by one version of your code stays readable by another, with formats like Jason, Protocol Buffers, and Avro.", "pause": 0.6 },
+        { "cue": "credits", "text": "The book and the blog presentation are credited on screen. Thanks for watching.", "pause": 1.5 }
+      ]
+    }
+  ]
+}
