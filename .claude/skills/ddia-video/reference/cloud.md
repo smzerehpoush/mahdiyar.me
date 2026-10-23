@@ -27,7 +27,9 @@ on their own machine. So a cloud session ends by pushing its work to its branch,
 - **§0 Setup.** Run `bash "${CLAUDE_SKILL_DIR}/scripts/cloud-setup.sh"` instead of `setup.mjs`. It installs ffmpeg, fallback fonts,
   whisper-cli (built from source, v1.9.5), Chrome for Testing 155 in `~/.cache/ddia-video/chrome`, node_modules, and the models.
   The tools pick up Chrome there automatically and add `--no-sandbox` because the session runs as root. If the last lines report a
-  missing model and a log shows 403/blocked, the network settings above are missing: tell the user and stop.
+  missing model and a log shows 403/blocked, the network settings above are missing: tell the user and stop. If they say
+  "✗ Chrome did not start headless", read `~/.cache/ddia-video/setup-logs/chrome-start.log` before going further, because every
+  still, sweep and render needs Chrome.
 - **Work dir.** `new-video.mjs` puts everything under `<repo>/videos/DDIA-Session-N-Video/` (same layout as `~/Movies/…`:
   `work/<format>/`, deliverables at the top level or in `Short/`). It also writes `videos/.gitignore`, which keeps audio, QA images
   and intermediate mp4s out of git.

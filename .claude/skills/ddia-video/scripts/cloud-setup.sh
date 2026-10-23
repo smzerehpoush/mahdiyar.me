@@ -66,12 +66,19 @@ wait
 if [ ! -x "$CACHE/chrome/chrome-linux64/chrome" ] && [ -f "$CHROME_ZIP" ]; then
   (cd "$CACHE/chrome" && unzip -q -o "$CHROME_ZIP" && rm -f "$CHROME_ZIP") >>"$LOGS/chrome.log" 2>&1
 fi
-if [ -x "$CACHE/chrome/chrome-linux64/chrome" ]; then
-  missing=$(ldd "$CACHE/chrome/chrome-linux64/chrome" 2>/dev/null | awk '/not found/{print $1}' | tr '\n' ' ')
+CHROME_BIN="${CHROME_PATH:-$CACHE/chrome/chrome-linux64/chrome}"
+chrome_ok=""
+if [ -x "$CHROME_BIN" ]; then
+  missing=$(ldd "$CHROME_BIN" 2>/dev/null | awk '/not found/{print $1}' | tr '\n' ' ')
   [ -n "$missing" ] && echo "✗ Chrome is missing shared libraries: $missing"
+  # Start it the way the tools do (root → --no-sandbox), so a sandbox/GPU problem shows here, not at the first still.
+  if timeout 90 "$CHROME_BIN" --headless --no-sandbox --disable-dev-shm-usage --dump-dom "data:text/html,<p>chrome-ok</p>" 2>"$LOGS/chrome-start.log" \
+    | grep -q chrome-ok; then chrome_ok="✓ Chrome starts headless"
+  else chrome_ok="✗ Chrome did not start headless (see $LOGS/chrome-start.log)"; fi
 fi
 
 echo "ddia-video cloud setup ($(( $(date +%s) - t0 )) s; logs in $LOGS):"
 node "$SKILL/scripts/setup.mjs" 2>&1 | sed 's/^/  /'
+[ -n "$chrome_ok" ] && echo "  $chrome_ok"
 grep -h -i -m3 "error\|fail\|denied\|403" "$LOGS"/*.log 2>/dev/null | sed 's/^/  log: /' || true
 exit 0
