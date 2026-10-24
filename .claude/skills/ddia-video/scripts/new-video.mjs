@@ -21,6 +21,8 @@ const REPO = process.env.DDIA_REPO || path.resolve(SKILL, "../../..");
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf("--" + n); return i >= 0 ? argv[i + 1] : d; };
 const flag = (n) => argv.includes("--" + n);
+// Narration voice for new videos (template/build/config.mjs DEFAULT_VOICE; reference/series-log.md). A worked example keeps its own.
+const VOICE = "am_michael";
 
 // Blog session → book chapter (1st edition). Some chapters span two sessions.
 const CHAPTER = { 1: 1, 2: 2, 3: 3, 4: 3, 5: 4, 6: 5, 7: 5, 8: 6, 9: 7, 10: 7, 11: 8, 12: 9, 13: 9, 14: 10, 15: 11, 16: 11, 17: 12 };
@@ -91,8 +93,9 @@ if (example) {
     shortTitle: format === "short" ? `TODO — DDIA Chapter ${chapter} Short` : `${topic} — DDIA Chapter ${chapter}`,
     deck: { title: deckTitle, url: `https://mahdiyar.me/blog/ddia-session-${session}/`, file: path.relative(REPO, deckFile) },
     book: "Martin Kleppmann, Designing Data-Intensive Applications (O'Reilly, 1st edition, 2017)",
-    voice: "af_heart", speed,
-    words: short ? { min: 120, max: 155 } : { min: 1700, max: 2000 },
+    voice: VOICE, speed,
+    // Sized for am_michael (≈ 150 words/min at 1.0×): long-form 12–14 min; a Short ≈ 128 words ≈ 58 s at 1.08×.
+    words: short ? { min: 110, max: 140 } : { min: 1550, max: 1850 },
     sections: format === "short" ? { short: { label: "", accent: "hl" } } : { intro: { label: "", accent: "hl" }, ending: { label: "", accent: "hl" } },
     scenes: [],
     spokenRules: [],
@@ -106,7 +109,7 @@ if (example) {
     deliverables: tilde(format === "short" ? path.join(deliverables, "Short") : deliverables),
   };
   put("video.json", (f) => fs.writeFileSync(f, JSON.stringify(video, null, 1) + "\n"));
-  put("script/script.json", (f) => fs.writeFileSync(f, JSON.stringify({ voice: "af_heart", speed, scenes: [] }, null, 1) + "\n"));
+  put("script/script.json", (f) => fs.writeFileSync(f, JSON.stringify({ voice: VOICE, speed, scenes: [] }, null, 1) + "\n"));
   put("build/data.mjs", (f) => fs.copyFileSync(path.join(SKILL, "reference/data-template.mjs"), f));
   put("stage/thumbnail.html", (f) => fs.copyFileSync(path.join(SKILL, "reference", short ? "thumbnail-short.html" : "thumbnail-long.html"), f));
 }

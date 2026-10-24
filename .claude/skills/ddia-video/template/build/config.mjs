@@ -27,6 +27,10 @@ export const CAPTIONS = { ...fmt.captions, ...(cfg.captions || {}) };
 export const THUMB = { ...fmt.thumb, ...(cfg.thumbnail || {}) };
 export const TIMING = { ...fmt.timing, ...(cfg.timing || {}) };
 export const FADE = { ...fmt.fade, ...(cfg.fade || {}) };
+/** Kokoro narration voice when video.json and the script name none. Sessions 1–4 used af_heart; their video.json pins it. */
+export const DEFAULT_VOICE = "am_michael";
+/** Measured speaking rate at speed 1.0 (words/min), for the validator's runtime estimate. Re-measure before adding a voice. */
+export const VOICE_WPM = { am_michael: 150, af_heart: 164 };
 
 /** Shared, durable cache for heavy dependencies (node_modules, whisper model). */
 export const CACHE = process.env.DDIA_VIDEO_CACHE || path.join(os.homedir(), ".cache/ddia-video");

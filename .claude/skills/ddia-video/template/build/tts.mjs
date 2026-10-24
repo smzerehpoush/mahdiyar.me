@@ -4,12 +4,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
-import { root, cfg, TIMING, writeStageConfig } from "./config.mjs";
+import { root, cfg, TIMING, DEFAULT_VOICE, writeStageConfig } from "./config.mjs";
 
 const scriptArg = process.argv.indexOf("--script");
 const scriptFile = scriptArg > 0 ? path.resolve(process.argv[scriptArg + 1]) : path.join(root, "script/script.json");
 const script = JSON.parse(fs.readFileSync(scriptFile, "utf8"));
-const VOICE = cfg.voice || script.voice || "af_heart";
+const VOICE = cfg.voice || script.voice || DEFAULT_VOICE;
 const SPEED = cfg.speed || script.speed || 1.0;
 const SR = 24000;
 const LEAD_FIRST = TIMING.leadFirst, LEAD = TIMING.lead, DEFAULT_PAUSE = 0.35, DEFAULT_TAIL = TIMING.tail, END_HOLD = TIMING.endHold;

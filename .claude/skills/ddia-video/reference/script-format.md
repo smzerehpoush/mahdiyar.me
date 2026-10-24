@@ -6,7 +6,7 @@ triggers a storyboard beat when its line starts). Scene ids, their order, sectio
 
 ```json
 {
-  "voice": "af_heart",
+  "voice": "am_michael",
   "speed": 1.0,
   "scenes": [
     {
@@ -43,12 +43,13 @@ triggers a storyboard beat when its line starts). Scene ids, their order, sectio
 - `tail` — OPTIONAL silence at the end of the scene. Default by format: long-form 0.8, Shorts 0.4 (`video.json` `timing.tail` overrides);
   section dividers usually 1.2.
 
-`video.json` `voice`/`speed` override the script's. The series uses `af_heart` at 1.0 for long-form and 1.08 for Shorts.
+`video.json` `voice`/`speed` override the script's. The series uses `am_michael` (male, American) at 1.0 for long-form and 1.08 for
+Shorts, from Session 5 on. Sessions 1–4 and the worked examples used `af_heart`; their `video.json` keeps it.
 
 ## Length budget
-- Long-form: measured voice rate ≈ 164 words/min at 1.0×; pauses/leads add ~1.5–2 min. 12–14 min ⇒ ≈ 1,700–2,000 words (set
-  `video.json` `words`). Per-scene targets ±15% (`video.json` `scenes[].words`).
-- Shorts: ≈ 130–150 words at 1.08× for ≤ 60 s. Check the real length after `node build/tts.mjs`, not just the validator's estimate.
+- Long-form: measured voice rate ≈ 150 words/min at 1.0× (af_heart was 164); pauses/leads add ~1.5–2 min. 12–14 min ⇒ ≈ 1,550–1,850
+  words (set `video.json` `words`). Per-scene targets ±15% (`video.json` `scenes[].words`).
+- Shorts: ≈ 110–140 words (≈ 128 is about 58 s) at 1.08× for ≤ 60 s. Check the real length after `node build/tts.mjs`, not just the validator's estimate.
 
 ## Style
 - Conversational and clear: an experienced engineer talking to a colleague. Second person ("you") is welcome. Short sentences. No hype

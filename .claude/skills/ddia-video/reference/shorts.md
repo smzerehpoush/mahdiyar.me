@@ -2,13 +2,14 @@
 
 Worked example: `examples/session-01-short/` (Chapter 1, "How Twitter Built Your Timeline: Fan-Out Explained", 59.5 s,
 https://youtube.com/shorts/unP7OnG847Y). Rebuild it with `node scripts/new-video.mjs --session 1 --format short --example session-01-short --dir <dir>`.
+It was voiced with `af_heart` and the rebuild keeps that voice. Its 146 words would run 64.5 s in `am_michael`, the series voice now.
 
 ## Pick the idea
 One self-contained idea from the chapter that has a number or a contrast people remember (Chapter 1: Twitter fan-out — 4,600 tweets/s
 vs 300,000 timeline reads/s; tail-latency amplification — 1% slow calls → 63% slow requests). Check the channel's existing Shorts first
 (see youtube-upload.md §1) so topics do not repeat. Same accuracy rules as long-form: label historical figures on screen and in speech.
 
-## Shape (≤ 60 s, 5–7 scenes, 120–155 words, ≈ 140, at 1.08×)
+## Shape (≤ 60 s, 5–7 scenes, 110–140 words, ≈ 128, at 1.08×)
 1. **Hook (0–10 s)** — a question or surprising contrast as the headline, visible from frame 0 (it is the cover in the feed). The first
    spoken sentence states the tension.
 2. **2–4 explanation scenes** — one diagram each, one idea each, beats on spoken words.

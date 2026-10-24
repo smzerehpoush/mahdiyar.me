@@ -26,8 +26,8 @@ your scenes, script, data or config.
   "deck": { "title": "DDIA Session 2: …", "url": "https://mahdiyar.me/blog/ddia-session-2/", "file": "public/blog/ddia-session-2/index.html" },
   // "deck2": { "title": …, "url": … },                    // only for a chapter split over two sessions
   "book": "Martin Kleppmann, Designing Data-Intensive Applications (O'Reilly, 1st edition, 2017)",
-  "voice": "af_heart", "speed": 1.0,                         // Kokoro voice + speed (Shorts: 1.08)
-  "words": { "min": 1700, "max": 2000 },                     // validator range for the whole script
+  "voice": "am_michael", "speed": 1.0,                       // Kokoro voice + speed (Shorts: 1.08)
+  "words": { "min": 1550, "max": 1850 },                     // validator range for the whole script (Shorts: 110–140)
   "sections": {                                              // script scene.section → on-screen section tag + accent
     "intro": { "label": "", "accent": "hl" },
     "models": { "label": "01 · Data models", "accent": "teal" }

@@ -39,6 +39,9 @@ its custom thumbnail on upload.
 - It is not yet decided whether the other split chapters (sessions 6+7, 9+10, 12+13, 15+16) get one video or two. Ask the user when
   one comes up.
 - A Short's `relatedVideo` is its chapter's long-form URL from the table above.
+- **Narration voice: male, Kokoro `am_michael`, from Session 5 on** (the user's choice, 2026-10-24). This includes new Shorts for
+  earlier chapters. Everything in the Published table above used `af_heart` (female). am_michael speaks about 9% slower, so the
+  word budgets went down: long-form 1,550–1,850, Shorts 110–140 (script-format.md).
 
 ## Pending Studio edits (local, once the channel allows them)
 - Custom thumbnails, refused because of the daily limit (expect about one per day on this channel). The files are on the user's Mac:

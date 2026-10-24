@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { root, cfg, TIMING } from "./config.mjs";
+import { root, cfg, TIMING, DEFAULT_VOICE, VOICE_WPM } from "./config.mjs";
 const file = path.resolve(process.argv[2] || path.join(root, "script/script.json"));
 const script = JSON.parse(fs.readFileSync(file, "utf8"));
 // Scenes, beats (cue names, in order), sections and per-scene word targets come from video.json "scenes".
@@ -13,7 +13,8 @@ const BEATS = Object.fromEntries(SCENES.map((s) => [s.id, s.beats || []]));
 const SECTIONS = {};
 for (const s of SCENES) (SECTIONS[s.section] ||= []).push(s.id);
 const TARGET = Object.fromEntries(SCENES.map((s) => [s.id, s.words || 0]));
-const WMIN = cfg.words?.min ?? 1700, WMAX = cfg.words?.max ?? 2000;
+const WMIN = cfg.words?.min ?? 1550, WMAX = cfg.words?.max ?? 1850;
+const VOICE = cfg.voice || script.voice || DEFAULT_VOICE, WPM = VOICE_WPM[VOICE] ?? VOICE_WPM[DEFAULT_VOICE];
 
 const errors = [], warnings = [];
 const order = Object.keys(BEATS);
@@ -51,9 +52,9 @@ for (const sc of script.scenes) {
   rows.push(`${sc.id.padEnd(14)} ${String(w).padStart(4)} words (target ${t}, ${dev >= 0 ? "+" : ""}${Math.round(dev * 100)}%)`);
   if (Math.abs(dev) > 0.15) warnings.push(`${sc.id}: ${w} words vs target ${t} (more than ±15%)`);
 }
-const estSec = (total / 164 / (cfg.speed || 1)) * 60 * 0.93 + pauses + script.scenes.length * TIMING.lead + TIMING.leadFirst - TIMING.lead + TIMING.endHold;
+const estSec = (total / WPM / (cfg.speed || script.speed || 1)) * 60 * 0.93 + pauses + script.scenes.length * TIMING.lead + TIMING.leadFirst - TIMING.lead + TIMING.endHold;
 console.log(rows.join("\n"));
-console.log(`\nTOTAL ${total} words · pauses+tails ${pauses.toFixed(1)} s · estimated runtime ${(estSec / 60).toFixed(2)} min`);
+console.log(`\nTOTAL ${total} words (${VOICE}, ≈ ${WPM} words/min at 1.0×) · pauses+tails ${pauses.toFixed(1)} s · estimated runtime ${(estSec / 60).toFixed(2)} min`);
 if (total < WMIN || total > WMAX) errors.push(`total words ${total} outside ${WMIN}–${WMAX} (video.json "words")`);
 if (warnings.length) console.log("\nWARNINGS:\n- " + warnings.join("\n- "));
 if (errors.length) { console.log("\nERRORS:\n- " + errors.join("\n- ")); process.exit(1); }

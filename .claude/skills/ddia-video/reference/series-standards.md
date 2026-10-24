@@ -21,7 +21,8 @@ original). Each video's `brief/brief.md` restates them plus the chapter-specific
 ## Narration
 - Natural, clear, conversational teaching; moderate pace; an experienced engineer explaining to a colleague.
 - No hype, no robotic delivery, no unnecessary jargon. Explain unfamiliar terms before relying on them.
-- Synthetic voice (Kokoro `af_heart`); disclosed in the description.
+- Synthetic voice, male: Kokoro `am_michael` from Session 5 on (the user's choice, 2026-10-24; Sessions 1–4 used `af_heart`). Disclosed
+  in the description.
 
 ## Structure (long-form)
 - First ~20 seconds (YouTube's own analytics advice, 2026-10-23): open straight on a real-world problem a working engineer recognizes
