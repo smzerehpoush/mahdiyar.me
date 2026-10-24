@@ -91,7 +91,7 @@ Long-form: run the script workflow (two drafts → judge → four review lenses 
 `Workflow({ scriptPath: "${CLAUDE_SKILL_DIR}/workflows/script.js", args: { dir: "<abs work dir>" } })`.
 Then read the result yourself — the whole script, aloud in your head — and fix what is off. Gate: `node build/validate-script.mjs`
 prints "OK: no errors" and the total is in range.
-Shorts: write the script yourself (120–155 words, ≈ 140; reference/shorts.md), validate the same way.
+Shorts: write the script yourself (110–140 words, ≈ 128; reference/shorts.md), validate the same way.
 
 ## 4. Narration and timing
 ```bash
