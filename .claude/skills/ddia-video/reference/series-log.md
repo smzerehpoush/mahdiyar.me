@@ -25,14 +25,17 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 2 | long (13:45) | Designing Data-Intensive Applications, Chapter 2: Data Models and Query Languages | https://youtu.be/b-rJ8lzuEZY | 2026-10-21 |
 | 2 | Short | "Schemaless" Is a Myth: Schema-on-Read vs Schema-on-Write #Shorts | https://youtube.com/shorts/ho0yWHSOxXk | 2026-10-21 |
 | 3 | long (13:48) | Designing Data-Intensive Applications, Chapter 3, Part 1: Storage Engines | https://youtu.be/Pontu125KTo | 2026-10-21 |
+| 4 | long (12:50) | Designing Data-Intensive Applications, Chapter 3, Part 2: Why Analytics Uses Columns | https://youtu.be/Dbgfqu1neps | 2026-10-23 |
 
 All of these are Public. The three long-form titles were renamed to the book-first format on 2026-10-23 (they were
 "<Topic>: Designing Data-Intensive Applications, Chapter N Explained"). The long-form videos are in the playlist in chapter order, each with an English SRT.
+Chapter 3 Part 2 was the first video made in a cloud session (branch `claude/relaxed-goldberg-ryp57l`) and published locally; it got
+its custom thumbnail on upload.
 
 ## Series decisions
 - **Chapter 3 is two videos, one per deck** (the user's choice, 2026-10-21). Session 3 is Part 1 (published), and it ends by previewing
-  "Chapter 3, part 2". Session 4, "Analytics and column storage", is **Part 2**: a separate video, not started yet. Don't merge it into
-  Part 1 and don't add `deck2`.
+  "Chapter 3, part 2". Session 4, "Analytics and column storage", is **Part 2** (published 2026-10-23), a separate video that ends
+  by previewing Chapter 4.
 - It is not yet decided whether the other split chapters (sessions 6+7, 9+10, 12+13, 15+16) get one video or two. Ask the user when
   one comes up.
 - A Short's `relatedVideo` is its chapter's long-form URL from the table above.
