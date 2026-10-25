@@ -57,7 +57,8 @@ without an explicit request.
    - Playlist (long-form only): `click 'ytcp-video-metadata-playlists ytcp-dropdown-trigger'`, tick the series playlist by its label
      (eval: find `tp-yt-paper-checkbox`/item whose text is the playlist title and click it), then click the dialog's "Done". To create it
      the first time: `tp-yt-paper-item[test-id=new_playlist]` → fill title → visibility Public → `ytcp-playlist-creation-dialog #create-button`.
-   - `click 'tp-yt-paper-radio-button[name=VIDEO_MADE_FOR_KIDS_NOT_MFK]'`.
+   - `click 'tp-yt-paper-radio-button[name=VIDEO_MADE_FOR_KIDS_NOT_MFK]'`. If the dialog is still "Saving…", the click can be lost
+     and the radio reads `aria-checked="false"`: scroll it into view, click again, and check it in the verification eval.
    - `click '#toggle-button'` (Show more), then: `click 'tp-yt-paper-radio-button[name=VIDEO_PAID_PRODUCT_PLACEMENT_NO]'`,
      `click 'tp-yt-paper-radio-button[name=VIDEO_HAS_ALTERED_CONTENT_NO]'` (AI-use: No), tags: `click 'input[aria-label=Tags]'` then
      `type "tag1,tag2,…,"` (trailing comma commits the last chip), language: `click '#language-input'` then eval-click the visible
@@ -75,10 +76,31 @@ without an explicit request.
 4. `click '#next-button'` → Checks (wait for "Checks complete. No issues found.") → `click '#next-button'` → Visibility:
    `click 'tp-yt-paper-radio-button[name=PUBLIC]'` → `click '#done-button'` (Publish). Close the "Video published" dialog (eval-click
    the visible button with text "Close"). The video id is in the dialog's video link.
+   To **schedule** instead (e.g. one Short a day): open the "Schedule" card under "Save or publish" (`shot`, then `clickxy` on its
+   chevron) → `click '#datepicker-trigger'` and `clickxy` the day in the calendar → time: `click 'ytcp-visibility-scheduler
+   #time-of-day-container input'`, eval `focus(); select()` on that input, `type "6:30 PM"`, `key Enter`, then `clickxy` blank header
+   space so the field commits. The time zone defaults to the browser's, "(GMT+0330) Local Time" on the user's Mac. Check date and time
+   with one eval, then `click '#done-button'` (labelled "Schedule"); the first click can only blur the field, so confirm the "Video
+   scheduled … on <date> at <time>" dialog appeared before moving on. The video stays Private and turns Public on its own.
 
 ## 3. Verify
 `node tools/yt.mjs verify <videoId> out/watch.png` → title, `isPrivate: false`, `playable: "OK"`, captions include `English` (ours) besides
 the auto-generated track. Read the screenshot. Record the id in `video.json` → `youtube.videoId`, and in reference/series-log.md.
+
+## If a Studio tab freezes
+Seen on 2026-10-25 after clicking Schedule: `eval`, `shot` and even a raw CDP `Page.enable` timed out on the Studio tab while its
+renderer sat idle, and `json/activate` did not wake it. The browser itself was fine. Open a fresh tab with
+`curl -s -X PUT "localhost:9333/json/new?<studio url>"`, check the outcome there (the Content list shows "Scheduled" and the date), then
+close the frozen one with `curl -s localhost:9333/json/close/<target id>` so `yt.mjs` drives the new tab. The upload dialog auto-saves
+as a Private draft, so nothing is lost if the frozen tab held one.
+
+## End screen (long-form)
+On `/video/<id>/edit`, open `#endscreen-editor-link` → "Import from video" → pick "Chapter 1: Reliable…" by its
+`ytcp-entity-card .title` text (its layout puts the video element and Subscribe in the right half, clear of the "Next" scene's credits
+card). Select the timeline's video bar, then either set "Best for viewer" (the newest chapter) or use the pencil on the element →
+"Choose specific video" → pick the next chapter by title. Save with the visible `#save-button`. A video element cannot point at the
+video it is on, and a Short picked as the import source fails with an aspect-ratio error. After publishing a new chapter, repoint the
+previous chapter's video element at it.
 
 ## Edit page (after publishing)
 `studio.youtube.com/video/<id>/edit` — same field selectors; save with `ytcp-button#save`. Use it for visibility changes (e.g. making a
