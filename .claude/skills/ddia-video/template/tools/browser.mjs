@@ -21,7 +21,7 @@ export async function openStage({ qa = false } = {}) {
   const page = await browser.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e.message || e)));
-  page.on("console", (m) => { if (m.type() === "error" || m.type() === "warning") errors.push(`[console.${m.type()}] ${m.text()}`); });
+  page.on("console", (m) => { if (m.type() === "error" || m.type() === "warn" || m.type() === "warning") errors.push(`[console.${m.type()}] ${m.text()}`); });
   const url = "file://" + path.join(root, "stage/index.html") + (qa ? "?qa=1" : "");
   await page.goto(url, { waitUntil: "load" });
   await page.waitForFunction("window.__ready === true", { timeout: 60000 });
