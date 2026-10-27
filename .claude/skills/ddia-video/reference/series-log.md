@@ -37,6 +37,7 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 3 | Short (0:57) | Why Deleting Data Can Make a Database Bigger #Shorts | https://youtube.com/shorts/jQFb9xyO2hk | scheduled 2026-10-26 18:30 Tehran |
 | 4 | Short (0:55) | Why Analytics Databases Read Columns, Not Rows #Shorts | https://youtube.com/shorts/UEuhuITwccI | scheduled 2026-10-27 18:30 Tehran |
 | 5 | Short (0:56) | How a Rolling Deploy Can Silently Delete Data #Shorts | https://youtube.com/shorts/0jGFILQlCmg | scheduled 2026-10-28 18:30 Tehran |
+| 6 | long (13:52) | Designing Data-Intensive Applications, Chapter 5, Part 1: When Replicas Fall Behind | https://youtu.be/56fysYohb4k | 2026-10-27 |
 
 All of these are Public, except the three scheduled Shorts, which stay Private until their scheduled time and then turn Public on
 their own. The three long-form titles were renamed to the book-first format on 2026-10-23 (they were
@@ -44,6 +45,8 @@ their own. The three long-form titles were renamed to the book-first format on 2
 Chapter 3 Part 2 was the first video made in a cloud session (branch `claude/relaxed-goldberg-ryp57l`) and published locally; it got
 its custom thumbnail on upload.
 Chapter 4 (Session 5) is the first video with the male `am_michael` voice. It was made locally and got its custom thumbnail on upload.
+Chapter 5 Part 1 (Session 6) was made locally and got its custom thumbnail on upload. Its end screen uses "Best for viewer" until
+Part 2 is published.
 On 2026-10-25 the Chapter 1, 2 and 3 Part 1 long-form videos got redesigned thumbnails (v2), whose big words name the hook's problem
 rather than the book's terms. Each v1 is kept beside it as `thumbnail.v1.*` (and `stage/thumbnail.v1.html`). The Session 3, 4 and 5
 Shorts were made the same day, all with `am_michael`.
@@ -52,8 +55,9 @@ Shorts were made the same day, all with `am_michael`.
 - **Chapter 3 is two videos, one per deck** (the user's choice, 2026-10-21). Session 3 is Part 1 (published), and it ends by previewing
   "Chapter 3, part 2". Session 4, "Analytics and column storage", is **Part 2** (published 2026-10-23), a separate video that ends
   by previewing Chapter 4.
-- It is not yet decided whether the other split chapters (sessions 6+7, 9+10, 12+13, 15+16) get one video or two. Ask the user when
-  one comes up.
+- **Chapter 5 is two videos as well** (the user's choice, 2026-10-25): Session 6 is Part 1 (leaders and followers, replication lag)
+  and ends by previewing "Chapter 5, part 2"; Session 7 is Part 2 (multi-leader, leaderless). It is not yet decided whether the other
+  split chapters (sessions 9+10, 12+13, 15+16) get one video or two. Ask the user when one comes up.
 - A Short's `relatedVideo` is its chapter's long-form URL from the table above.
 - **Narration voice: male, Kokoro `am_michael`, from Session 5 on** (the user's choice, 2026-10-24). This includes new Shorts for
   earlier chapters. Sessions 1–4 in the Published table used `af_heart` (female). am_michael speaks about 9% slower, so the
@@ -61,8 +65,7 @@ Shorts were made the same day, all with `am_michael`.
 
 ## Pending Studio edits (local, once the channel allows them)
 - Custom thumbnails, refused because of the daily limit. The limit varies: about one per day earlier, while on 2026-10-25 five went
-  through before the sixth was refused. The files are on the user's Mac:
-  - 0jGFILQlCmg ← `~/Movies/DDIA-Session-5-Video/Short/thumbnail.jpg` (add it before the Short goes public on 2026-10-28 18:30 Tehran)
+  through before the sixth was refused. 0jGFILQlCmg got its thumbnail on 2026-10-27. The file is on the user's Mac:
   - ho0yWHSOxXk ← `~/Movies/DDIA-Session-2-Video/Short/thumbnail.jpg`
 - Related-video links, refused with "once you have more history":
   - unP7OnG847Y and dNdS39XkMqA → uCm4lbSYg2Y
@@ -70,7 +73,8 @@ Shorts were made the same day, all with `am_michael`.
   - jQFb9xyO2hk → Pontu125KTo
   - UEuhuITwccI → Dbgfqu1neps
   - 0jGFILQlCmg → gavQQVU2d1w
-- End screen: when Chapter 5 is published, point gavQQVU2d1w's end-screen video element at it (it uses "Best for viewer" now).
+- End screen: when Chapter 5, Part 2 is published, point 56fysYohb4k's end-screen video element at it (it uses "Best for viewer"
+  now). gavQQVU2d1w (Chapter 4) has pointed at 56fysYohb4k since 2026-10-27.
 - Description links aren't clickable until the channel has Advanced features. The phone is already verified (Intermediate is
   enabled); on 2026-10-25 Advanced was "Eligible", missing only "Channel history", which YouTube grants over time. This doesn't
   block publishing.
