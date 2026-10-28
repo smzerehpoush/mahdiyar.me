@@ -65,8 +65,8 @@ Shorts were made the same day, all with `am_michael`.
 
 ## Pending Studio edits (local, once the channel allows them)
 - Custom thumbnails, refused because of the daily limit. The limit varies: about one per day earlier, while on 2026-10-25 five went
-  through before the sixth was refused. 0jGFILQlCmg got its thumbnail on 2026-10-27. The file is on the user's Mac:
-  - ho0yWHSOxXk ← `~/Movies/DDIA-Session-2-Video/Short/thumbnail.jpg`
+  through before the sixth was refused. None are pending: 0jGFILQlCmg and ho0yWHSOxXk got theirs on 2026-10-27, the same day
+  56fysYohb4k got its thumbnail on upload.
 - Related-video links, refused with "once you have more history":
   - unP7OnG847Y and dNdS39XkMqA → uCm4lbSYg2Y
   - ho0yWHSOxXk → b-rJ8lzuEZY
