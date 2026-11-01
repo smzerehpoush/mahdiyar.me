@@ -40,6 +40,7 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 6 | long (13:52) | Designing Data-Intensive Applications, Chapter 5, Part 1: When Replicas Fall Behind | https://youtu.be/56fysYohb4k | 2026-10-27 |
 | 6 | Short (0:56) | How a Database Failover Showed Users Someone Else's Data #Shorts | https://youtube.com/shorts/wLJqdGGSv4o | scheduled 2026-10-31 18:30 Tehran |
 | 7 | long (13:39) | Designing Data-Intensive Applications, Chapter 5, Part 2: When Two Writes Collide | https://youtu.be/v7VNukkS3bA | 2026-11-01 |
+| 7 | Short (0:56) | Both Phones Said "Added." Then the Tea Vanished. #Shorts | https://youtube.com/shorts/wNt6U4lsYg8 | scheduled 2026-11-04 18:30 Tehran |
 
 All of these are Public. The scheduled Shorts stay Private until their scheduled time and then turn Public on their own. The
 three long-form titles were renamed to the book-first format on 2026-10-23 (they were
@@ -51,6 +52,8 @@ Chapter 5 Part 1 (Session 6) was made locally and got its custom thumbnail on up
 Part 2 since 2026-11-01.
 Chapter 5 Part 2 (Session 7) is the first video with the warmer script style and the robot narrator (Series decisions below). It
 got its custom thumbnail on upload, and its end screen (Subscribe + "Best for viewer") was imported from Part 1.
+The Session 7 Short (last write wins, told with Part 2's shopping-list hook and the same timestamps) was made locally on 2026-11-01
+and got its custom thumbnail on upload; related-video linking was still refused that day.
 The Session 6 Short (the GitHub 2012 failover, as described in the book) was made locally on 2026-10-30. The channel still could
 not link a Short to a related video that day ("Build your channel history"), so it relies on the description's "Full video:" line.
 On 2026-10-25 the Chapter 1, 2 and 3 Part 1 long-form videos got redesigned thumbnails (v2), whose big words name the hook's problem
@@ -62,8 +65,9 @@ Shorts were made the same day, all with `am_michael`.
   "Chapter 3, part 2". Session 4, "Analytics and column storage", is **Part 2** (published 2026-10-23), a separate video that ends
   by previewing Chapter 4.
 - **Chapter 5 is two videos as well** (the user's choice, 2026-10-25): Session 6 is Part 1 (leaders and followers, replication lag)
-  and ends by previewing "Chapter 5, part 2"; Session 7 is Part 2 (multi-leader, leaderless). It is not yet decided whether the other
-  split chapters (sessions 9+10, 12+13, 15+16) get one video or two. Ask the user when one comes up.
+  and ends by previewing "Chapter 5, part 2"; Session 7 is Part 2 (multi-leader, leaderless).
+- **Chapter 7 is two videos too** (the user's choice, 2026-11-01): Session 9 is Part 1 and Session 10 is Part 2, one per deck. It is
+  not yet decided whether the other split chapters (sessions 12+13, 15+16) get one video or two. Ask the user when one comes up.
 - A Short's `relatedVideo` is its chapter's long-form URL from the table above.
 - **Narration voice: male, Kokoro `am_michael`, from Session 5 on** (the user's choice, 2026-10-24). This includes new Shorts for
   earlier chapters. Sessions 1–4 in the Published table used `af_heart` (female). am_michael speaks about 9% slower, so the
@@ -84,6 +88,7 @@ Shorts were made the same day, all with `am_michael`.
   - UEuhuITwccI → Dbgfqu1neps
   - 0jGFILQlCmg → gavQQVU2d1w
   - wLJqdGGSv4o → 56fysYohb4k
+  - wNt6U4lsYg8 → v7VNukkS3bA
 - End screen: when Chapter 6 is published, point v7VNukkS3bA's end-screen video element at it (it uses "Best for viewer" now).
   56fysYohb4k (Chapter 5, Part 1) has pointed at v7VNukkS3bA since 2026-11-01, and gavQQVU2d1w (Chapter 4) at 56fysYohb4k since
   2026-10-27.
