@@ -44,6 +44,11 @@ for (const sc of script.scenes) {
     // video.json "spokenRules": [{ "pattern": "\\bMTTF\\b", "message": "say \"mean time to failure\"" }] — checked against what is spoken.
     for (const r of cfg.spokenRules || []) if (new RegExp(r.pattern).test(l.say || l.text)) errors.push(`${where}: ${r.message}`);
     pauses += l.pause ?? 0.35;
+    // Sentence gaps (build/tts.mjs synthesizes sentence by sentence): `gaps` must have one entry per sentence break.
+    const sents = (l.say || l.text).split(/(?<=[.?!])\s+(?=["'A-Z0-9])/).filter((x) => x.trim());
+    if (l.gaps && (!Array.isArray(l.gaps) || l.gaps.length !== sents.length - 1))
+      errors.push(`${where}: "gaps" needs ${sents.length - 1} entries (one per sentence break), got ${JSON.stringify(l.gaps)}`);
+    pauses += l.gaps ? l.gaps.reduce((a, b) => a + b, 0) : (sents.length - 1) * 0.3;
   });
   pauses += sc.tail ?? TIMING.tail;
   total += w;

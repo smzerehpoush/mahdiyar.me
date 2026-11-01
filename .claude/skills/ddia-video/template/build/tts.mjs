@@ -1,5 +1,8 @@
 // Narration: synthesize every script line with Kokoro (cached by content hash), trim edge silence, lay the clips out on a
 // timeline, and write: build/timeline.json, stage/timeline.js, audio/narration.wav (24 kHz mono).
+// Pacing: a line with several sentences is synthesized one sentence at a time and joined with short gaps, so each sentence gets
+// its own intonation and the rhythm can breathe (the 2026-10-31 "warmer" delivery). The gap after a sentence comes from the
+// line's optional `gaps` array (seconds, one per sentence break, in order), else from its end punctuation (GAP below).
 // Usage: node build/tts.mjs [--script script/script.json]
 import fs from "node:fs";
 import path from "node:path";
@@ -24,6 +27,12 @@ function ttsInput(line) {
   return s;
 }
 const keyOf = (s) => crypto.createHash("sha1").update(`${VOICE}|${SPEED}|${s}`).digest("hex").slice(0, 16);
+// Default gap after a sentence that ends a chunk: questions and exclamations breathe a little longer.
+const GAP = { ".": 0.28, "?": 0.38, "!": 0.34 };
+/** Split TTS input into sentences: end punctuation followed by a space and an upper-case letter, digit or quote. */
+function sentences(s) {
+  return s.split(/(?<=[.?!])\s+(?=["'A-Z0-9])/).map((x) => x.trim()).filter(Boolean);
+}
 
 function writeWav(file, f32, sr = SR) {
   const n = f32.length, buf = Buffer.alloc(44 + n * 2);
@@ -69,13 +78,24 @@ for (const [si, sc] of script.scenes.entries()) {
   let t = si === 0 ? LEAD_FIRST : LEAD;
   for (const [i, line] of sc.lines.entries()) {
     const say = ttsInput(line);
-    const key = keyOf(say);
+    const parts = sentences(say);
+    if (line.gaps && line.gaps.length !== parts.length - 1)
+      throw new Error(`${sc.id} line ${i}: ${line.gaps.length} gaps for ${parts.length} sentences: ${JSON.stringify(parts)}`);
+    const gaps = parts.slice(0, -1).map((p, j) => line.gaps ? line.gaps[j] : GAP[p.slice(-1)] ?? GAP["."]);
+    const key = keyOf(parts.length > 1 ? JSON.stringify([parts, gaps]) : say);
     const wav = path.join(linesDir, key + ".wav");
     if (!fs.existsSync(wav)) {
-      const raw = await synth(say);
-      writeWav(wav, trim(raw));
-      synthCount++;
-      process.stdout.write(`\r synthesized ${synthCount} lines (scene ${sc.id})      `);
+      const chunks = [];
+      for (const [j, p] of parts.entries()) {
+        const pk = path.join(linesDir, "s-" + keyOf(p) + ".wav");
+        if (!fs.existsSync(pk)) { writeWav(pk, trim(await synth(p))); synthCount++; }
+        chunks.push(readWav(pk));
+        if (j < gaps.length) chunks.push(new Float32Array(Math.round(SR * gaps[j])));
+      }
+      const all = new Float32Array(chunks.reduce((n, c) => n + c.length, 0));
+      let o = 0; for (const c of chunks) { all.set(c, o); o += c.length; }
+      writeWav(wav, all);
+      process.stdout.write(`\r synthesized ${synthCount} sentences (scene ${sc.id})      `);
     }
     const n = (fs.statSync(wav).size - 44) / 2;
     const dur = n / SR;
@@ -106,6 +126,26 @@ for (const sc of timeline.scenes) for (const l of sc.lines) {
   for (let i = 0; i < x.length && off + i < total.length; i++) total[off + i] += x[i];
 }
 writeWav(path.join(root, "audio/narration.wav"), total);
+
+// Mouth envelope for the narrator character (stage/narrator.js): per-frame loudness, 0..1, relative to the narration's own level
+// (the 95th percentile of voiced frames maps to 1, 30 dB below it to 0), with a fast attack and a slower release.
+{
+  const hop = SR / timeline.fps, nf = Math.ceil(total.length / hop), db = new Float32Array(nf);
+  for (let f = 0; f < nf; f++) {
+    let e2 = 0, c = 0;
+    for (let i = Math.floor(f * hop); i < Math.min(total.length, Math.floor((f + 1) * hop)); i++) { e2 += total[i] * total[i]; c++; }
+    db[f] = 20 * Math.log10(Math.sqrt(e2 / Math.max(1, c)) + 1e-9);
+  }
+  const voiced = [...db].filter((d) => d > -60).sort((a, b) => a - b);
+  const top = voiced.length ? voiced[Math.floor(voiced.length * 0.95)] : -12;
+  const v = new Array(nf); let env = 0;
+  for (let f = 0; f < nf; f++) {
+    const x = Math.max(0, Math.min(1, (db[f] - (top - 30)) / 30));
+    env = x > env ? env + (x - env) * 0.75 : env + (x - env) * 0.35;
+    v[f] = Math.round(env * 100) / 100;
+  }
+  fs.writeFileSync(path.join(root, "stage/mouth.js"), "window.MOUTH = " + JSON.stringify({ fps: timeline.fps, v }) + ";\n");
+}
 
 const words = script.scenes.flatMap((s) => s.lines).reduce((n, l) => n + l.text.split(/\s+/).length, 0);
 const m = Math.floor(timeline.total / 60), s = (timeline.total % 60).toFixed(1);

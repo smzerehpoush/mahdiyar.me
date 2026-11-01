@@ -59,6 +59,7 @@ export function stageConfig() {
     session: cfg.session ?? null, chapter: cfg.chapter ?? null, book: cfg.book || null,
     deck: cfg.deck ? { title: cfg.deck.title, url: cfg.deck.url } : null,
     ...(cfg.deck2 ? { deck2: { title: cfg.deck2.title, url: cfg.deck2.url } } : {}), // second session deck of a split chapter
+    narrator: cfg.narrator || null, // { character, box: [x, y, w, h], exitBefore }: the corner robot (stage/narrator.js), long-form only
   };
 }
 export function writeStageConfig() {

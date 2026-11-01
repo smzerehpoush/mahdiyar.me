@@ -57,7 +57,7 @@ your scenes, script, data or config.
 |---|---|---|
 | data | `node build/data.mjs` | `data/numbers.md`, `stage/datasets.js` |
 | validate script | `node build/validate-script.mjs` | per-scene word counts, runtime estimate, errors |
-| narration | `node build/tts.mjs` | `audio/lines/*.wav` (cached by text+voice+speed), `audio/narration.wav`, `build/timeline.json`, `stage/timeline.js`, `stage/video.js` (re-run after editing `video.json` sections/deck) |
+| narration | `node build/tts.mjs` | `audio/lines/*.wav` (cached by text+voice+speed), `audio/narration.wav`, `build/timeline.json`, `stage/timeline.js`, `stage/video.js` (re-run after editing `video.json` sections/deck/narrator), `stage/mouth.js` (per-frame loudness for the narrator robot's mouth). Lines are synthesized sentence by sentence with `gaps` (script-format.md) |
 | word timings | `node build/words.mjs` | `build/words.json`, `stage/words.js` (whisper; rerun after every tts) |
 | narration QA | `node tools/asr-check.mjs` | WER per line (> 12 % flagged; "look-up" vs "lookup"-style hits are false positives) |
 | scene QA | `node tools/still.mjs <scene> --qa [--at cue+0.3]` | `out/qa/<scene>/*.png`, `sheet.png`, layout warnings |
@@ -95,3 +95,11 @@ On Linux (cloud sessions), `bash scripts/cloud-setup.sh` first installs ffmpeg, 
 (`~/.cache/ddia-video/chrome`), then runs `setup.mjs` (reference/cloud.md).
 Env overrides: `DDIA_VIDEO_CACHE`, `CHROME_PATH`, `WHISPER_MODEL`, `DDIA_REPO`, `DDIA_VIDEO_HOME` (default `~/Movies`; `<repo>/videos` in
 a cloud session), `YT_CDP_PORT`.
+
+## Narrator robot (long-form, from Ch. 5 Part 2 on)
+`video.json` → `"narrator": { "character": "robot", "box": [1752, 874, 152, 198], "exitBefore": 20 }` turns on `stage/narrator.js`, a
+global layer that `R.seek` updates every frame, like the section tag. Its mouth follows `stage/mouth.js`. It blinks on a seeded
+schedule and points up-left once per scene, on the scene's first cue. Its colour follows the section accent, crossfading over 0.5 s
+when the section changes. It pops up after 0.9 s and slides out `exitBefore` seconds before the end, clear of the end screen.
+`layoutReport` flags scene content inside `box` (`NARRATOR`). Leave `narrator` out (Shorts, older videos) and nothing changes.
+

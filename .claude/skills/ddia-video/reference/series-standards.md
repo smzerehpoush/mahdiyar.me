@@ -23,6 +23,16 @@ original). Each video's `brief/brief.md` restates them plus the chapter-specific
 - No hype, no robotic delivery, no unnecessary jargon. Explain unfamiliar terms before relying on them.
 - Synthetic voice, male: Kokoro `am_michael` from Session 5 on (the user's choice, 2026-10-24; Sessions 1–4 used `af_heart`). Disclosed
   in the description.
+- **Warm delivery, from Ch. 5 Part 2 (Session 7) on** (the user, 2026-10-31: the earlier narration sounded too dry). Write the way a
+  friendly presenter talks: contractions, direct "you", short real questions ("The catch?", "So how do you keep both?"), short punchy
+  sentences mixed with longer ones, a callback to the hook now and then. The engine speaks long-form at speed 1.05 and synthesizes
+  each sentence separately with a short gap, so rhythm comes from sentence breaks and `gaps` (script-format.md). The user picked this
+  from samples (sample C in `~/Movies/DDIA-Session-7-Video/options/narrator-options.html`).
+- **Narrator character, long-form from Ch. 5 Part 2 on** (the user's choice, 2026-10-31): a small original robot in the bottom-right
+  corner. It has a screen face, and its mouth is five sound bars that follow the narration. It takes the colour of the section's
+  accent. It is in every frame except the last ~20 s, which belong to the end screen. The engine draws it (`stage/narrator.js`;
+  `video.json` `narrator`), and scenes keep its corner clear (scene-guide.md). Not in Shorts (the player UI covers every corner).
+  Published videos were not redone.
 
 ## Structure (long-form)
 - First ~20 seconds (YouTube's own analytics advice, 2026-10-23): open straight on a real-world problem a working engineer recognizes

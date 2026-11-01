@@ -38,15 +38,21 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 4 | Short (0:55) | Why Analytics Databases Read Columns, Not Rows #Shorts | https://youtube.com/shorts/UEuhuITwccI | scheduled 2026-10-27 18:30 Tehran |
 | 5 | Short (0:56) | How a Rolling Deploy Can Silently Delete Data #Shorts | https://youtube.com/shorts/0jGFILQlCmg | scheduled 2026-10-28 18:30 Tehran |
 | 6 | long (13:52) | Designing Data-Intensive Applications, Chapter 5, Part 1: When Replicas Fall Behind | https://youtu.be/56fysYohb4k | 2026-10-27 |
+| 6 | Short (0:56) | How a Database Failover Showed Users Someone Else's Data #Shorts | https://youtube.com/shorts/wLJqdGGSv4o | scheduled 2026-10-31 18:30 Tehran |
+| 7 | long (13:39) | Designing Data-Intensive Applications, Chapter 5, Part 2: When Two Writes Collide | https://youtu.be/v7VNukkS3bA | 2026-11-01 |
 
-All of these are Public, except the three scheduled Shorts, which stay Private until their scheduled time and then turn Public on
-their own. The three long-form titles were renamed to the book-first format on 2026-10-23 (they were
+All of these are Public. The scheduled Shorts stay Private until their scheduled time and then turn Public on their own. The
+three long-form titles were renamed to the book-first format on 2026-10-23 (they were
 "<Topic>: Designing Data-Intensive Applications, Chapter N Explained"). The long-form videos are in the playlist in chapter order, each with an English SRT.
 Chapter 3 Part 2 was the first video made in a cloud session (branch `claude/relaxed-goldberg-ryp57l`) and published locally; it got
 its custom thumbnail on upload.
 Chapter 4 (Session 5) is the first video with the male `am_michael` voice. It was made locally and got its custom thumbnail on upload.
-Chapter 5 Part 1 (Session 6) was made locally and got its custom thumbnail on upload. Its end screen uses "Best for viewer" until
-Part 2 is published.
+Chapter 5 Part 1 (Session 6) was made locally and got its custom thumbnail on upload. Its end-screen video element has pointed at
+Part 2 since 2026-11-01.
+Chapter 5 Part 2 (Session 7) is the first video with the warmer script style and the robot narrator (Series decisions below). It
+got its custom thumbnail on upload, and its end screen (Subscribe + "Best for viewer") was imported from Part 1.
+The Session 6 Short (the GitHub 2012 failover, as described in the book) was made locally on 2026-10-30. The channel still could
+not link a Short to a related video that day ("Build your channel history"), so it relies on the description's "Full video:" line.
 On 2026-10-25 the Chapter 1, 2 and 3 Part 1 long-form videos got redesigned thumbnails (v2), whose big words name the hook's problem
 rather than the book's terms. Each v1 is kept beside it as `thumbnail.v1.*` (and `stage/thumbnail.v1.html`). The Session 3, 4 and 5
 Shorts were made the same day, all with `am_michael`.
@@ -62,6 +68,10 @@ Shorts were made the same day, all with `am_michael`.
 - **Narration voice: male, Kokoro `am_michael`, from Session 5 on** (the user's choice, 2026-10-24). This includes new Shorts for
   earlier chapters. Sessions 1–4 in the Published table used `af_heart` (female). am_michael speaks about 9% slower, so the
   word budgets went down: long-form 1,550–1,850, Shorts 110–140 (script-format.md).
+- **Warmer narration and a robot narrator, long-form from Session 7 on** (the user's choice, 2026-10-31, after finding the
+  narration too dry): warm script with short sentences and sentence-level pauses, `am_michael` at speed 1.05 (long-form budget
+  1,600–1,950 words), and the robot in the bottom-right corner, gone for the last 20 s (series-standards.md, pipeline.md →
+  Narrator robot). Published videos stay as they are; Shorts have no narrator for now.
 
 ## Pending Studio edits (local, once the channel allows them)
 - Custom thumbnails, refused because of the daily limit. The limit varies: about one per day earlier, while on 2026-10-25 five went
@@ -73,8 +83,10 @@ Shorts were made the same day, all with `am_michael`.
   - jQFb9xyO2hk → Pontu125KTo
   - UEuhuITwccI → Dbgfqu1neps
   - 0jGFILQlCmg → gavQQVU2d1w
-- End screen: when Chapter 5, Part 2 is published, point 56fysYohb4k's end-screen video element at it (it uses "Best for viewer"
-  now). gavQQVU2d1w (Chapter 4) has pointed at 56fysYohb4k since 2026-10-27.
+  - wLJqdGGSv4o → 56fysYohb4k
+- End screen: when Chapter 6 is published, point v7VNukkS3bA's end-screen video element at it (it uses "Best for viewer" now).
+  56fysYohb4k (Chapter 5, Part 1) has pointed at v7VNukkS3bA since 2026-11-01, and gavQQVU2d1w (Chapter 4) at 56fysYohb4k since
+  2026-10-27.
 - Description links aren't clickable until the channel has Advanced features. The phone is already verified (Intermediate is
   enabled); on 2026-10-25 Advanced was "Eligible", missing only "Channel history", which YouTube grants over time. This doesn't
   block publishing.

@@ -539,8 +539,18 @@
       I.root.style.zIndex = fin < 1 ? 2 : 1; // incoming scene on top during crossfade
       I.def.update(T - sc.start, I.k, I.state);
       if (I.def.chrome !== false && SECTION_LABEL[sc.section]) {
-        if (op > chromeOp) { chromeOp = op; chromeText = SECTION_LABEL[sc.section]; chromeColor = PILLAR[sc.section]; }
+        // Two scenes of the same section crossfading share one tag: add their opacities so the tag does not dip at the cut.
+        if (SECTION_LABEL[sc.section] === chromeText) chromeOp = Math.min(1, chromeOp + op);
+        else if (op > chromeOp) { chromeOp = op; chromeText = SECTION_LABEL[sc.section]; chromeColor = PILLAR[sc.section]; }
       }
+    }
+    // Narrator character (stage/narrator.js, only when video.json has "narrator"): colour = the current scene's section accent,
+    // crossfaded from the previous scene's accent over the first 0.5 s of a scene that changes section.
+    if (window.NARRATOR) {
+      const scs = tl.scenes, hx = (c) => (/^#[0-9a-f]{6}$/i.test(c || "") ? c : C.hl);
+      let ci = scs.findIndex((x) => T < x.start + x.dur); if (ci < 0) ci = scs.length - 1;
+      const cur = hx(PILLAR[scs[ci].section]), prev = ci > 0 ? hx(PILLAR[scs[ci - 1].section]) : cur;
+      NARRATOR.update(T, cur, prev, prev !== cur ? T - scs[ci].start : 99);
     }
     R.chrome.querySelector(".t").textContent = chromeText;
     R.chrome.querySelector(".sw").style.background = chromeColor;
@@ -584,6 +594,13 @@
       if (r.left < stage.left - 1 || r.right > stage.right + 1 || r.top < stage.top - 1 || r.bottom > stage.bottom + 1) out.push(`OFF-FRAME: "${desc(n)}" [${Math.round(r.left)},${Math.round(r.top)},${Math.round(r.right)},${Math.round(r.bottom)}]`);
       else if (!n.closest("[data-allow-safe]") && (r.bottom > stage.top + SAFE.y1 || r.top < stage.top + SAFE.y0 || r.left < stage.left + SAFE.x0 || r.right > stage.left + SAFE.x1))
         out.push(`${SAFE.y1 < H && SAFE.y0 === 0 && SAFE.x0 === 0 ? "CAPTION-BAND" : "UNSAFE"}: "${desc(n)}" [${Math.round(r.left)},${Math.round(r.top)},${Math.round(r.right)},${Math.round(r.bottom)}]`);
+    }
+    // The narrator's corner (video.json narrator.box) must stay clear of scene content.
+    const NB = window.NARRATOR && NARRATOR.box;
+    if (NB) for (const { n, r } of boxes) {
+      const x0 = stage.left + NB[0], y0 = stage.top + NB[1];
+      if (r.right > x0 + 4 && r.left < x0 + NB[2] - 4 && r.bottom > y0 + 4 && r.top < y0 + NB[3] - 4)
+        out.push(`NARRATOR: "${desc(n)}" [${Math.round(r.left)},${Math.round(r.top)},${Math.round(r.right)},${Math.round(r.bottom)}]`);
     }
     const leafText = boxes.filter((b) => b.n.matches(".k-text, svg text, .k-chip, .k-pill, .k-badge") && !b.n.closest(".k-card"));
     for (let i = 0; i < leafText.length; i++) for (let j = i + 1; j < leafText.length; j++) {

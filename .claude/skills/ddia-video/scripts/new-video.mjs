@@ -86,7 +86,7 @@ if (example) {
   }
 } else {
   const short = format === "short";
-  const speed = short ? 1.08 : 1.0; // Shorts: slightly faster voice to fit ≤ 60 s
+  const speed = short ? 1.08 : 1.05; // Shorts: faster to fit ≤ 60 s; long-form 1.05 with sentence gaps (the warm delivery, 2026-10-31)
   const video = {
     session, chapter, format,
     title: format === "short" ? `TODO hook-style Short title (≤ 70 chars) #Shorts` : `Designing Data-Intensive Applications, Chapter ${chapter}: TODO the problem/payoff, not just "${topic}" (≤ 100 chars total)`,
@@ -94,8 +94,10 @@ if (example) {
     deck: { title: deckTitle, url: `https://mahdiyar.me/blog/ddia-session-${session}/`, file: path.relative(REPO, deckFile) },
     book: "Martin Kleppmann, Designing Data-Intensive Applications (O'Reilly, 1st edition, 2017)",
     voice: VOICE, speed,
-    // Sized for am_michael (≈ 150 words/min at 1.0×): long-form 12–14 min; a Short ≈ 128 words ≈ 58 s at 1.08×.
-    words: short ? { min: 110, max: 140 } : { min: 1550, max: 1850 },
+    // Sized for am_michael: long-form 12–14 min at 1.05× with sentence gaps; a Short ≈ 128 words ≈ 58 s at 1.08×.
+    words: short ? { min: 110, max: 140 } : { min: 1600, max: 1950 },
+    // The corner robot presenter (stage/narrator.js), long-form only.
+    ...(short ? {} : { narrator: { character: "robot", box: [1752, 874, 152, 198], exitBefore: 20 } }),
     sections: format === "short" ? { short: { label: "", accent: "hl" } } : { intro: { label: "", accent: "hl" }, ending: { label: "", accent: "hl" } },
     scenes: [],
     spokenRules: [],

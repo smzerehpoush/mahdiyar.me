@@ -46,6 +46,10 @@ The canvas depends on `video.json` → `format`:
    x = 500 (not 540 — the right edge is covered by buttons); minimum text 36 px, labels 38–44 px, numbers 76–130 px; one idea per
    screen. `layoutReport` (printed by the QA tools) flags long-form text below y 950 (`CAPTION-BAND`) and Shorts text outside the safe
    area (`UNSAFE`). The long-form side and top margins (x 120–1800, y ≥ 105) are a design rule QA does not check: check them by eye.
+   **Narrator corner** (long-form with `video.json` `narrator`, from Ch. 5 Part 2 on): a small robot presenter lives in the
+   bottom-right corner, box x 1752–1904, y 874–1072, on every frame except the last ~20 s. It is drawn by the engine
+   (`stage/narrator.js`), not by scenes. Keep that corner clear: nothing below y 860 right of x 1740, and keep labels and arrows
+   that end near the bottom-right well left of it. `layoutReport` flags anything that enters the box (`NARRATOR`).
 4. **Visual language**: dark canvas; one accent per section from `video.json` `sections` (teal / orange / purple; the Chapter 1 names
    `rel`/`sca`/`mai` are aliases); `bad` red for faults/slow/failure, `ok` green for healthy, `hl` yellow for emphasis and request dots.
    Use the K components (box, arrow, packets, card, chip(s), pill, badge, label, mark, svgIcon, histogram, divider) rather than inventing

@@ -38,7 +38,9 @@
       safe.appendChild(d);
     }
     const ids = window.TIMELINE.scenes.map((s) => s.id);
-    let left = ids.length;
+    // The narrator character and its mouth envelope load only when video.json enables it (build/tts.mjs writes mouth.js).
+    const extra = V.narrator ? ["narrator.js", "mouth.js"] : [];
+    let left = ids.length + extra.length;
     const done = () => {
       if (--left > 0) return;
       R.init(window.TIMELINE);
@@ -47,6 +49,11 @@
         window.__ready = true;
       });
     };
+    for (const f of extra) {
+      const s = document.createElement("script");
+      s.src = f; s.onload = done; s.onerror = done;
+      document.body.appendChild(s);
+    }
     for (const id of ids) {
       const s = document.createElement("script");
       s.src = "scenes/" + id + ".js";
