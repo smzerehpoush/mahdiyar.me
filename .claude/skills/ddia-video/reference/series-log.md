@@ -43,6 +43,8 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 7 | Short (0:56) | Both Phones Said "Added." Then the Tea Vanished. #Shorts | https://youtube.com/shorts/wNt6U4lsYg8 | scheduled 2026-11-04 18:30 Tehran |
 | 8 | long (13:22) | Designing Data-Intensive Applications, Chapter 6: Why Adding One Server Moved 91% of the Data | https://youtu.be/n6lwcDeHCP8 | 2026-11-02 |
 | 9 | long (13:54) | Designing Data-Intensive Applications, Chapter 7, Part 1: The Races Your Database Lets Through | https://youtu.be/jm2QdtYKAdY | 2026-11-02 |
+| 8 | Short (0:58) | Add One Server, Move 91% of the Data: Never Use Hash Mod N #Shorts | https://youtube.com/shorts/za3mF_n4X-Q | scheduled 2026-11-05 18:30 Tehran |
+| 9 | Short (0:55) | Both Doctors Checked the Rule. Nobody Was On Call. #Shorts | https://youtube.com/shorts/A3Eu-DooYDc | scheduled 2026-11-06 18:30 Tehran |
 
 All of these are Public. The scheduled Shorts stay Private until their scheduled time and then turn Public on their own. The
 three long-form titles were renamed to the book-first format on 2026-10-23 (they were
@@ -64,6 +66,9 @@ Chapter 7 Part 1 (Session 9, transactions: ACID, weak isolation, lost updates, w
 run (reference/auto.md) on 2026-11-02. Its hook is a simplified lost update (two +10 fees on a balance of 100 leave 110, not 120),
 resolved in the callback by `SET balance = balance + 10`. It got its custom thumbnail on upload, and its end screen (Subscribe +
 "Best for viewer") was imported from Chapter 6.
+The Session 8 Short (hash mod N: 10 → 11 servers moves 100 of 110 keys; 1,000 fixed partitions move about 9%) and the Session 9 Short
+(write skew, the book's on-call doctors) were made by the same automatic run on 2026-11-02, with custom thumbnails on upload;
+related-video linking was still refused.
 The Session 6 Short (the GitHub 2012 failover, as described in the book) was made locally on 2026-10-30. The channel still could
 not link a Short to a related video that day ("Build your channel history"), so it relies on the description's "Full video:" line.
 On 2026-10-25 the Chapter 1, 2 and 3 Part 1 long-form videos got redesigned thumbnails (v2), whose big words name the hook's problem
@@ -99,6 +104,8 @@ Shorts were made the same day, all with `am_michael`.
   - 0jGFILQlCmg → gavQQVU2d1w
   - wLJqdGGSv4o → 56fysYohb4k
   - wNt6U4lsYg8 → v7VNukkS3bA
+  - za3mF_n4X-Q → n6lwcDeHCP8
+  - A3Eu-DooYDc → jm2QdtYKAdY
 - End screen: when Chapter 7, Part 2 is published, point jm2QdtYKAdY's end-screen video element at it (it uses "Best for viewer"
   now). n6lwcDeHCP8 (Chapter 6) has pointed at jm2QdtYKAdY since 2026-11-02, v7VNukkS3bA (Chapter 5, Part 2) has pointed at n6lwcDeHCP8 since 2026-11-02, 56fysYohb4k (Chapter 5, Part 1) at v7VNukkS3bA
   since 2026-11-01, and gavQQVU2d1w (Chapter 4) at 56fysYohb4k since 2026-10-27.
