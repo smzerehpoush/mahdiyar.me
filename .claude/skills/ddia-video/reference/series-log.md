@@ -41,6 +41,7 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 6 | Short (0:56) | How a Database Failover Showed Users Someone Else's Data #Shorts | https://youtube.com/shorts/wLJqdGGSv4o | scheduled 2026-10-31 18:30 Tehran |
 | 7 | long (13:39) | Designing Data-Intensive Applications, Chapter 5, Part 2: When Two Writes Collide | https://youtu.be/v7VNukkS3bA | 2026-11-01 |
 | 7 | Short (0:56) | Both Phones Said "Added." Then the Tea Vanished. #Shorts | https://youtube.com/shorts/wNt6U4lsYg8 | scheduled 2026-11-04 18:30 Tehran |
+| 8 | long (13:22) | Designing Data-Intensive Applications, Chapter 6: Why Adding One Server Moved 91% of the Data | https://youtu.be/n6lwcDeHCP8 | 2026-11-02 |
 
 All of these are Public. The scheduled Shorts stay Private until their scheduled time and then turn Public on their own. The
 three long-form titles were renamed to the book-first format on 2026-10-23 (they were
@@ -54,6 +55,10 @@ Chapter 5 Part 2 (Session 7) is the first video with the warmer script style and
 got its custom thumbnail on upload, and its end screen (Subscribe + "Best for viewer") was imported from Part 1.
 The Session 7 Short (last write wins, told with Part 2's shopping-list hook and the same timestamps) was made locally on 2026-11-01
 and got its custom thumbnail on upload; related-video linking was still refused that day.
+Chapter 6 (Session 8, partitioning) was made locally on 2026-11-01/02 with the warm script and the robot narrator. Its hook is
+the app's own hash mod N placement (adding an 11th server moves 100 of 110 example keys, about 91%), resolved in the callback by
+1,000 fixed partitions (about 9%). It got its custom thumbnail on upload, and its end screen (Subscribe + "Best for viewer") was
+imported from Chapter 5, Part 2.
 The Session 6 Short (the GitHub 2012 failover, as described in the book) was made locally on 2026-10-30. The channel still could
 not link a Short to a related video that day ("Build your channel history"), so it relies on the description's "Full video:" line.
 On 2026-10-25 the Chapter 1, 2 and 3 Part 1 long-form videos got redesigned thumbnails (v2), whose big words name the hook's problem
@@ -89,9 +94,9 @@ Shorts were made the same day, all with `am_michael`.
   - 0jGFILQlCmg → gavQQVU2d1w
   - wLJqdGGSv4o → 56fysYohb4k
   - wNt6U4lsYg8 → v7VNukkS3bA
-- End screen: when Chapter 6 is published, point v7VNukkS3bA's end-screen video element at it (it uses "Best for viewer" now).
-  56fysYohb4k (Chapter 5, Part 1) has pointed at v7VNukkS3bA since 2026-11-01, and gavQQVU2d1w (Chapter 4) at 56fysYohb4k since
-  2026-10-27.
+- End screen: when Chapter 7, Part 1 is published, point n6lwcDeHCP8's end-screen video element at it (it uses "Best for viewer"
+  now). v7VNukkS3bA (Chapter 5, Part 2) has pointed at n6lwcDeHCP8 since 2026-11-02, 56fysYohb4k (Chapter 5, Part 1) at v7VNukkS3bA
+  since 2026-11-01, and gavQQVU2d1w (Chapter 4) at 56fysYohb4k since 2026-10-27.
 - Description links aren't clickable until the channel has Advanced features. The phone is already verified (Intermediate is
   enabled); on 2026-10-25 Advanced was "Eligible", missing only "Channel history", which YouTube grants over time. This doesn't
   block publishing.

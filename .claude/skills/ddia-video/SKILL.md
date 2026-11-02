@@ -83,14 +83,18 @@ illustrative charts; never run the unedited template (it writes placeholder numb
 
 ## 3. Script
 **Workflows cost real tokens.** Run the workflows below directly only when the user typed `/ddia-video` or asked for agents/workflows.
-If you picked this skill up yourself from a plain request, first tell the user what will run and roughly how many agents (script ≈ 9;
+If you picked this skill up yourself from a plain request, first tell the user what will run and roughly how many agents (script 10–22;
 scenes ≈ 3 per group, e.g. ≈ 27 for 9 groups), and ask once. The scenes workflow is large either way: state its agent count before
 starting it. If they decline, or the Workflow tool is not available, do that step yourself, following the same guides.
 
-Long-form: run the script workflow (two drafts → judge → four review lenses → revise → adversarial check, ≈ 9 agents):
+Long-form: run the script workflow (two drafts → judge → five review lenses, one of them a viewer who can leave at any second →
+revise → debate → adversarial check). In the debate, each reviewer whose must/should point was not applied sees the head writer's reason
+and concedes or pushes back with something new. A should gets one exchange; a must gets up to `debateRounds` (default 2, 0 turns the
+debate off). 10 agents when every point is applied, up to 22 with two full rounds:
 `Workflow({ scriptPath: "${CLAUDE_SKILL_DIR}/workflows/script.js", args: { dir: "<abs work dir>" } })`.
-Then read the result yourself — the whole script, aloud in your head — and fix what is off. Gate: `node build/validate-script.mjs`
-prints "OK: no errors" and the total is in range.
+Then read the result yourself — the whole script, aloud in your head — and fix what is off. Settle every entry in `disputes` (both
+sides are in it): decide a must yourself when the sources settle it, and ask the user when it is a judgment call. Gate:
+`node build/validate-script.mjs` prints "OK: no errors" and the total is in range.
 Shorts: write the script yourself (110–140 words, ≈ 128; reference/shorts.md), validate the same way.
 
 ## 4. Narration and timing

@@ -27,7 +27,7 @@ const VOICE = "am_michael";
 // Blog session → book chapter (1st edition). Some chapters span two sessions.
 const CHAPTER = { 1: 1, 2: 2, 3: 3, 4: 3, 5: 4, 6: 5, 7: 5, 8: 6, 9: 7, 10: 7, 11: 8, 12: 9, 13: 9, 14: 10, 15: 11, 16: 11, 17: 12 };
 const ENGINE = ["build/config.mjs", "build/tts.mjs", "build/captions.mjs", "build/music.mjs", "build/mix.mjs", "build/package.mjs", "build/words.mjs",
-  "build/validate-script.mjs", "tools", "stage/index.html", "stage/runtime.js", "stage/tokens.css", "fonts", "package.json", "package-lock.json"];
+  "build/validate-script.mjs", "tools", "stage/index.html", "stage/runtime.js", "stage/narrator.js", "stage/tokens.css", "fonts", "package.json", "package-lock.json"];
 
 const GUIDES = ["scene-guide.md", "script-format.md", "series-standards.md"];
 const copy = (rel, dir) => fs.cpSync(path.join(TEMPLATE, rel), path.join(dir, rel), { recursive: true });
