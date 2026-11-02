@@ -11,8 +11,8 @@ The DDIA video series and its promotion keep their state in [.claude/handoff/](.
 - Update these files whenever the state changes, not only local memory. They sync only through git, so commit and push them when the user says so.
 
 Notes in [.claude/handoff/memory/](.claude/handoff/memory/):
-- [DDIA YouTube series](.claude/handoff/memory/ddia-youtube-series.md): Studio/CDP notes and progress. The published record is [series-log.md](.claude/skills/ddia-video/reference/series-log.md). Ch6 was published 2026-11-02 (n6lwcDeHCP8); Ch7 Part 1 is next.
-- [DDIA LinkedIn posts](.claude/handoff/memory/ddia-linkedin-posts.md): posts go out Sat/Mon/Wed at 11:30 Tehran, and 10 are scheduled through Nov 25. Video posts go first and in order. Editing a scheduled post's text duplicates it. The state is in [posts-v2.md](.claude/handoff/linkedin/posts-v2.md) and the helpers are in [linkedin/tools/](.claude/handoff/linkedin/tools/).
+- [DDIA YouTube series](.claude/handoff/memory/ddia-youtube-series.md): Studio/CDP notes and progress. The published record is [series-log.md](.claude/skills/ddia-video/reference/series-log.md). Ch7 Part 1 was published 2026-11-02 (jm2QdtYKAdY) by the automatic run; it continues nightly.
+- [DDIA LinkedIn posts](.claude/handoff/memory/ddia-linkedin-posts.md): posts go out Sat/Mon/Wed at 11:30 Tehran, and 11 are scheduled through Nov 28. Video posts go first and in order. Editing a scheduled post's text duplicates it. The state is in [posts-v2.md](.claude/handoff/linkedin/posts-v2.md) and the helpers are in [linkedin/tools/](.claude/handoff/linkedin/tools/).
 - [DDIA TODO file](.claude/handoff/memory/ddia-todo-file.md): how to keep the one to-do list.
 - [DDIA YouTube growth](.claude/handoff/memory/ddia-youtube-growth.md): the 2026-10-25 analytics baseline (browse CTR ~1%) and how to read Studio analytics. Re-check around 2026-11-08.
 - [YouTube channel scope](.claude/handoff/memory/youtube-channel-scope.md): the channel covers technical and management content, and DDIA is one series. Draft channel copy for approval.
@@ -22,6 +22,15 @@ Notes in [.claude/handoff/memory/](.claude/handoff/memory/):
 - [HTML pages stay local](.claude/handoff/memory/html-pages-local.md): build HTML as local files and open them; don't publish artifacts unless asked.
 
 ## Standing rules
+
+**Exception: the automatic run** (`/ddia-video auto`, started by `.claude/skills/ddia-video/scripts/auto/run.sh`; the user's
+decision, 2026-11-03: "no questions, no asking for permission, publish it yourself"). In that run, and when the user asks a session to
+do the same work by hand, the rules below give way to `.claude/skills/ddia-video/reference/auto.md`: make videos Public and schedule
+Shorts without asking, run the script and scenes workflows, commit and push `series-log.md` and `.claude/handoff/` state files to
+`master`, and schedule LinkedIn video posts into their Sat/Mon/Wed 11:30 slots (moving the chapter posts back) without asking.
+Everything else still holds: Schedule never Post, never delete or replace a published video, never touch published posts, the user
+signs in themselves.
+
 
 - Never commit or push without asking. Leave unrelated working-tree changes alone.
 - No cloud sessions; everything runs locally.

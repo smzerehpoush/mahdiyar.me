@@ -1,7 +1,8 @@
 #!/bin/bash
 # Automatic DDIA video run (reference/auto.md). Started by launchd (install.sh), or by hand:
 #   run.sh            produce: next session's long-form + Short(s), publish to YouTube, queue the LinkedIn post
-#   run.sh linkedin   post queued LinkedIn posts
+#   run.sh linkedin   schedule approved LinkedIn posts (Sat/Mon/Wed 11:30 slots)
+#   run.sh approve N  release a held LinkedIn post of session N
 #   run.sh plan       print what the next produce run would make, and exit
 # Env: DDIA_AUTO_MODEL (default: your Claude Code default), DDIA_AUTO_PERMISSION_MODE (default auto),
 #      DDIA_AUTO_MAX_HOURS (watchdog, default 20 for produce, 1 for linkedin).
@@ -21,6 +22,11 @@ STAMP="$(date +%F-%H%M)"
 notify() { osascript -e "display notification \"${2//\"/\\\"}\" with title \"DDIA auto: ${1//\"/\\\"}\" sound name \"Glass\"" >/dev/null 2>&1 || true; }
 
 if [ "$JOB" = plan ]; then node "$SKILL/scripts/auto/next.mjs"; exit 0; fi
+if [ "$JOB" = approve ]; then
+  Q="$STATE/linkedin-queue/session-${2:?usage: run.sh approve N}.json"
+  [ -f "$Q" ] || { echo "no queued post for session $2"; exit 1; }
+  sed -i '' -E 's/"status": *"(draft|hold)"/"status": "approved"/' "$Q"; cat "$Q"; exit 0
+fi
 
 # One run at a time (a produce run can take most of a day; launchd's next start just skips).
 LOCK="$STATE/$JOB.lock"
@@ -44,9 +50,9 @@ if ! curl -s -m 3 localhost:9333/json/version >/dev/null; then
 fi
 
 if [ "$JOB" = linkedin ]; then
-  if ! grep -lq '"status": *"pending"' "$STATE"/linkedin-queue/*.json 2>/dev/null; then echo "nothing queued for LinkedIn"; exit 0; fi
+  if ! grep -lq '"status": *"approved"' "$STATE"/linkedin-queue/*.json 2>/dev/null; then echo "no approved LinkedIn post to schedule"; exit 0; fi
   NAME="linkedin"
-  PROMPT="/ddia-video auto linkedin — post every pending item in ~/.cache/ddia-video/auto/linkedin-queue (reference/auto.md → LinkedIn, reference/linkedin.md). Today is $TODAY. Write the report to $REPORTS/$TODAY-linkedin.md."
+  PROMPT="/ddia-video auto linkedin — schedule every approved item in ~/.cache/ddia-video/auto/linkedin-queue into its Sat/Mon/Wed 11:30 slot (reference/auto.md → LinkedIn, reference/linkedin.md); Schedule, never Post; never touch drafts. Today is $TODAY. Write the report to $REPORTS/$TODAY-linkedin.md."
   HOURS="${DDIA_AUTO_MAX_HOURS:-1}"
 else
   if ! node "$SKILL/scripts/setup.mjs" > "$LOGS/$STAMP-setup.log" 2>&1; then

@@ -1,7 +1,7 @@
 # Automatic run (`/ddia-video auto`)
 
 The user's choice (2026-11-02): the series runs by itself on the Mac, one chapter a day, fully automatic: produce the long-form video
-and its Short, publish to YouTube, and post on LinkedIn, with no questions. `scripts/auto/run.sh` (started by launchd every night,
+and its Short and publish them to YouTube with no questions; then schedule the LinkedIn post, all with no questions. `scripts/auto/run.sh` (started by launchd every night,
 see "Machine setup" below) runs `claude -p "/ddia-video auto …"` headless. Nobody is watching, so nobody can answer. This file says
 what replaces each place where SKILL.md would ask or wait. Everything else in SKILL.md and its references still holds (accuracy,
 every QA gate, looking at the images yourself).
@@ -10,7 +10,7 @@ every QA gate, looking at the images yourself).
 The prompt carries the plan from `node scripts/auto/next.mjs`: `long` (the next session with no long-form in series-log.md) and
 `shorts` (that session's Short, plus at most one backlog Short for a published long-form without one). Do them in this order:
 1. the long-form video for `long`, through §9;
-2. its LinkedIn post, written and queued (below);
+2. its LinkedIn post, written and queued for the morning job (below);
 3. each Short in `shorts`, in order, through §9.
 If a step fails for good (see "Stop conditions"), skip what depends on it and go on with the rest: a failed long-form still lets a
 backlog Short run, but not the same session's Short (its `relatedVideo` would be missing).
@@ -29,7 +29,7 @@ backlog Short run, but not the same session's Short (its `relatedVideo` would be
 - **Custom thumbnail refused** (daily limit): publish anyway with the auto frame, and record the thumbnail under "Pending Studio edits"
   in series-log.md. The next run adds pending thumbnails on the edit page before uploading anything new.
 - **Related video refused** for a Short: as now, record it as pending and rely on the description's "Full video:" line.
-- **series-log.md**: update it as §9 says, then commit only that file to `master` and push:
+- **series-log.md**: update it as §9 says, then commit only that file (and `.claude/handoff/` state you changed) to `master` and push:
   `git -C <repo> commit -m "ddia-video series log: <what was published>" -- .claude/skills/ddia-video/reference/series-log.md && git -C <repo> push origin master`.
   Never stage anything else, and leave the user's other working-tree changes alone. If the push is rejected, don't rebase or force:
   report it.
@@ -54,17 +54,16 @@ because series-log.md only changes after publishing. So:
 Never delete a video, and never change channel-level settings, in an automatic run.
 
 ## LinkedIn (reference/linkedin.md)
-After the long-form video is Public, write `<deliverables>/linkedin-post.md` (Persian, linkedin.md → The post) and queue it:
-```bash
-mkdir -p ~/.cache/ddia-video/auto/linkedin-queue
-# one file per long-form video
-cat > ~/.cache/ddia-video/auto/linkedin-queue/session-N.json <<EOF
-{ "session": N, "videoId": "<id>", "url": "https://youtu.be/<id>", "post": "<abs path to linkedin-post.md>", "status": "pending" }
-EOF
-```
-The morning job (`run.sh linkedin`, 10:00) runs `/ddia-video auto linkedin`: for each queue item with `"status": "pending"`, post it
-as linkedin.md → Publishing says, then set `"status": "posted"`, `"postedAt"`, and `"postUrl"` if known, and add
-`LinkedIn: <url or date>` to that video's deliverables `README.md`. If it can't post, leave it pending and report why.
+No approval step (the user, 2026-11-03). After the long-form video is Public:
+1. Write the trimmed post (linkedin.md → The text) to `<deliverables>/linkedin-post.md`, append it to
+   `.claude/handoff/linkedin/youtube-video-posts.md`, and queue it as
+   `{ "session": N, "videoId": "<id>", "url": "https://youtu.be/<id>", "post": "<abs path>", "status": "approved" }` in
+   `~/.cache/ddia-video/auto/linkedin-queue/session-N.json`.
+2. The 10:00 job (`run.sh linkedin` → `/ddia-video auto linkedin`) schedules each approved item into its slot as linkedin.md →
+   Scheduling says (moves first, last post first, then the new post; **Schedule**, never Post), sets `"status": "scheduled"` and
+   `"slot"`, and commits + pushes the updated `.claude/handoff/` files. If it can't finish, it leaves the item approved and reports
+   exactly which moves were done, so the next run continues from there.
+A post the user wants to hold: `"status": "hold"`; the job skips it.
 
 ## The report (always, even when nothing worked)
 Write `~/Movies/DDIA-Auto/reports/<YYYY-MM-DD>-<job>.md` (`job` = `session-N` or `linkedin`). Its **first line** is
