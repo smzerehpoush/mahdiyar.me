@@ -1,7 +1,7 @@
 ---
 name: ddia-video
 description: Make an English YouTube explainer video (12–14 min, 16:9) or a YouTube Short (≤ 60 s, 9:16) for one chapter of Designing Data-Intensive Applications from the blog's DDIA session deck (public/blog/ddia-session-N), then publish it to the channel with captions, thumbnail, description and playlist. Use when the user asks for a DDIA chapter video, the next video in the series, or a DDIA Short.
-argument-hint: "session <N> [short [topic]] | import <cloud branch>"
+argument-hint: "session <N> [short [topic]] | import <cloud branch> | auto [linkedin]"
 ---
 
 # DDIA chapter videos (long-form and Shorts)
@@ -18,6 +18,10 @@ lives, long commands, checkpoint commits to the session branch, and the hand-off
 **`import <branch>`** (local only): run `node "${CLAUDE_SKILL_DIR}/scripts/import-cloud.mjs" --branch <branch>`. It brings a cloud
 session's work into `~/Movies`. Then QA-check the imported `final.mp4` (a few frames, the length) and continue at §8 from its work dir.
 
+**`auto`** (headless, started by `scripts/auto/run.sh`): read [reference/auto.md](reference/auto.md) first. It replaces every question,
+confirmation and wait in this file with a decision, adds the LinkedIn post ([reference/linkedin.md](reference/linkedin.md)), and allows
+committing `reference/series-log.md` to `master`. `auto linkedin` only posts the queued LinkedIn posts.
+
 `SKILL` = `${CLAUDE_SKILL_DIR}`. Read as needed:
 - [reference/series-standards.md](reference/series-standards.md) — the user's binding requirements for every video. **Read first.**
 - [reference/pipeline.md](reference/pipeline.md) — work-dir layout, `video.json` schema, every command, timing model, deliverables.
@@ -31,7 +35,7 @@ session's work into `~/Movies`. Then QA-check the imported `final.mp4` (a few fr
   videos), pending Studio edits. Local sessions may also have the project memory `ddia-youtube-series` (local-only Studio notes).
 
 ## Ground rules
-- Locally, never commit or push anything. In a cloud session, commit only `videos/` to the session's own branch and push it
+- Locally, never commit or push anything (except in an `auto` run: series-log.md only, reference/auto.md). In a cloud session, commit only `videos/` to the session's own branch and push it
   (reference/cloud.md); never `master`. Leave unrelated working-tree changes alone.
 - The user signs in to Google themselves; never ask for or type a password. Never send their email address anywhere.
 - Accuracy over speed: every number is sourced (book 1st ed. / deck), historical figures are labeled, illustrations are labeled.
