@@ -1,0 +1,27 @@
+---
+name: ddia-linkedin-posts
+description: "Designing Data-Intensive Applications LinkedIn posts: Sat/Mon/Wed 11:30 Tehran cadence, schedule through Nov 25, video posts first, state files, duplicate-on-edit behaviour, how to reschedule"
+metadata:
+  node_type: memory
+  type: project
+  originSessionId: 32e320eb-b919-4da4-931d-aaf8a06c9ce2
+  modified: 2026-11-02T08:20:00.000Z
+---
+
+On 2026-10-27 the user cut LinkedIn from one post a day to three a week: **Saturday, Monday, Wednesday at 11:30 Tehran**, one post per day. The YouTube video posts count as slots. Already published: Ch7 (Oct 25), Ch8 and the user's own video-4 post (Oct 26, 13:30), Ch9 (Tue Oct 27, under the old daily plan). On the evening of Oct 27 the user was annoyed that the video-4 post (Ch3 Part 2) had gone out while video 3 (Ch3 Part 1) was still waiting, so the video posts were pulled forward. Late on Oct 27 the video-6 post (Ch5 Part 1, 56fysYohb4k) went in at Mon Nov 2, and Ch10–17 each moved back one slot, all approved by the user. On 2026-11-01 the approved video-7 post (Ch5 Part 2, v7VNukkS3bA) went in at Wed Nov 4 and Ch10–17 moved back one more slot. On 2026-11-02 the video-6 post went out at 11:30 (seen at the top of the profile's activity), the approved video-8 post (Chapter 6, n6lwcDeHCP8) went in at Sat Nov 7, and Ch10–17 moved back one more slot. Scheduled after reload (10): video 7 Wed Nov 4 · video 8 Sat Nov 7 · Ch10 Mon Nov 9 · Ch11 Wed Nov 11 · Ch12 Sat Nov 14 · Ch13 Mon Nov 16 · Ch14 Wed Nov 18 · Ch15 Sat Nov 21 · Ch16 Mon Nov 23 · Ch17 Wed Nov 25. Videos 3 and 5 left the queue on their dates. The state lives at the top of `.claude/handoff/linkedin/posts-v2.md` (chapter posts). The trimmed video-post texts are at the bottom of `.claude/handoff/linkedin/youtube-video-posts.md`. `~/Downloads/ddia-linkedin/posts.md` (first Mac only, with the post videos) is an older copy; its Ch7–17 sections are stale.
+
+**Why:** the user asked for less frequent posting. 11:30 was their choice on 2026-10-25, after research had suggested 18:00. Never abbreviate the book title. Don't touch published posts. The user trims video posts themselves and prefers them short (hook, question as its own paragraph, audience line + CTA, link).
+
+**How to apply:**
+- Video posts go out in video order and soon after the video, ahead of the chapter-post queue. Before scheduling, check that no free slot is left behind and that no later part goes out before an earlier one. A new video post goes right after the last video post, and the chapter posts behind it move back one slot each (8 date-only moves, last post first). After Nov 25 (the last queued post), extend the cadence and ask before scheduling.
+- Editing a scheduled post's text or video creates a NEW scheduled post and leaves the old one. Delete the old copy afterwards; the Scheduled count should match the plan.
+- "Modify schedule" with only a date or time change updates the post in place. Verified for 8 posts on 2026-10-27.
+- The Scheduled list is virtualized and sometimes renders stale (a duplicate, a missing post). Reload before trusting it.
+- Find a post by its exact header ("Posting Mon, Nov 2, 2026 at 11:30 AM") plus the "More options" button on that row.
+- The date field needs focus+select, typing M/D/YYYY, Tab, then a blur click before "Posting at …" updates. Confirm can stay disabled until the time ("11:30 AM") is re-entered the same way (seen for near dates and, on 2026-11-02, for a far one; move.sh now always re-enters it). Check that Confirm is enabled before clicking it.
+- Rows far down the Scheduled list aren't rendered until the list's scroll container is scrolled. LinkedIn sometimes shows "Something went wrong"; click Refresh and retry.
+- On the evening of Oct 27 LinkedIn was slow: dialogs and the composer took 10–30 s to render. Poll for the element you need; never fall back to clicking a fixed spot, because on the feed that could land on someone's post. A new post's text is typed with real keystrokes into the TipTap/ProseMirror editor, read back and diffed against the approved text, then scheduled from the composer's clock button. Don't touch "Post".
+- Helpers in `.claude/handoff/linkedin/tools/` (run from that folder): li2.mjs (CDP, pierces shadow roots), move.sh (one date-only move: composer clock → Scheduled → row by header y → Modify schedule), list.sh. The composer clock is the digit SPAN with y>300 and x>800 (the nav badge "1" also matches a bare digit). After Confirm the link-preview card can scroll out of view under the text; check it in the DOM, not the screenshot.
+- Never accept the cookie banner.
+
+Related: [[ddia-youtube-series]].
