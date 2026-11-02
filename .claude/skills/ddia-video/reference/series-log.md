@@ -45,6 +45,8 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 9 | long (13:54) | Designing Data-Intensive Applications, Chapter 7, Part 1: The Races Your Database Lets Through | https://youtu.be/jm2QdtYKAdY | 2026-11-02 |
 | 8 | Short (0:58) | Add One Server, Move 91% of the Data: Never Use Hash Mod N #Shorts | https://youtube.com/shorts/za3mF_n4X-Q | scheduled 2026-11-05 18:30 Tehran |
 | 9 | Short (0:55) | Both Doctors Checked the Rule. Nobody Was On Call. #Shorts | https://youtube.com/shorts/A3Eu-DooYDc | scheduled 2026-11-06 18:30 Tehran |
+| 10 | long (13:50) | Designing Data-Intensive Applications, Chapter 7, Part 2: What Serializable Really Costs | https://youtu.be/hVbc2H4pfT8 | 2026-11-03 |
+| 10 | Short (0:59) | One Thread, No Locks, No Races: Why Some Databases Do It #Shorts | https://youtube.com/shorts/1oawD9yt6ss | scheduled 2026-11-07 18:30 Tehran |
 
 All of these are Public. The scheduled Shorts stay Private until their scheduled time and then turn Public on their own. The
 three long-form titles were renamed to the book-first format on 2026-10-23 (they were
@@ -69,6 +71,12 @@ resolved in the callback by `SET balance = balance + 10`. It got its custom thum
 The Session 8 Short (hash mod N: 10 → 11 servers moves 100 of 110 keys; 1,000 fixed partitions move about 9%) and the Session 9 Short
 (write skew, the book's on-call doctors) were made by the same automatic run on 2026-11-02, with custom thumbnails on upload;
 related-video linking was still refused.
+Chapter 7 Part 2 (Session 10, serializability: actual serial execution, two-phase locking, SSI) was made by the automatic run on
+2026-11-03. Its hook is the book's room-123 booking: a double booking (write skew), fixed with SERIALIZABLE, after which PostgreSQL
+throws "could not serialize access" (40001); the callback shows that error is SSI catching the double booking, and the retry.
+Its custom thumbnail was refused (daily limit), so it went Public with the auto frame; its end screen (Subscribe + "Best for
+viewer") was imported from Chapter 7, Part 1, and jm2QdtYKAdY's video element now points at it. The Session 10 Short (actual serial
+execution: one thread, no locks, no races) was made the same run; its thumbnail and related-video link were both refused.
 The Session 6 Short (the GitHub 2012 failover, as described in the book) was made locally on 2026-10-30. The channel still could
 not link a Short to a related video that day ("Build your channel history"), so it relies on the description's "Full video:" line.
 On 2026-10-25 the Chapter 1, 2 and 3 Part 1 long-form videos got redesigned thumbnails (v2), whose big words name the hook's problem
@@ -94,8 +102,9 @@ Shorts were made the same day, all with `am_michael`.
 
 ## Pending Studio edits (local, once the channel allows them)
 - Custom thumbnails, refused because of the daily limit. The limit varies: about one per day earlier, while on 2026-10-25 five went
-  through before the sixth was refused. None are pending: 0jGFILQlCmg and ho0yWHSOxXk got theirs on 2026-10-27, the same day
-  56fysYohb4k got its thumbnail on upload.
+  through before the sixth was refused. **Pending (2026-11-03, refused on upload):** hVbc2H4pfT8 (Chapter 7, Part 2) →
+  `~/Movies/DDIA-Session-10-Video/thumbnail.jpg`, then 1oawD9yt6ss (Session 10 Short) → `~/Movies/DDIA-Session-10-Video/Short/thumbnail.jpg`.
+  Add the long-form one first on the next run.
 - Related-video links, refused with "once you have more history":
   - unP7OnG847Y and dNdS39XkMqA → uCm4lbSYg2Y
   - ho0yWHSOxXk → b-rJ8lzuEZY
@@ -106,9 +115,11 @@ Shorts were made the same day, all with `am_michael`.
   - wNt6U4lsYg8 → v7VNukkS3bA
   - za3mF_n4X-Q → n6lwcDeHCP8
   - A3Eu-DooYDc → jm2QdtYKAdY
-- End screen: when Chapter 7, Part 2 is published, point jm2QdtYKAdY's end-screen video element at it (it uses "Best for viewer"
-  now). n6lwcDeHCP8 (Chapter 6) has pointed at jm2QdtYKAdY since 2026-11-02, v7VNukkS3bA (Chapter 5, Part 2) has pointed at n6lwcDeHCP8 since 2026-11-02, 56fysYohb4k (Chapter 5, Part 1) at v7VNukkS3bA
-  since 2026-11-01, and gavQQVU2d1w (Chapter 4) at 56fysYohb4k since 2026-10-27.
+  - 1oawD9yt6ss → hVbc2H4pfT8
+- End screen: when Chapter 8 is published, point hVbc2H4pfT8's end-screen video element at it (it uses "Best for viewer" now).
+  jm2QdtYKAdY (Chapter 7, Part 1) has pointed at hVbc2H4pfT8 since 2026-11-03, n6lwcDeHCP8 (Chapter 6) at jm2QdtYKAdY since 2026-11-02,
+  v7VNukkS3bA (Chapter 5, Part 2) at n6lwcDeHCP8 since 2026-11-02, 56fysYohb4k (Chapter 5, Part 1) at v7VNukkS3bA since 2026-11-01, and
+  gavQQVU2d1w (Chapter 4) at 56fysYohb4k since 2026-10-27.
 - Description links aren't clickable until the channel has Advanced features. The phone is already verified (Intermediate is
   enabled); on 2026-10-25 Advanced was "Eligible", missing only "Channel history", which YouTube grants over time. This doesn't
   block publishing.
