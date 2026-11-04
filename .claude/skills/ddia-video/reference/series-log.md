@@ -49,6 +49,8 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 10 | Short (0:59) | One Thread, No Locks, No Races: Why Some Databases Do It #Shorts | https://youtube.com/shorts/1oawD9yt6ss | scheduled 2026-11-07 18:30 Tehran |
 | 11 | long (13:44) | Designing Data-Intensive Applications, Chapter 8: No Reply, Wrong Clock, Frozen Process | https://youtu.be/z-4wlzzo9xw | 2026-11-04 |
 | 11 | Short (0:45) | No Reply From the Server? It Could Mean Six Things #Shorts | https://youtube.com/shorts/fAEHRojGeLg | scheduled 2026-11-08 18:30 Tehran |
+| 12 | long (13:35) | Designing Data-Intensive Applications, Chapter 9, Part 1: When Eventually Consistent Isn't Enough | https://youtu.be/xRykTIOSPLc | 2026-11-05 |
+| 12 | Short (0:50) | Quorum Said Yes. The Read Still Went Back in Time #Shorts | https://youtube.com/shorts/tIThOX05zn4 | scheduled 2026-11-09 18:30 Tehran |
 
 All of these are Public. The scheduled Shorts stay Private until their scheduled time and then turn Public on their own. The
 three long-form titles were renamed to the book-first format on 2026-10-23 (they were
@@ -86,6 +88,14 @@ tokens 33 and 34. It got its custom thumbnail on upload, its end screen (Subscri
 Part 2, and hVbc2H4pfT8's video element now points at it. The Session 11 Short (no reply can mean six things; a timeout can't tell
 which, so retries must be safe to repeat) was made the same run, with its custom cover on upload; related-video linking was still
 refused. The same run added the two thumbnails pending from 2026-11-03 (hVbc2H4pfT8 and 1oawD9yt6ss).
+Chapter 9 Part 1 (Session 12, consistency and ordering: linearizability, CAP, causality, Lamport timestamps, total order
+broadcast) was made by the automatic run on 2026-11-05; Chapter 9 is two videos, one per deck (auto.md), so Session 13 is Part 2.
+Its hook is the book's image-resizer race (the queue message overtakes storage replication and the thumbnail is made from the old
+photo), resolved in the callback by storage that behaves like one copy. It got its custom thumbnail on upload, its end screen
+(Subscribe + "Best for viewer") was imported from Chapter 8, and z-4wlzzo9xw's video element now points at it. The Session 12
+Short (the book's strict-quorum race: n = 3, w = 3, r = 2, and a later read still returns the old value) was made the same run
+with its custom cover, and it was the first Short the channel let link to a related video. The same run then linked all eleven
+pending Shorts to their long-form videos.
 The Session 6 Short (the GitHub 2012 failover, as described in the book) was made locally on 2026-10-30. The channel still could
 not link a Short to a related video that day ("Build your channel history"), so it relies on the description's "Full video:" line.
 On 2026-10-25 the Chapter 1, 2 and 3 Part 1 long-form videos got redesigned thumbnails (v2), whose big words name the hook's problem
@@ -98,8 +108,9 @@ Shorts were made the same day, all with `am_michael`.
   by previewing Chapter 4.
 - **Chapter 5 is two videos as well** (the user's choice, 2026-10-25): Session 6 is Part 1 (leaders and followers, replication lag)
   and ends by previewing "Chapter 5, part 2"; Session 7 is Part 2 (multi-leader, leaderless).
-- **Chapter 7 is two videos too** (the user's choice, 2026-11-01): Session 9 is Part 1 and Session 10 is Part 2, one per deck. It is
-  not yet decided whether the other split chapters (sessions 12+13, 15+16) get one video or two. Ask the user when one comes up.
+- **Chapter 7 is two videos too** (the user's choice, 2026-11-01): Session 9 is Part 1 and Session 10 is Part 2, one per deck.
+- **Chapter 9 is two videos** (auto.md: split chapters 12+13 and 15+16 get one video per deck): Session 12 is Part 1 (consistency
+  and ordering, published 2026-11-05) and ends by previewing Part 2; Session 13 is Part 2 (distributed transactions and consensus).
 - A Short's `relatedVideo` is its chapter's long-form URL from the table above.
 - **Narration voice: male, Kokoro `am_michael`, from Session 5 on** (the user's choice, 2026-10-24). This includes new Shorts for
   earlier chapters. Sessions 1–4 in the Published table used `af_heart` (female). am_michael speaks about 9% slower, so the
@@ -112,20 +123,9 @@ Shorts were made the same day, all with `am_michael`.
 ## Pending Studio edits (local, once the channel allows them)
 - Custom thumbnails, refused because of the daily limit. The limit varies: about one per day earlier, while on 2026-10-25 five went
   through before the sixth was refused. On 2026-11-04 four went through (two pending ones, then Chapter 8 and its Short). **None pending.**
-- Related-video links, refused with "once you have more history":
-  - unP7OnG847Y and dNdS39XkMqA → uCm4lbSYg2Y
-  - ho0yWHSOxXk → b-rJ8lzuEZY
-  - jQFb9xyO2hk → Pontu125KTo
-  - UEuhuITwccI → Dbgfqu1neps
-  - 0jGFILQlCmg → gavQQVU2d1w
-  - wLJqdGGSv4o → 56fysYohb4k
-  - wNt6U4lsYg8 → v7VNukkS3bA
-  - za3mF_n4X-Q → n6lwcDeHCP8
-  - A3Eu-DooYDc → jm2QdtYKAdY
-  - 1oawD9yt6ss → hVbc2H4pfT8
-  - fAEHRojGeLg → z-4wlzzo9xw
-- End screen: when Chapter 9 is published, point z-4wlzzo9xw's end-screen video element at it (it uses "Best for viewer" now).
-  hVbc2H4pfT8 (Chapter 7, Part 2) has pointed at z-4wlzzo9xw since 2026-11-04, jm2QdtYKAdY (Chapter 7, Part 1) has pointed at hVbc2H4pfT8 since 2026-11-03, n6lwcDeHCP8 (Chapter 6) at jm2QdtYKAdY since 2026-11-02,
+- Related-video links: **none pending.** The channel allowed them from 2026-11-05; that day every Short got its related video.
+- End screen: when Chapter 9, Part 2 is published, point xRykTIOSPLc's end-screen video element at it (it uses "Best for viewer"
+  now). z-4wlzzo9xw (Chapter 8) has pointed at xRykTIOSPLc since 2026-11-05, hVbc2H4pfT8 (Chapter 7, Part 2) has pointed at z-4wlzzo9xw since 2026-11-04, jm2QdtYKAdY (Chapter 7, Part 1) has pointed at hVbc2H4pfT8 since 2026-11-03, n6lwcDeHCP8 (Chapter 6) at jm2QdtYKAdY since 2026-11-02,
   v7VNukkS3bA (Chapter 5, Part 2) at n6lwcDeHCP8 since 2026-11-02, 56fysYohb4k (Chapter 5, Part 1) at v7VNukkS3bA since 2026-11-01, and
   gavQQVU2d1w (Chapter 4) at 56fysYohb4k since 2026-10-27.
 - Description links aren't clickable until the channel has Advanced features. The phone is already verified (Intermediate is
