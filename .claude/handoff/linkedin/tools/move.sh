@@ -14,8 +14,9 @@ L click '^Scheduled \(\d+\)$' >/dev/null
 waitfor '^Posting \w+, \w+ \d+, 2026 at'
 hy=""
 for i in 1 2 3 4 5 6 7 8; do
-  L reveal "^$1\$" >/dev/null; sleep 1
-  hy=$(L find "^$1\$" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const a=JSON.parse(s).filter(o=>o.tag=="SPAN"&&o.y>40&&o.y<800);console.log(a.length==1?a[0].y:"")})')
+  # Scroll the row to the top: a row low in the list sits outside the dialog's visible area, and a click there closes it (2026-11-05). Alternate with centre: a row at the very top can end up under the dialog header.
+  L eval '(()=>{const h=[...document.querySelectorAll("span")].find(e=>(e.innerText||"").trim()==="'"$1"'");if(h)h.scrollIntoView({block:"'"$([[ $((i%2)) == 1 ]] && echo start || echo center)"'"});return !!h})()' >/dev/null; sleep 1
+  hy=$(L find "^$1\$" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const a=JSON.parse(s).filter(o=>o.tag=="SPAN"&&o.y>40&&o.y<600);console.log(a.length==1?a[0].y:"")})')
   [[ -n "$hy" ]] && break
   L eval '(()=>{const h=[...document.querySelectorAll("span")].filter(e=>/^Posting \w+, \w+ \d+, 2026 at/.test((e.innerText||"").trim()));if(h.length)h[h.length-1].scrollIntoView({block:"start"});return h.length})()' >/dev/null; sleep 1.5
 done
