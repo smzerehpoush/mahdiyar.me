@@ -51,6 +51,9 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 11 | Short (0:45) | No Reply From the Server? It Could Mean Six Things #Shorts | https://youtube.com/shorts/fAEHRojGeLg | scheduled 2026-11-08 18:30 Tehran |
 | 12 | long (13:35) | Designing Data-Intensive Applications, Chapter 9, Part 1: When Eventually Consistent Isn't Enough | https://youtu.be/xRykTIOSPLc | 2026-11-05 |
 | 12 | Short (0:50) | Quorum Said Yes. The Read Still Went Back in Time #Shorts | https://youtube.com/shorts/tIThOX05zn4 | scheduled 2026-11-09 18:30 Tehran |
+| 13 | long (13:57) | Designing Data-Intensive Applications, Chapter 9, Part 2: How Machines Agree Despite Crashes | https://youtu.be/6Fr7ynt8cA4 | 2026-11-07 |
+| 13 | Short (0:52) | Why a 4th Node Doesn't Make Your Cluster Safer #Shorts | https://youtube.com/shorts/b9L62AnawgM | scheduled 2026-11-10 18:30 Tehran |
+| 1 | Short (0:56) | Disks Last 10–50 Years. Why Does One Die Every Day? #Shorts | https://youtube.com/shorts/vWibkvJgc54 | scheduled 2026-11-11 18:30 Tehran |
 
 All of these are Public. The scheduled Shorts stay Private until their scheduled time and then turn Public on their own. The
 three long-form titles were renamed to the book-first format on 2026-10-23 (they were
@@ -96,6 +99,14 @@ photo), resolved in the callback by storage that behaves like one copy. It got i
 Short (the book's strict-quorum race: n = 3, w = 3, r = 2, and a later read still returns the old value) was made the same run
 with its custom cover, and it was the first Short the channel let link to a related video. The same run then linked all eleven
 pending Shorts to their long-form videos.
+Chapter 9 Part 2 (Session 13, distributed transactions and consensus: two-phase commit, XA, fault-tolerant consensus, epochs and
+quorums, ZooKeeper and etcd) was made by the automatic run on 2026-11-06/07 (the 11-06 run stopped mid-way and the 11-07 run resumed it).
+Its hook is a $100 transfer across two databases whose coordinator crashes after telling only the first to commit, leaving the
+second in doubt and holding its lock; the callback stores the decision through consensus (and mentions the outbox pattern). It
+got its custom thumbnail on upload, its end screen (Subscribe + "Best for viewer") was imported from Chapter 9, Part 1, and
+xRykTIOSPLc's video element now points at it. The Session 13 Short (a 4th consensus node adds no crash tolerance) and Session 1's
+third Short (disk MTTF 10–50 years, so 10,000 disks lose about one a day) were made the same run, with custom covers and related
+videos on upload.
 The Session 6 Short (the GitHub 2012 failover, as described in the book) was made locally on 2026-10-30. The channel still could
 not link a Short to a related video that day ("Build your channel history"), so it relies on the description's "Full video:" line.
 On 2026-10-25 the Chapter 1, 2 and 3 Part 1 long-form videos got redesigned thumbnails (v2), whose big words name the hook's problem
@@ -124,8 +135,8 @@ Shorts were made the same day, all with `am_michael`.
 - Custom thumbnails, refused because of the daily limit. The limit varies: about one per day earlier, while on 2026-10-25 five went
   through before the sixth was refused. On 2026-11-04 four went through (two pending ones, then Chapter 8 and its Short). **None pending.**
 - Related-video links: **none pending.** The channel allowed them from 2026-11-05; that day every Short got its related video.
-- End screen: when Chapter 9, Part 2 is published, point xRykTIOSPLc's end-screen video element at it (it uses "Best for viewer"
-  now). z-4wlzzo9xw (Chapter 8) has pointed at xRykTIOSPLc since 2026-11-05, hVbc2H4pfT8 (Chapter 7, Part 2) has pointed at z-4wlzzo9xw since 2026-11-04, jm2QdtYKAdY (Chapter 7, Part 1) has pointed at hVbc2H4pfT8 since 2026-11-03, n6lwcDeHCP8 (Chapter 6) at jm2QdtYKAdY since 2026-11-02,
+- End screen: when Chapter 10 is published, point 6Fr7ynt8cA4's end-screen video element at it (it uses "Best for viewer" now).
+  xRykTIOSPLc (Chapter 9, Part 1) has pointed at 6Fr7ynt8cA4 since 2026-11-07, z-4wlzzo9xw (Chapter 8) has pointed at xRykTIOSPLc since 2026-11-05, hVbc2H4pfT8 (Chapter 7, Part 2) has pointed at z-4wlzzo9xw since 2026-11-04, jm2QdtYKAdY (Chapter 7, Part 1) has pointed at hVbc2H4pfT8 since 2026-11-03, n6lwcDeHCP8 (Chapter 6) at jm2QdtYKAdY since 2026-11-02,
   v7VNukkS3bA (Chapter 5, Part 2) at n6lwcDeHCP8 since 2026-11-02, 56fysYohb4k (Chapter 5, Part 1) at v7VNukkS3bA since 2026-11-01, and
   gavQQVU2d1w (Chapter 4) at 56fysYohb4k since 2026-10-27.
 - Description links aren't clickable until the channel has Advanced features. The phone is already verified (Intermediate is
@@ -133,3 +144,12 @@ Shorts were made the same day, all with `am_michael`.
   block publishing.
 - Chapters: on 2026-10-23 the player showed no chapter segments on uCm4lbSYg2Y and Pontu125KTo, and the page data had no
   `multiMarkersPlayerBarRenderer`. The description timestamps are valid and render as clickable links. Cause unknown; check again later.
+
+## Pinned comments
+One pinned discussion question per video (auto.md). Scheduled Shorts are pinned by a later run after they go public.
+- 6Fr7ynt8cA4: Where have you seen a transaction stuck halfway across two systems in production? How did you find it, and who cleaned it up?
+- dNdS39XkMqA: How many backend calls does one request to your slowest endpoint fan out to?
+- uCm4lbSYg2Y: Where have you seen a system that was up and running but still felt broken to users? What gave it away first: stale data, slow requests, or slow changes?
+- unP7OnG847Y: Does your feed or inbox do its work when someone writes, or when someone reads?
+- pending: b9L62AnawgM (public 2026-11-10 18:30)
+- pending: vWibkvJgc54 (public 2026-11-11 18:30)
