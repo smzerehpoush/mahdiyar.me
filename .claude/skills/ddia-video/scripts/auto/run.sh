@@ -40,6 +40,14 @@ trap 'rm -rf "$LOCK"' EXIT
 # Keep the Mac awake for this run (display may sleep; the CDP Chrome flags keep Studio painting).
 caffeinate -ims -w $$ &
 
+# Wait for the network (the Mac may wake before Wi-Fi/DNS is back): check every 5 min for up to 6 h before giving up.
+for i in $(seq 72); do
+  curl -s -m 10 -o /dev/null https://api.anthropic.com && break
+  [ "$i" = 1 ] && echo "[$(date)] no network; waiting up to 6 h"
+  [ "$i" = 72 ] && { notify "no network" "Gave up after 6 h without internet; the next scheduled run retries."; exit 1; }
+  sleep 300
+done
+
 # The signed-in CDP Chrome for YouTube Studio and LinkedIn (reference/youtube-upload.md §0).
 if ! curl -s -m 3 localhost:9333/json/version >/dev/null; then
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --user-data-dir="$HOME/.cache/ddia-video/yt-profile" \
