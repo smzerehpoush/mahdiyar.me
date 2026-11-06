@@ -12,3 +12,7 @@ empty Persian blog at `/blog/`.
 - `CONTEXT.md` — the site's vocabulary
 
 Open any file in `public/` in a browser to preview. Pushing to `master` publishes within 5 minutes.
+
+Project thumbnails use Thum.io's public screenshot API, refreshing images older than
+one hour when requested. Previews show public pages only; if the service fails,
+the project card still links directly to its site.

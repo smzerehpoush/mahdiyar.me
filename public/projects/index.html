@@ -13,104 +13,172 @@
 <style>
   :root{
     --bg:#04050B;
-    --surface:rgba(124,108,255,.05);
-    --surface-hi:rgba(124,108,255,.09);
-    --line:rgba(140,128,255,.18);
-    --line-strong:rgba(140,128,255,.45);
-    --indigo:#8C80FF;
-    --indigo-hi:#B3AAFF;
-    --t-hi:#FFFFFF;
-    --t-body:#C9CCE0;
-    --t-mut:#7E829E;
-    --radius:16px;
+    --surface:#0C0E19;
+    --line:#262A40;
+    --accent:#B3AAFF;
+    --t-hi:#F4F5FF;
+    --t-body:#C4C9DE;
+    --t-mut:#9AA3BE;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{min-height:100%}
   body{
-    background:
-      radial-gradient(1100px 600px at 85% -10%, rgba(91,75,255,.16), transparent 60%),
-      radial-gradient(900px 500px at 0% 110%, rgba(91,75,255,.08), transparent 55%),
-      var(--bg);
+    background:radial-gradient(900px 500px at 90% 0%,#14112D 0%,transparent 70%),var(--bg);
     color:var(--t-body);
     font-family:'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
     min-height:100vh;
+    -webkit-font-smoothing:antialiased;
   }
-  .wrap{width:min(980px,100%);margin:auto;padding:clamp(40px,7vw,88px) clamp(22px,5vw,56px)}
+  a{color:inherit}
+  .wrap{width:min(1240px,100%);margin:auto;padding:32px clamp(20px,5vw,64px) 36px}
   .ltr{direction:ltr;unicode-bidi:isolate}
+  .site-nav{display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:.9rem}
+  .brand{display:flex;align-items:center;gap:10px;color:var(--t-hi);font-weight:700}
+  .brand::before{content:"";width:10px;height:10px;background:var(--accent);border-radius:3px}
+  .back{display:inline-flex;align-items:center;gap:8px;min-height:44px;color:var(--t-mut);text-decoration:none}
+  .back:hover{color:var(--t-hi)}
+  .back svg{width:16px;height:16px}
+  .intro{padding-block:clamp(40px,6vw,72px) clamp(30px,4vw,48px)}
+  h1{color:var(--t-hi);font-size:clamp(2.2rem,4.5vw,3.5rem);font-weight:900;line-height:1.5}
+  .lede{margin-top:12px;font-size:clamp(1rem,1.8vw,1.13rem);line-height:2;color:var(--t-mut)}
+  .projects{display:grid;gap:28px}
 
-  .eyebrow{
-    color:var(--indigo);font-size:.86rem;font-weight:600;margin-bottom:18px;
-    display:flex;align-items:center;gap:12px;
+  /* Each project pairs its description with a current public-page screenshot. */
+  .project-card{
+    --project-accent:#88E0CB;
+    display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.35fr);
+    align-items:center;gap:clamp(24px,4vw,48px);
+    padding:clamp(20px,3vw,32px);border:1px solid var(--line);border-radius:24px;
+    background:var(--surface);text-decoration:none;
+    transition:border-color .2s,background .2s;
   }
-  .eyebrow::before{
-    content:"";width:26px;height:2px;border-radius:2px;
-    background:linear-gradient(90deg,var(--indigo),transparent);
-  }
-  h1{
-    color:var(--t-hi);font-weight:900;line-height:1.4;
-    font-size:clamp(2rem,5vw,3.2rem);margin-bottom:18px;
-  }
-  .lede{font-size:clamp(1.02rem,2vw,1.2rem);color:var(--t-body);max-width:52ch;line-height:2;text-wrap:pretty}
+  .project-card.weather{--project-accent:#9BC8FF}
+  .project-card:hover{border-color:#535B7E;background:#101320}
+  a:focus-visible{outline:3px solid var(--accent);outline-offset:6px;border-radius:6px}
+  .project-card:focus-visible{border-radius:24px}
+  .project-copy{min-width:0;padding-block:8px}
+  .category{display:flex;align-items:center;gap:9px;color:var(--project-accent);font-size:.85rem;font-weight:500}
+  .category svg{width:20px;height:20px;flex:none}
+  h2{margin-block:14px 12px;color:var(--t-hi);font-weight:800;font-size:clamp(1.65rem,2.5vw,2.1rem);line-height:1.5}
+  .description{font-size:.96rem;line-height:2.1;text-wrap:pretty}
+  .project-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:24px}
+  .host{color:var(--t-mut);font-size:.8rem;direction:ltr;unicode-bidi:isolate}
+  .visit{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:44px;padding:10px 15px;border:1px solid #343B53;border-radius:10px;color:var(--t-hi);font-size:.85rem;font-weight:500;transition:background .2s,border-color .2s}
+  .visit svg{width:16px;height:16px;transition:transform .2s}
+  .project-card:hover .visit{background:#242A3D;border-color:#647092}
+  .project-card:hover .visit svg{transform:translateX(-3px)}
 
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:clamp(34px,6vw,56px)}
-  @media (max-width:720px){.grid{grid-template-columns:1fr}}
+  .browser{min-width:0;overflow:hidden;border:1px solid #34394D;border-radius:12px;background:#171B29;box-shadow:0 16px 40px #0003;direction:ltr}
+  .browser-bar{height:38px;display:grid;grid-template-columns:50px 1fr 50px;align-items:center;padding-inline:12px;border-bottom:1px solid #34394D;color:#B7BFD4}
+  .browser-dots{display:flex;gap:5px}
+  .browser-dots i{width:6px;height:6px;border-radius:50%;background:#677087}
+  .browser-address{justify-self:center;font-family:inherit;font-size:.68rem}
+  .browser-symbol{justify-self:end;width:13px;height:13px;color:#8A95B1}
+  .preview{position:relative;aspect-ratio:1200/760;overflow:hidden;background:#E9EDF4}
+  .preview img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;transition:opacity .2s}
+  .preview[data-state="loading"] img,.preview[data-state="error"] img{opacity:0}
+  .preview-message{position:absolute;inset:0;display:none;place-content:center;gap:12px;padding:20px;text-align:center;direction:rtl;color:#3C4963;font-size:.85rem;line-height:1.9}
+  .preview[data-state="loading"] .preview-loading,.preview[data-state="error"] .preview-error{display:grid}
+  .loading-mark{width:30px;height:30px;margin-inline:auto;border:3px solid #CFD6E4;border-top-color:#59678B;border-radius:50%;animation:loading .8s linear infinite}
+  .preview-error svg{width:30px;height:30px;margin-inline:auto}
+  @keyframes loading{to{transform:rotate(360deg)}}
+  .preview-caption{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 13px;color:#A9B3CC;font-size:.68rem;direction:rtl}
+  .preview-caption svg{width:13px;height:13px}
 
-  /* Project card — one per project, newest first. */
-  .card{
-    display:flex;flex-direction:column;text-decoration:none;
-    background:var(--surface);border:1px solid var(--line);
-    border-radius:var(--radius);padding:clamp(22px,3vw,30px);
-    transition:border-color .2s,background .2s,transform .2s;
+  footer{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:40px;padding-top:24px;border-top:1px solid var(--line);color:var(--t-mut);font-size:.8rem;line-height:2}
+  footer a{text-decoration:none}
+  footer a:hover{color:var(--t-hi)}
+  @media (max-width:800px){
+    .project-card{grid-template-columns:minmax(0,1fr);gap:20px;padding:20px}
+    .browser{grid-row:1}
+    .project-copy{padding:4px 4px 6px}
+    h2{margin-block:10px}
+    .project-bottom{margin-top:20px}
   }
-  .card:hover,.card:focus-visible{
-    border-color:var(--line-strong);background:var(--surface-hi);
-    transform:translateY(-3px);outline:none;
+  @media (max-width:420px){
+    .wrap{padding-inline:16px;padding-top:18px}
+    .site-nav{font-size:.8rem}
+    .project-card{padding:14px;border-radius:20px}
+    .project-card:focus-visible{border-radius:20px}
+    .project-bottom{gap:12px}
+    .preview-caption{font-size:.65rem}
   }
-  .card .kicker{
-    direction:ltr;unicode-bidi:isolate;align-self:flex-start;
-    font-size:.7rem;font-weight:700;letter-spacing:.16em;
-    color:var(--indigo-hi);border:1px solid var(--line-strong);
-    padding:.34em .95em;border-radius:999px;margin-bottom:18px;
-  }
-  .card h2{color:var(--t-hi);font-weight:800;font-size:1.4rem;line-height:1.5;margin-bottom:12px}
-  .card p{color:var(--t-body);line-height:1.95;font-size:1rem;flex:1}
-  .card .host{margin-top:16px;color:var(--t-mut);font-size:.85rem;direction:ltr;unicode-bidi:isolate;align-self:flex-start}
-  .card .go{
-    margin-top:14px;color:var(--indigo);font-weight:700;font-size:.95rem;
-    display:flex;align-items:center;gap:8px;
-  }
-  .card .go::after{content:"←";transition:transform .2s}
-  .card:hover .go::after{transform:translateX(-5px)}
-
-  footer{
-    margin-top:clamp(40px,7vw,72px);padding-top:22px;
-    border-top:1px solid var(--line);
-    color:var(--t-mut);font-size:.85rem;line-height:2;
-  }
-  footer a{color:var(--indigo);text-decoration:none}
-  footer a::before{content:"→ "}
-  footer a:hover{text-decoration:underline}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
   <div class="wrap">
-    <p class="eyebrow">مهدیار زره‌پوش</p>
-    <h1>پروژه‌های شخصی</h1>
-    <p class="lede">سرویس‌ها و ابزارهایی که خودم ساخته‌ام.</p>
+    <nav class="site-nav" aria-label="ناوبری اصلی">
+      <span class="brand">مهدیار زره‌پوش</span>
+      <a class="back" href="/">صفحهٔ اصلی <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+    </nav>
+    <main>
+      <header class="intro">
+        <h1>پروژه‌های شخصی</h1>
+        <p class="lede">سرویس‌ها و ابزارهایی که خودم ساخته‌ام.</p>
+      </header>
 
-    <div class="grid">
-      <a class="card" href="https://hoshdarbaran.ir/">
-        <span class="kicker">SMS · WEATHER</span>
-        <h2>هشدار باران</h2>
-        <p>هشدار پیامکی باران و برف برای موتورسوارها. شهر و ساعت حرکتتان را انتخاب می‌کنید و صبح روزهایی که احتمال بارش هست، پیامک می‌گیرید.</p>
-        <span class="host">hoshdarbaran.ir</span>
-        <span class="go">دیدن سایت</span>
+    <div class="projects">
+      <a class="project-card" href="https://matab-yaar.ir/" aria-labelledby="matab-title" aria-describedby="matab-description">
+        <div class="project-copy">
+          <span class="category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4" y="4" width="16" height="17" rx="3"/><path d="M8 2v4m8-4v4M4 10h16m-8 3v5m-2.5-2.5h5"/></svg>مدیریت مطب</span>
+          <h2 id="matab-title">مطب‌یار</h2>
+          <p class="description" id="matab-description">سامانهٔ فارسی مدیریت مطب برای پزشک، منشی و مراجع. مدیریت نوبت‌ها، رسیدها و حساب مراجعان در وب و ربات‌های تلگرام و بله، با دسترسی جداگانه برای هر نقش.</p>
+          <div class="project-bottom">
+            <span class="visit">دیدن سایت <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg></span>
+            <span class="host">matab-yaar.ir</span>
+          </div>
+        </div>
+        <div class="browser" aria-hidden="true">
+          <div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-address">matab-yaar.ir</span><svg class="browser-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+          <div class="preview" data-preview>
+            <img src="https://image.thum.io/get/width/1200/crop/760/maxAge/1/noanimate/allowJPG/https://matab-yaar.ir/" width="1200" height="760" alt="" loading="eager" fetchpriority="high" decoding="async" referrerpolicy="no-referrer">
+            <div class="preview-message preview-loading"><span class="loading-mark"></span><span>در حال دریافت پیش‌نمایش…</span></div>
+            <div class="preview-message preview-error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m3 16 5-5 5 5 3-3 5 5"/></svg><span>پیش‌نمایش در دسترس نیست<br>برای دیدن سایت کلیک کنید.</span></div>
+          </div>
+          <div class="preview-caption"><span>پیش‌نمایش وب‌سایت</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 4h6v6m0-6L10 14m0-10H4v16h16v-6"/></svg></div>
+        </div>
+      </a>
+      <a class="project-card weather" href="https://hoshdarbaran.ir/" aria-labelledby="weather-title" aria-describedby="weather-description">
+        <div class="project-copy">
+          <span class="category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 15a4 4 0 0 1-.5-8A6 6 0 0 1 17 6a4.5 4.5 0 0 1 1 9M8 17l-1 3m6-3-1 3m6-3-1 3"/></svg>هواشناسی و پیامک</span>
+          <h2 id="weather-title">هشدار باران</h2>
+          <p class="description" id="weather-description">هشدار پیامکی باران و برف برای موتورسوارها. شهر و ساعت حرکتتان را انتخاب می‌کنید و صبح روزهایی که احتمال بارش هست، پیامک می‌گیرید.</p>
+          <div class="project-bottom">
+            <span class="visit">دیدن سایت <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg></span>
+            <span class="host">hoshdarbaran.ir</span>
+          </div>
+        </div>
+        <div class="browser" aria-hidden="true">
+          <div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-address">hoshdarbaran.ir</span><svg class="browser-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+          <div class="preview" data-preview>
+            <img src="https://image.thum.io/get/width/1200/crop/760/maxAge/1/noanimate/allowJPG/https://hoshdarbaran.ir/" width="1200" height="760" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+            <div class="preview-message preview-loading"><span class="loading-mark"></span><span>در حال دریافت پیش‌نمایش…</span></div>
+            <div class="preview-message preview-error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m3 16 5-5 5 5 3-3 5 5"/></svg><span>پیش‌نمایش در دسترس نیست<br>برای دیدن سایت کلیک کنید.</span></div>
+          </div>
+          <div class="preview-caption"><span>پیش‌نمایش وب‌سایت</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 4h6v6m0-6L10 14m0-10H4v16h16v-6"/></svg></div>
+        </div>
       </a>
     </div>
-
+    </main>
     <footer>
-      <a href="/">بازگشت به <span class="ltr">mahdiyar.me</span></a>
+      <span>طراحی و توسعه توسط مهدیار زره‌پوش</span>
+      <a class="ltr" href="/">mahdiyar.me</a>
     </footer>
   </div>
+<script>
+  // Thum.io refreshes screenshots older than one hour when requested.
+  // Keep project navigation usable even when the thumbnail service is unavailable.
+  for (const preview of document.querySelectorAll('[data-preview]')) {
+    const image = preview.querySelector('img');
+    const showResult = () => {
+      preview.dataset.state = image.naturalWidth > 0 ? 'ready' : 'error';
+    };
+    image.addEventListener('load', showResult, { once: true });
+    image.addEventListener('error', showResult, { once: true });
+    if (image.complete) showResult();
+    else preview.dataset.state = 'loading';
+  }
+</script>
 </body>
 </html>
