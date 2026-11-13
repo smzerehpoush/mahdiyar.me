@@ -54,6 +54,9 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 13 | long (13:57) | Designing Data-Intensive Applications, Chapter 9, Part 2: How Machines Agree Despite Crashes | https://youtu.be/6Fr7ynt8cA4 | 2026-11-07 |
 | 13 | Short (0:52) | Why a 4th Node Doesn't Make Your Cluster Safer #Shorts | https://youtube.com/shorts/b9L62AnawgM | scheduled 2026-11-10 18:30 Tehran |
 | 1 | Short (0:56) | Disks Last 10–50 Years. Why Does One Die Every Day? #Shorts | https://youtube.com/shorts/vWibkvJgc54 | scheduled 2026-11-11 18:30 Tehran |
+| 14 | long (13:12) | Designing Data-Intensive Applications, Chapter 10: Join a Billion Rows Without a Single Lookup | https://youtu.be/qO_7DblLNOk | 2026-11-13 |
+| 14 | Short (0:51) | A Billion 1 ms Lookups = 11 Days. Batch Jobs Sort Instead #Shorts | https://youtube.com/shorts/EH4JE0uM-Gc | scheduled 2026-11-14 18:30 Tehran |
+| 2 | Short (0:57) | Why Databases Store "us:91", Not "Greater Seattle Area" #Shorts | https://youtube.com/shorts/YPZMeKZp3VM | scheduled 2026-11-15 18:30 Tehran |
 
 All of these are Public. The scheduled Shorts stay Private until their scheduled time and then turn Public on their own. The
 three long-form titles were renamed to the book-first format on 2026-10-23 (they were
@@ -107,6 +110,14 @@ got its custom thumbnail on upload, its end screen (Subscribe + "Best for viewer
 xRykTIOSPLc's video element now points at it. The Session 13 Short (a 4th consensus node adds no crash tolerance) and Session 1's
 third Short (disk MTTF 10–50 years, so 10,000 disks lose about one a day) were made the same run, with custom covers and related
 videos on upload.
+Chapter 10 (Session 14, batch processing: Unix tools, MapReduce and HDFS, sort-merge and map-side joins, dataflow engines, Pregel)
+was made by the automatic run on 2026-11-08 and published on 2026-11-13; the runs of 11-08 to 11-11 could not reach YouTube from
+this Mac, and there was no 11-12 run. Its hook is the deck's nightly payments job doing one 1 ms merchant lookup per payment
+(a billion of them ≈ 11.6 days, a simplified illustration), resolved in the callback by dumping the merchants table, a sort-merge
+join and swapping the output in. It got its custom thumbnail on upload, its end screen (Subscribe + "Best for viewer") was
+imported from Chapter 9, Part 2, and 6Fr7ynt8cA4's video element now points at it. The Session 14 Short (the same lookup math,
+then the sort-merge fix) and Session 2's second Short (store the ID us:91, not "Greater Seattle Area") were made the same run,
+with custom covers and related videos on upload. Nov 12 and Nov 13 have no Short because of the outage.
 The Session 6 Short (the GitHub 2012 failover, as described in the book) was made locally on 2026-10-30. The channel still could
 not link a Short to a related video that day ("Build your channel history"), so it relies on the description's "Full video:" line.
 On 2026-10-25 the Chapter 1, 2 and 3 Part 1 long-form videos got redesigned thumbnails (v2), whose big words name the hook's problem
@@ -135,8 +146,8 @@ Shorts were made the same day, all with `am_michael`.
 - Custom thumbnails, refused because of the daily limit. The limit varies: about one per day earlier, while on 2026-10-25 five went
   through before the sixth was refused. On 2026-11-04 four went through (two pending ones, then Chapter 8 and its Short). **None pending.**
 - Related-video links: **none pending.** The channel allowed them from 2026-11-05; that day every Short got its related video.
-- End screen: when Chapter 10 is published, point 6Fr7ynt8cA4's end-screen video element at it (it uses "Best for viewer" now).
-  xRykTIOSPLc (Chapter 9, Part 1) has pointed at 6Fr7ynt8cA4 since 2026-11-07, z-4wlzzo9xw (Chapter 8) has pointed at xRykTIOSPLc since 2026-11-05, hVbc2H4pfT8 (Chapter 7, Part 2) has pointed at z-4wlzzo9xw since 2026-11-04, jm2QdtYKAdY (Chapter 7, Part 1) has pointed at hVbc2H4pfT8 since 2026-11-03, n6lwcDeHCP8 (Chapter 6) at jm2QdtYKAdY since 2026-11-02,
+- End screen: when Chapter 11 Part 1 is published, point qO_7DblLNOk's end-screen video element at it (it uses "Best for viewer" now).
+  6Fr7ynt8cA4 (Chapter 9, Part 2) has pointed at qO_7DblLNOk since 2026-11-13, xRykTIOSPLc (Chapter 9, Part 1) has pointed at 6Fr7ynt8cA4 since 2026-11-07, z-4wlzzo9xw (Chapter 8) has pointed at xRykTIOSPLc since 2026-11-05, hVbc2H4pfT8 (Chapter 7, Part 2) has pointed at z-4wlzzo9xw since 2026-11-04, jm2QdtYKAdY (Chapter 7, Part 1) has pointed at hVbc2H4pfT8 since 2026-11-03, n6lwcDeHCP8 (Chapter 6) at jm2QdtYKAdY since 2026-11-02,
   v7VNukkS3bA (Chapter 5, Part 2) at n6lwcDeHCP8 since 2026-11-02, 56fysYohb4k (Chapter 5, Part 1) at v7VNukkS3bA since 2026-11-01, and
   gavQQVU2d1w (Chapter 4) at 56fysYohb4k since 2026-10-27.
 - Description links aren't clickable until the channel has Advanced features. The phone is already verified (Intermediate is
@@ -151,5 +162,11 @@ One pinned discussion question per video (auto.md). Scheduled Shorts are pinned 
 - dNdS39XkMqA: How many backend calls does one request to your slowest endpoint fan out to?
 - uCm4lbSYg2Y: Where have you seen a system that was up and running but still felt broken to users? What gave it away first: stale data, slow requests, or slow changes?
 - unP7OnG847Y: Does your feed or inbox do its work when someone writes, or when someone reads?
-- pending: b9L62AnawgM (public 2026-11-10 18:30)
-- pending: vWibkvJgc54 (public 2026-11-11 18:30)
+- qO_7DblLNOk: Where have you seen a nightly job look up one record at a time in a production database? How long did it run, and what did you change?
+- b9L62AnawgM: How many nodes does your etcd or ZooKeeper cluster run, and how many can it lose and still accept writes?
+- vWibkvJgc54: How often does a disk or machine die in your fleet, and does your system notice before you do?
+- b-rJ8lzuEZY: Where have you seen data that started as a neat document turn into a web of links in production? Did you keep the documents, or move to joins?
+- ho0yWHSOxXk: In your schemaless database, where does the schema actually live: in the data, or in the code that reads it?
+- Pontu125KTo: Where have you seen a database slow down or its disk usage balloon because of how it stores data on disk? Was it an LSM-tree or a B-tree underneath?
+- pending: EH4JE0uM-Gc (public 2026-11-14 18:30)
+- pending: YPZMeKZp3VM (public 2026-11-15 18:30)
