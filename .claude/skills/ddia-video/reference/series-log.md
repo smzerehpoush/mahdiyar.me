@@ -57,6 +57,9 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 14 | long (13:12) | Designing Data-Intensive Applications, Chapter 10: Join a Billion Rows Without a Single Lookup | https://youtu.be/qO_7DblLNOk | 2026-11-13 |
 | 14 | Short (0:51) | A Billion 1 ms Lookups = 11 Days. Batch Jobs Sort Instead #Shorts | https://youtube.com/shorts/EH4JE0uM-Gc | scheduled 2026-11-14 18:30 Tehran |
 | 2 | Short (0:57) | Why Databases Store "us:91", Not "Greater Seattle Area" #Shorts | https://youtube.com/shorts/YPZMeKZp3VM | scheduled 2026-11-15 18:30 Tehran |
+| 2 | Short (0:56) | Why This Query Takes 29 Lines in SQL and 4 in Cypher #Shorts | https://youtube.com/shorts/C2we3H9gJWE | scheduled 2026-11-17 18:30 Tehran |
+| 15 | long (13:12) | Designing Data-Intensive Applications, Chapter 11, Part 1: Why Dual Writes Go Out of Sync | https://youtu.be/Y_7oXFujud4 | 2026-11-15 |
+| 15 | Short (0:57) | Your Search Index Says A. Your Database Says B. #Shorts | https://youtube.com/shorts/XS3EYoqj15c | scheduled 2026-11-16 18:30 Tehran |
 
 All of these are Public. The scheduled Shorts stay Private until their scheduled time and then turn Public on their own. The
 three long-form titles were renamed to the book-first format on 2026-10-23 (they were
@@ -118,6 +121,14 @@ join and swapping the output in. It got its custom thumbnail on upload, its end 
 imported from Chapter 9, Part 2, and 6Fr7ynt8cA4's video element now points at it. The Session 14 Short (the same lookup math,
 then the sort-merge fix) and Session 2's second Short (store the ID us:91, not "Greater Seattle Area") were made the same run,
 with custom covers and related videos on upload. Nov 12 and Nov 13 have no Short because of the outage.
+Chapter 11 Part 1 (Session 15, stream processing: message brokers, log-based brokers, change data capture, event sourcing,
+state and immutability) was started by the automatic run on 2026-11-13 (stopped at its usage limit after the script synthesis) and
+finished and published by the run of 2026-11-14/15; Chapter 11 is two videos, one per deck (auto.md), so Session 16 is Part 2. Its hook
+is the book's dual-write race (two renames, the database ends at B and the search index at A, no error), resolved in the callback
+by change data capture into one partition keyed by the product. It got its custom thumbnail on upload, its end screen (Subscribe +
+"Best for viewer") was imported from Chapter 10, and qO_7DblLNOk's video element now points at it. The Session 15 Short (the same
+race, fixed by following the database's log) was rendered by the 11-13 run and published by this one with its custom cover and
+related video. Session 2's third Short (graph queries, 4 lines of Cypher vs 29 of SQL) was also made and scheduled by the 11-13 run.
 The Session 6 Short (the GitHub 2012 failover, as described in the book) was made locally on 2026-10-30. The channel still could
 not link a Short to a related video that day ("Build your channel history"), so it relies on the description's "Full video:" line.
 On 2026-10-25 the Chapter 1, 2 and 3 Part 1 long-form videos got redesigned thumbnails (v2), whose big words name the hook's problem
@@ -146,8 +157,8 @@ Shorts were made the same day, all with `am_michael`.
 - Custom thumbnails, refused because of the daily limit. The limit varies: about one per day earlier, while on 2026-10-25 five went
   through before the sixth was refused. On 2026-11-04 four went through (two pending ones, then Chapter 8 and its Short). **None pending.**
 - Related-video links: **none pending.** The channel allowed them from 2026-11-05; that day every Short got its related video.
-- End screen: when Chapter 11 Part 1 is published, point qO_7DblLNOk's end-screen video element at it (it uses "Best for viewer" now).
-  6Fr7ynt8cA4 (Chapter 9, Part 2) has pointed at qO_7DblLNOk since 2026-11-13, xRykTIOSPLc (Chapter 9, Part 1) has pointed at 6Fr7ynt8cA4 since 2026-11-07, z-4wlzzo9xw (Chapter 8) has pointed at xRykTIOSPLc since 2026-11-05, hVbc2H4pfT8 (Chapter 7, Part 2) has pointed at z-4wlzzo9xw since 2026-11-04, jm2QdtYKAdY (Chapter 7, Part 1) has pointed at hVbc2H4pfT8 since 2026-11-03, n6lwcDeHCP8 (Chapter 6) at jm2QdtYKAdY since 2026-11-02,
+- End screen: when Chapter 11 Part 2 is published, point Y_7oXFujud4's end-screen video element at it (it uses "Best for viewer" now).
+  qO_7DblLNOk (Chapter 10) has pointed at Y_7oXFujud4 since 2026-11-15, 6Fr7ynt8cA4 (Chapter 9, Part 2) has pointed at qO_7DblLNOk since 2026-11-13, xRykTIOSPLc (Chapter 9, Part 1) has pointed at 6Fr7ynt8cA4 since 2026-11-07, z-4wlzzo9xw (Chapter 8) has pointed at xRykTIOSPLc since 2026-11-05, hVbc2H4pfT8 (Chapter 7, Part 2) has pointed at z-4wlzzo9xw since 2026-11-04, jm2QdtYKAdY (Chapter 7, Part 1) has pointed at hVbc2H4pfT8 since 2026-11-03, n6lwcDeHCP8 (Chapter 6) at jm2QdtYKAdY since 2026-11-02,
   v7VNukkS3bA (Chapter 5, Part 2) at n6lwcDeHCP8 since 2026-11-02, 56fysYohb4k (Chapter 5, Part 1) at v7VNukkS3bA since 2026-11-01, and
   gavQQVU2d1w (Chapter 4) at 56fysYohb4k since 2026-10-27.
 - Description links aren't clickable until the channel has Advanced features. The phone is already verified (Intermediate is
@@ -168,5 +179,14 @@ One pinned discussion question per video (auto.md). Scheduled Shorts are pinned 
 - b-rJ8lzuEZY: Where have you seen data that started as a neat document turn into a web of links in production? Did you keep the documents, or move to joins?
 - ho0yWHSOxXk: In your schemaless database, where does the schema actually live: in the data, or in the code that reads it?
 - Pontu125KTo: Where have you seen a database slow down or its disk usage balloon because of how it stores data on disk? Was it an LSM-tree or a B-tree underneath?
-- pending: EH4JE0uM-Gc (public 2026-11-14 18:30)
+- EH4JE0uM-Gc: Does your nightly batch job query the live database once per record, or join against a dump of the table?
+- Dbgfqu1neps: Where have you seen an analytics query crawl because it scanned whole rows of a wide table in production? What did you change: the storage format, the query, or the schema?
+- gavQQVU2d1w: Where have you seen a schema or API change break old code in production? Was it old readers or old writers that broke, and how did you roll it out the second time?
+- jQFb9xyO2hk: Has a big delete or cleanup ever made your database's disk usage go up before it went down?
+- Y_7oXFujud4: Where have you seen two systems your code writes to drift out of sync in production? How did you find out, and what did you change?
+- 56fysYohb4k: Where have you seen replication lag show users stale data in production? Did you fix it by reading from the leader, or something else?
+- UEuhuITwccI: Which of your analytics queries would get faster if the data were stored by column instead of by row?
+- 0jGFILQlCmg: During your last rolling deploy, could old code have rewritten records written by new code? What stops it from dropping the new fields?
 - pending: YPZMeKZp3VM (public 2026-11-15 18:30)
+- pending: C2we3H9gJWE (public 2026-11-17 18:30)
+- pending: XS3EYoqj15c (public 2026-11-16 18:30)
