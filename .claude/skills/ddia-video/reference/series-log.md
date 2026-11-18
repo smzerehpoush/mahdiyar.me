@@ -60,6 +60,7 @@ a video. Update it after publishing (SKILL.md §9), and commit it to `master` wi
 | 2 | Short (0:56) | Why This Query Takes 29 Lines in SQL and 4 in Cypher #Shorts | https://youtube.com/shorts/C2we3H9gJWE | scheduled 2026-11-17 18:30 Tehran |
 | 15 | long (13:12) | Designing Data-Intensive Applications, Chapter 11, Part 1: Why Dual Writes Go Out of Sync | https://youtu.be/Y_7oXFujud4 | 2026-11-15 |
 | 15 | Short (0:57) | Your Search Index Says A. Your Database Says B. #Shorts | https://youtube.com/shorts/XS3EYoqj15c | scheduled 2026-11-16 18:30 Tehran |
+| 3 | Short (0:55) | Why Adding an Index Slows Down Your Inserts #Shorts | https://youtube.com/shorts/OAxKrmwnpew | scheduled 2026-11-18 18:30 Tehran |
 
 All of these are Public. The scheduled Shorts stay Private until their scheduled time and then turn Public on their own. The
 three long-form titles were renamed to the book-first format on 2026-10-23 (they were
@@ -190,3 +191,4 @@ One pinned discussion question per video (auto.md). Scheduled Shorts are pinned 
 - pending: YPZMeKZp3VM (public 2026-11-15 18:30)
 - pending: C2we3H9gJWE (public 2026-11-17 18:30)
 - pending: XS3EYoqj15c (public 2026-11-16 18:30)
+- pending: OAxKrmwnpew (public 2026-11-18 18:30)
